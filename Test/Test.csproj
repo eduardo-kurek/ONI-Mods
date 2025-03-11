@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ModTitle>My First Mod</ModTitle>
+        <ModDescription>This is my first mod.</ModDescription>
+        <ModVersion>1.0.0</ModVersion>
+        <SupportedContent>ALL</SupportedContent>
+        <LastWorkingBuild>652372</LastWorkingBuild>
+        <RootNamespace>Test</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="PLib" Version="4.17.1" />
+        <AssembliesToMerge Include="$(TargetDir)PLib.dll" />
+    </ItemGroup>
+
+</Project>

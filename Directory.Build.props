@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    
+    <!-- Assembly info -->
+    <PropertyGroup>
+        <Product>Kurek ONI Mods</Product>
+        <Authors>Eduardo Kurek</Authors>
+        <Company>Eduardo Kurek https://github.com/eduardo-kurek</Company>
+        <Copyright>Kurek &#169; 2025</Copyright>
+    </PropertyGroup>
+
+    <!-- Build setup -->
+    <PropertyGroup>
+        <TargetFramework>net471</TargetFramework>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <OutputType>Library</OutputType>
+        <LangVersion>10</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    
+    <!-- Variables -->
+    <PropertyGroup>
+        <GameFolder>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 457140@InstallLocation)</GameFolder>
+        <ManagedFolder>$(GameFolder)\OxygenNotIncluded_Data\Managed</ManagedFolder>
+        <DocumentsFolder>$(registry:HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders@Personal)</DocumentsFolder>
+        <GameModFolder>$(DocumentsFolder)\Klei\OxygenNotIncluded\mods</GameModFolder>
+        <LocalModFolder>resources</LocalModFolder>
+        <RemoteModFolder>$(GameModFolder)\Dev\$(MSBuildProjectName)</RemoteModFolder>
+        <PlayerLogFile>$(USERPROFILE)\AppData\LocalLow\Klei\Oxygen Not Included\Player.log</PlayerLogFile>
+        <EditorToOpenLog>notepad</EditorToOpenLog>
+    </PropertyGroup>
+
+    <!-- Game references -->
+    <ItemGroup>
+        <Reference Include="0Harmony" HintPath="$(ManagedFolder)\0Harmony.dll" />
+        <Reference Include="Assembly-CSharp" HintPath="$(ManagedFolder)\Assembly-CSharp.dll" />
+        <Reference Include="Assembly-CSharp-firstpass" HintPath="$(ManagedFolder)\Assembly-CSharp-firstpass.dll" />
+        <Reference Include="FMODUnity" HintPath="$(ManagedFolder)\FMODUnity.dll" />
+        <Reference Include="Newtonsoft.Json" HintPath="$(ManagedFolder)\Newtonsoft.Json.dll" />
+        <Reference Include="UnityEngine" HintPath="$(ManagedFolder)\UnityEngine.dll" />
+        <Reference Include="UnityEngine.CoreModule" HintPath="$(ManagedFolder)\UnityEngine.CoreModule.dll" />
+        <Reference Include="UnityEngine.ImageConversionModule" HintPath="$(ManagedFolder)\UnityEngine.ImageConversionModule.dll" />
+        <Reference Include="UnityEngine.InputLegacyModule" HintPath="$(ManagedFolder)\UnityEngine.InputLegacyModule.dll" />
+        <Reference Include="Unity.TextMeshPro" HintPath="$(ManagedFolder)\Unity.TextMeshPro.dll" />
+        <Reference Include="UnityEngine.TextRenderingModule" HintPath="$(ManagedFolder)\UnityEngine.TextRenderingModule.dll" />
+        <Reference Include="UnityEngine.UI" HintPath="$(ManagedFolder)\UnityEngine.UI.dll" />
+        <Reference Include="UnityEngine.UIModule" HintPath="$(ManagedFolder)\UnityEngine.UIModule.dll" />
+    </ItemGroup>
+
+    <!-- Packages -->
+    <ItemGroup>
+        <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.26" />
+    </ItemGroup>
+    
+</Project>

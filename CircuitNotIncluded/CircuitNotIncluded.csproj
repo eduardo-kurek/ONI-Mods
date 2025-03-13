@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ModTitle>Circuit Not Included</ModTitle>
+        <ModDescription>A mod for creating custom circuits</ModDescription>
+        <ModVersion>1.0.0</ModVersion>
+        <SupportedContent>ALL</SupportedContent>
+        <LastWorkingBuild>652372</LastWorkingBuild>
+        <RootNamespace>CircuitNotIncluded</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="PLib" Version="4.17.1" />
+        <AssembliesToMerge Include="$(TargetDir)PLib.dll" />
+    </ItemGroup>
+
+</Project>

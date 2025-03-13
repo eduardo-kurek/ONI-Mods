@@ -2,3 +2,6 @@
 */bin
 */obj
 ONI-Mods.sln.DotSettings.user
+*/resources/**.dll
+*/resources/mod.yaml
+*/resources/mod_info.yaml

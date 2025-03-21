@@ -7,12 +7,12 @@ public class BinaryOperation : INode {
 	
 	public INode Left;
 	public INode Right;
-	private IBinaryKind _kind;
+	private readonly IBinaryKind kind;
 
 	public BinaryOperation(INode left, INode right, IBinaryKind kind){
 		Left = left;
 		Right = right;
-		_kind = kind;
+		this.kind = kind;
 	}
 
 	public void Accept(IVisitor v){
@@ -20,7 +20,7 @@ public class BinaryOperation : INode {
 	}
 	
 	public int Evaluate(int left, int right){
-		return _kind.Evaluate(left, right);
+		return kind.Evaluate(left, right);
 	}
 	
 }

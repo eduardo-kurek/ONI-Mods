@@ -3,28 +3,21 @@ using CircuitNotIncluded.Syntax.Visitors;
 
 namespace CircuitNotIncluded.Structs;
 
-internal class Circuit : KMonoBehaviour {
+public class Circuit : KMonoBehaviour {
 
-	private LogicPorts _ports = null!;
-	private CircuitDef _circuitDef = null!;
-	private DependencyTable _dependencyTable = null!;
-	private LogicValueChanged _lastChange = new LogicValueChanged();
+	private LogicPorts ports = null!;
+	private CircuitDef circuitDef = null!;
+	private DependencyTable dependencyTable = null!;
+	private LogicValueChanged lastChange;
 	
-
 	protected override void OnSpawn(){
-		_ports = GetComponent<LogicPorts>();
-		_circuitDef = (CircuitDef)GetComponent<Building>().Def;
-		_dependencyTable = new DependencyTable(_circuitDef);
+		ports = GetComponent<LogicPorts>();
+		circuitDef = (CircuitDef)GetComponent<Building>().Def;
+		dependencyTable = new DependencyTable(circuitDef);
 		
 		Subscribe((int)GameHashes.LogicEvent, data => {
-			_lastChange = (LogicValueChanged)data;
+			lastChange = (LogicValueChanged)data;
 			OnNetworkValueChanged();
-		});
-
-		Subscribe((int)GameHashes.SelectObject, data => {
-			bool selected = (bool)data;
-			if(selected) OnSelected();
-			else OnDeselected();
 		});
 		
 		ApplyChanges();
@@ -36,41 +29,35 @@ internal class Circuit : KMonoBehaviour {
 	}
 
 	private bool IsInputPort(){
-		return _dependencyTable.HasInputPort(_lastChange.portID);
+		return dependencyTable.HasInputPort(lastChange.portID);
 	}
 
 	private bool ValueChanged(){
-		return _lastChange.prevValue != _lastChange.newValue;
-	}
-
-	private void OnSelected(){
-		Debug.Log("Selected!");
-	}
-	
-	private void OnDeselected(){
-		Debug.Log("Deselected!");
+		return lastChange.prevValue != lastChange.newValue;
 	}
 
 	private void OnInputPortChanged(){
-		var outDependents = _dependencyTable.GetDependents(_lastChange.portID);
+		var outDependents = dependencyTable.GetDependents(lastChange.portID);
 		foreach(SyntaxTree tree in outDependents){
-			SyntaxEvaluater evaluater = new SyntaxEvaluater(_ports);
+			SyntaxEvaluater evaluater = new SyntaxEvaluater(ports);
 			tree.Accept(evaluater);
 			int result = evaluater.GetResult();
-			_ports.SendSignal(tree.OutputPort.id, result);
+			ports.SendSignal(tree.OutputPort.id, result);
 		}
 	}
 
 	public void ApplyChanges(){
-		_ports.inputPortInfo = _circuitDef.CNI_InputPorts.ToArray();
-		_ports.outputPortInfo = _circuitDef.CNI_Outputs.Select(tree => tree.OutputPort).ToArray();
+		ports.inputPortInfo = circuitDef.CNI_InputPorts.ToArray();
+		ports.outputPortInfo = circuitDef.CNI_Outputs.Select(tree => tree.OutputPort).ToArray();
 		RefreshPhysicalPorts();
 	}
 
 	// When you call SendSignal and the outputPorts is null, the game will call _ports.CreatePhysicalPorts
 	public void RefreshPhysicalPorts(){
-		_ports.outputPorts = null;
-		_ports.SendSignal("", 0);
+		ports.outputPorts = null;
+		ports.SendSignal("", 0);
 	}
+	
+	public string GetCNIName() => circuitDef.CNI_Name;
 	
 }

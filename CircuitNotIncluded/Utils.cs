@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using STRINGS;
-using TUNING;
-
 namespace CircuitNotIncluded;
 
 public class Utils {
 	public static void AddBuildingStrings(string buildingId, string name, string description, string effect){
 			Strings.Add(new string[] {
 				"STRINGS.BUILDINGS.PREFABS." + buildingId.ToUpperInvariant() + ".NAME",
-				UI.FormatAsLink(name, buildingId)
+				STRINGS.UI.FormatAsLink(name, buildingId)
 			});
 			Strings.Add(new string[] {
 				"STRINGS.BUILDINGS.PREFABS." + buildingId.ToUpperInvariant() + ".DESC",

@@ -6,11 +6,11 @@ namespace CircuitNotIncluded.Syntax.Nodes;
 public class UnaryOperation : INode {
 	
 	public INode Child;
-	private IUnaryKind _kind;
+	private readonly IUnaryKind kind;
 	
 	public UnaryOperation(INode child, IUnaryKind kind){
 		Child = child;
-		_kind = kind;
+		this.kind = kind;
 	}
 	
 	public void Accept(IVisitor v){
@@ -18,6 +18,6 @@ public class UnaryOperation : INode {
 	}
 	
 	public int Evaluate(int value){
-		return _kind.Evaluate(value);
+		return kind.Evaluate(value);
 	}
 }

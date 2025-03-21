@@ -4,37 +4,37 @@ namespace CircuitNotIncluded.Syntax.Visitors;
 
 public class SyntaxEvaluater : IVisitor {
 	
-	private readonly LogicPorts _ports;
-	private int _value;
+	private readonly LogicPorts ports;
+	private int value;
 
 	public SyntaxEvaluater(LogicPorts ports){
-		_ports = ports;
-		_value = 0;
+		this.ports = ports;
+		value = 0;
 	}
 	
 	public void Visit(Identifier node){
-		_value = _ports.GetInputValue(node.InputPortId);
+		value = ports.GetInputValue(node.InputPortId);
 	}
 	
 	public void Visit(BinaryOperation node){
 		node.Left.Accept(this);
-		int lValue = _value;
+		int lValue = value;
 		
 		node.Right.Accept(this);
-		int rValue = _value;
+		int rValue = value;
 
-		_value = node.Evaluate(lValue, rValue);
+		value = node.Evaluate(lValue, rValue);
 	}
 	
 	public void Visit(UnaryOperation node){
 		node.Child.Accept(this);
-		int value = _value;
+		int value = this.value;
 
-		_value = node.Evaluate(value);
+		this.value = node.Evaluate(value);
 	}
 
 	public int GetResult(){
-		return _value;
+		return value;
 	}
 
 }

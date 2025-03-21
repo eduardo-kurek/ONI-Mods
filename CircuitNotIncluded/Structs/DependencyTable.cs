@@ -7,7 +7,7 @@ namespace CircuitNotIncluded.Structs;
 // In other words, which output ports are influenced by each input port
 public class DependencyTable {
 
-	private Dictionary<HashedString, List<SyntaxTree>> _table = new();
+	private Dictionary<HashedString, List<SyntaxTree>> table = new();
 	
 	public DependencyTable(CircuitDef def){
 		Update(def);
@@ -20,7 +20,7 @@ public class DependencyTable {
 
 	private void InitializeEmptyTable(List<LogicPorts.Port> inputPorts){
 		foreach(LogicPorts.Port port in inputPorts){
-			_table[port.id] = new List<SyntaxTree>();
+			table[port.id] = new List<SyntaxTree>();
 		}
 	}
 
@@ -32,16 +32,16 @@ public class DependencyTable {
 	private void AddDependecy(SyntaxTree tree){
 		var inputPorts = ExtractInputPorts(tree);
 		foreach(HashedString inputPort in inputPorts){
-			_table[inputPort].Add(tree);
+			table[inputPort].Add(tree);
 		}
 	}
 	
 	public List<SyntaxTree> GetDependents(HashedString inputPortId){
-		return _table[inputPortId];
+		return table[inputPortId];
 	}
 
 	public bool HasInputPort(HashedString inputPortId){
-		return _table.ContainsKey(inputPortId);
+		return table.ContainsKey(inputPortId);
 	}
 	
 	private static List<HashedString> ExtractInputPorts(SyntaxTree tree){
@@ -52,7 +52,7 @@ public class DependencyTable {
 
 	public void Print(){
 		Debug.Log("Dependency Table:");
-		foreach(KeyValuePair<HashedString, List<SyntaxTree>> entry in _table){
+		foreach(KeyValuePair<HashedString, List<SyntaxTree>> entry in table){
 			Debug.Log("Input port has: " + entry.Key);
 			foreach(SyntaxTree tree in entry.Value){
 				Debug.Log("\tOutput port: " + tree.OutputPort.id);

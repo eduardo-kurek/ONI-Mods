@@ -20,6 +20,12 @@ internal class Circuit : KMonoBehaviour {
 			_lastChange = (LogicValueChanged)data;
 			OnNetworkValueChanged();
 		});
+
+		Subscribe((int)GameHashes.SelectObject, data => {
+			bool selected = (bool)data;
+			if(selected) OnSelected();
+			else OnDeselected();
+		});
 		
 		ApplyChanges();
 	}
@@ -35,6 +41,14 @@ internal class Circuit : KMonoBehaviour {
 
 	private bool ValueChanged(){
 		return _lastChange.prevValue != _lastChange.newValue;
+	}
+
+	private void OnSelected(){
+		Debug.Log("Selected!");
+	}
+	
+	private void OnDeselected(){
+		Debug.Log("Deselected!");
 	}
 
 	private void OnInputPortChanged(){

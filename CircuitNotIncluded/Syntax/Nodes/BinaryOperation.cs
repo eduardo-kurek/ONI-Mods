@@ -1,4 +1,3 @@
-using CircuitNotIncluded.Syntax.Binary;
 using CircuitNotIncluded.Syntax.Kinds;
 using CircuitNotIncluded.Syntax.Visitors;
 

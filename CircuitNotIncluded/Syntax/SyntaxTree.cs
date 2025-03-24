@@ -17,4 +17,6 @@ public class SyntaxTree {
 		Root.Accept(v);
 	}
 	
+	public string GetOutputId() => OutputPort.OriginalId;
+	public HashedString GetOutputHash() => OutputPort.P.id;
 }

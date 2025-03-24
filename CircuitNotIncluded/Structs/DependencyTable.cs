@@ -30,23 +30,17 @@ public class DependencyTable {
 	}
 	
 	private void AddDependecy(SyntaxTree tree){
-		var inputPorts = ExtractInputPorts(tree);
+		var inputPorts = InputPortsExtractor.Extract(tree);
 		foreach(HashedString inputPort in inputPorts){
 			table[inputPort].Add(tree);
 		}
 	}
 	
-	public List<SyntaxTree> GetDependents(HashedString inputPortId){
+	public List<SyntaxTree> GetOutputDependents(HashedString inputPortId){
 		return table[inputPortId];
 	}
 
 	public bool HasInputPort(HashedString inputPortId){
 		return table.ContainsKey(inputPortId);
-	}
-	
-	private static List<HashedString> ExtractInputPorts(SyntaxTree tree){
-		InputPortsExtractor extractor = new();
-		tree.Accept(extractor);
-		return extractor.InputPorts;
 	}
 }

@@ -12,16 +12,16 @@ public class RegisterBuilding {
 
 	public static void Postfix(){
 
-		var i1 = Port.InputPort("i1", new CellOffset(0, 0),
+		var i1 = CNIPort.InputPort("i1", new CellOffset(0, 0),
 			"i1", "i1", "i1");
 
-		var i2 = Port.InputPort("i2", new CellOffset(0, 1),
+		var i2 = CNIPort.InputPort("i2", new CellOffset(0, 1),
 			"i2", "i2", "i2");
 
-		var i3 = Port.InputPort("i3", new CellOffset(1, 0),
+		var i3 = CNIPort.InputPort("i3", new CellOffset(1, 0),
 			"i3", "i3", "i3");
 
-		var o1 = Port.OutputPort("o1", new CellOffset(1, 1),
+		var o1 = CNIPort.OutputPort("o1", new CellOffset(1, 1),
 			"o1", "o1", "o1");
 		
 		
@@ -37,20 +37,20 @@ public class RegisterBuilding {
 		CircuitDef newAnd = CircuitDef.Create(
 			"New and Gate!","Steins; Gate", "HOUOUYIN KYOUMA-DA",
 			2, 2, "logic_new_and_kanim",
-			new List<Port> { i1, i2, i3 },
+			new List<CNIPort> { i1, i2, i3 },
 			new List<SyntaxTree> { o1Syntax }
 		);
 		
-		var ii1 = Port.InputPort("i1", new CellOffset(0, 1),
+		var ii1 = CNIPort.InputPort("i1", new CellOffset(0, 1),
 			"i1", "i1", "i1");
 
-		var ii2 = Port.InputPort("i2", new CellOffset(0, 0),
+		var ii2 = CNIPort.InputPort("i2", new CellOffset(0, 0),
 			"i2", "i2", "i2");
 
-		var oo1 = Port.OutputPort("o1", new CellOffset(1, 1),
+		var oo1 = CNIPort.OutputPort("o1", new CellOffset(1, 1),
 			"and", "o1", "o1");
 		
-		var oo2 = Port.OutputPort("o2", new CellOffset(1, 0),
+		var oo2 = CNIPort.OutputPort("o2", new CellOffset(1, 0),
 			"or", "o2", "o2");
 
 		Identifier __i1 = new Identifier(ii1);
@@ -65,7 +65,7 @@ public class RegisterBuilding {
 		CircuitDef andOr = CircuitDef.Create(
 			"And Or","desc", "asdf",
 			2, 2, "logic_new_and_kanim",
-			new List<Port> { ii1, ii2, },
+			new List<CNIPort> { ii1, ii2, },
 			new List<SyntaxTree> { oo1Syntax, oo2Syntax }
 		);
 		

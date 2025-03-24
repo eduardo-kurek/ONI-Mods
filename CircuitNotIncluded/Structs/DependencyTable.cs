@@ -7,7 +7,7 @@ namespace CircuitNotIncluded.Structs;
 // In other words, which output ports are influenced by each input port
 public class DependencyTable {
 
-	private Dictionary<HashedString, List<SyntaxTree>> table = new();
+	private readonly Dictionary<HashedString, List<SyntaxTree>> table = new();
 	
 	public DependencyTable(CircuitDef def){
 		Update(def);
@@ -18,9 +18,9 @@ public class DependencyTable {
 		InitializeDependecies(def.CNI_Outputs);
 	}
 
-	private void InitializeEmptyTable(List<LogicPorts.Port> inputPorts){
-		foreach(LogicPorts.Port port in inputPorts){
-			table[port.id] = new List<SyntaxTree>();
+	private void InitializeEmptyTable(List<CNIPort> inputPorts){
+		foreach(CNIPort port in inputPorts){
+			table[port.P.id] = new List<SyntaxTree>();
 		}
 	}
 
@@ -49,16 +49,4 @@ public class DependencyTable {
 		tree.Accept(extractor);
 		return extractor.InputPorts;
 	}
-
-	public void Print(){
-		Debug.Log("Dependency Table:");
-		foreach(KeyValuePair<HashedString, List<SyntaxTree>> entry in table){
-			Debug.Log("Input port has: " + entry.Key);
-			foreach(SyntaxTree tree in entry.Value){
-				Debug.Log("\tOutput port: " + tree.OutputPort.id);
-			}
-		}
-	}
-	
-	
 }

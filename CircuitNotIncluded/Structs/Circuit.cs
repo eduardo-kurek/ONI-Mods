@@ -42,13 +42,13 @@ public class Circuit : KMonoBehaviour {
 			SyntaxEvaluater evaluater = new SyntaxEvaluater(ports);
 			tree.Accept(evaluater);
 			int result = evaluater.GetResult();
-			ports.SendSignal(tree.OutputPort.id, result);
+			ports.SendSignal(tree.OutputPort.P.id, result);
 		}
 	}
 
 	public void ApplyChanges(){
-		ports.inputPortInfo = circuitDef.CNI_InputPorts.ToArray();
-		ports.outputPortInfo = circuitDef.CNI_Outputs.Select(tree => tree.OutputPort).ToArray();
+		ports.inputPortInfo = circuitDef.CNI_InputPorts.Select(port => port.P).ToArray();
+		ports.outputPortInfo = circuitDef.CNI_Outputs.Select(tree => tree.OutputPort.P).ToArray();
 		RefreshPhysicalPorts();
 	}
 

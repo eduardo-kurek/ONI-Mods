@@ -1,6 +1,4 @@
 using System.Runtime.CompilerServices;
-using CircuitNotIncluded.Syntax;
-using CircuitNotIncluded.Syntax.Visitors;
 
 namespace CircuitNotIncluded.Structs;
 
@@ -8,14 +6,14 @@ public class Circuit : KMonoBehaviour {
 	private LogicPorts ports = null!;
 	private CircuitDef circuitDef = null!;
 	private DependencyTable dependencyTable = null!;
-	private SyntaxEvaluater evaluater = null!;
+	private SymbolTable symbolTable = null!;
 	private LogicValueChanged lastChange;
 	
 	protected override void OnSpawn(){
 		ports = GetComponent<LogicPorts>();
 		circuitDef = (CircuitDef)GetComponent<Building>().Def;
 		dependencyTable = new DependencyTable(circuitDef);
-		evaluater = new SyntaxEvaluater(ports);
+		symbolTable = new SymbolTable(ports, circuitDef);
 		
 		Subscribe((int)GameHashes.LogicEvent, data => {
 			lastChange = (LogicValueChanged)data;
@@ -41,27 +39,29 @@ public class Circuit : KMonoBehaviour {
 	private void OnInputPortChanged(){
 		var inputId = GetInputPortId();
 		var outDependents = dependencyTable.GetOutputDependents(inputId);
-		foreach(SyntaxTree tree in outDependents)
-			UpdateOutputPort(tree);
+		foreach(Output output in outDependents)
+			output.Update(symbolTable);
 	}
-
-	private void UpdateOutputPort(SyntaxTree tree){
-		int result = evaluater.Evaluate(tree);
-		ports.SendSignal(tree.GetOutputHash(), result);
-	}
+	
+	private HashedString GetInputPortId() => lastChange.portID;
 
 	public void ApplyChanges(){
 		ports.inputPortInfo = circuitDef.CNI_InputPorts.Select(port => port.P).ToArray();
-		ports.outputPortInfo = circuitDef.CNI_Outputs.Select(tree => tree.OutputPort.P).ToArray();
+		ports.outputPortInfo = circuitDef.CNI_Outputs.Select(output => output.Port.P).ToArray();
 		RefreshPhysicalPorts();
+		UpdateAllOutputs();
 	}
 
-	// When you call SendSignal and the outputPorts is null, the game will call _ports.CreatePhysicalPorts
-	public void RefreshPhysicalPorts(){
+	// When you call SendSignal and the outputPorts is null, the game will call ports.CreatePhysicalPorts
+	private void RefreshPhysicalPorts(){
 		ports.outputPorts = null;
 		ports.SendSignal("", 0);
 	}
 	
-	private HashedString GetInputPortId() => lastChange.portID;
+	private void UpdateAllOutputs(){
+		foreach(Output output in circuitDef.CNI_Outputs)
+			output.Update(symbolTable);
+	}
+	
 	public string GetCNIName() => circuitDef.CNI_Name;
 }

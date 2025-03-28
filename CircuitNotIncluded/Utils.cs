@@ -1,3 +1,7 @@
+using Antlr4.Runtime;
+using CircuitNotIncluded.Grammar;
+using static CircuitNotIncluded.Grammar.ExpressionParser;
+
 namespace CircuitNotIncluded;
 
 public class Utils {
@@ -57,6 +61,13 @@ public class Utils {
 
 				buildingAndSubcategoryData.Insert(num + 1, new KeyValuePair<string, string>(idBuilding, subcategory));
 			}
+		}
+
+		public static ProgramContext Parse(string expression){
+			AntlrInputStream inputStream = new AntlrInputStream(expression);
+			ExpressionLexer lexer = new ExpressionLexer(inputStream);
+			ExpressionParser parser = new ExpressionParser(new CommonTokenStream(lexer));
+			return parser.program();
 		}
 	
 }

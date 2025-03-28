@@ -1,4 +1,3 @@
-using CircuitNotIncluded.Syntax;
 using TUNING;
 
 namespace CircuitNotIncluded.Structs;
@@ -9,10 +8,10 @@ public class CircuitDef : BuildingDef {
 	public string CNI_Description = null!;
 	public string CNI_Effect = null!;
 	public List<CNIPort> CNI_InputPorts = null!;
-	public List<SyntaxTree> CNI_Outputs = null!;
+	public List<Output> CNI_Outputs = null!;
 	
 	public static CircuitDef Create(string name, string description, string effect, int width, int height, string anim, 
-			List<CNIPort> inputPorts, List<SyntaxTree> outputs)
+			List<CNIPort> inputPorts, List<Output> outputs)
 	{
 		string id = "cni_" + name;
 		id = id.Trim();

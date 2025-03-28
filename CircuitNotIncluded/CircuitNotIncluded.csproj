@@ -7,11 +7,30 @@
         <SupportedContent>ALL</SupportedContent>
         <LastWorkingBuild>652372</LastWorkingBuild>
         <RootNamespace>CircuitNotIncluded</RootNamespace>
+        <LangVersion>12</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Antlr4" Version="4.6.6">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
         <PackageReference Include="PLib" Version="4.17.1" />
+    </ItemGroup>
+    
+    <ItemGroup>
         <AssembliesToMerge Include="$(TargetDir)PLib.dll" />
+        <AssembliesToMerge Include="$(TargetDir)Antlr4.Runtime.dll" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Antlr4 Include="Grammar\Expression.g4">
+            <Generator>MSBuild:Compile</Generator>
+            <CustomToolNamespace>CircuitNotIncluded.Grammar</CustomToolNamespace>
+            <Listener>True</Listener>
+            <Visitor>True</Visitor>
+        </Antlr4>
     </ItemGroup>
 
 </Project>

@@ -1,9 +1,5 @@
 using CircuitNotIncluded.Structs;
-using CircuitNotIncluded.Syntax;
-using CircuitNotIncluded.Syntax.Kinds;
-using CircuitNotIncluded.Syntax.Nodes;
 using HarmonyLib;
-using static LogicPorts;
 
 namespace CircuitNotIncluded.Patches;
 
@@ -11,62 +7,41 @@ namespace CircuitNotIncluded.Patches;
 public class RegisterBuilding {
 
 	public static void Postfix(){
-
 		var i1 = CNIPort.InputPort("i1", new CellOffset(0, 0),
 			"i1", "i1", "i1");
-
 		var i2 = CNIPort.InputPort("i2", new CellOffset(0, 1),
 			"i2", "i2", "i2");
-
 		var i3 = CNIPort.InputPort("i3", new CellOffset(1, 0),
 			"i3", "i3", "i3");
-
 		var o1 = CNIPort.OutputPort("o1", new CellOffset(1, 1),
 			"o1", "o1", "o1");
-		
-		
-		Identifier _i1 = new Identifier(i1);
-		Identifier _i2 = new Identifier(i2);
-		Identifier _i3 = new Identifier(i3);
-		
-		BinaryOperation and = new BinaryOperation(_i1, _i2, AndKind.Instance);
-		BinaryOperation or = new BinaryOperation(and, _i3, OrKind.Instance);
-		
-		SyntaxTree o1Syntax = new SyntaxTree(o1, or);
-		 
+
+		Output output1 = new Output("i1 & i2 | i3", o1);
+			
 		CircuitDef newAnd = CircuitDef.Create(
 			"New and Gate!","Steins; Gate", "HOUOUYIN KYOUMA-DA",
 			2, 2, "logic_new_and_kanim",
-			new List<CNIPort> { i1, i2, i3 },
-			new List<SyntaxTree> { o1Syntax }
+			[i1, i2, i3],
+			[output1]
 		);
 		
 		var ii1 = CNIPort.InputPort("i1", new CellOffset(0, 1),
 			"i1", "i1", "i1");
-
 		var ii2 = CNIPort.InputPort("i2", new CellOffset(0, 0),
 			"i2", "i2", "i2");
-
 		var oo1 = CNIPort.OutputPort("o1", new CellOffset(1, 1),
 			"and", "o1", "o1");
-		
 		var oo2 = CNIPort.OutputPort("o2", new CellOffset(1, 0),
 			"or", "o2", "o2");
-
-		Identifier __i1 = new Identifier(ii1);
-		Identifier __i2 = new Identifier(ii2);
-
-		BinaryOperation and2 = new BinaryOperation(__i1, __i2, AndKind.Instance);
-		BinaryOperation or2 = new BinaryOperation(__i1, __i2, OrKind.Instance);
 		
-		SyntaxTree oo1Syntax = new SyntaxTree(oo1, and2);
-		SyntaxTree oo2Syntax = new SyntaxTree(oo2, or2);
+		Output outputt1 = new Output("i1 & i2", oo1);
+		Output outputt2 = new Output("i1 | i2", oo2);
 		
 		CircuitDef andOr = CircuitDef.Create(
-			"And Or","desc", "asdf",
+			"And Or","asdf", "asdf",
 			2, 2, "logic_new_and_kanim",
-			new List<CNIPort> { ii1, ii2, },
-			new List<SyntaxTree> { oo1Syntax, oo2Syntax }
+			[ii1, ii2],
+			[outputt1, outputt2]
 		);
 		
 		CircuitManager.Instance.RegisterCircuit(newAnd);

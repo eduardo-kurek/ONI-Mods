@@ -64,4 +64,5 @@ public class Circuit : KMonoBehaviour {
 	}
 	
 	public string GetCNIName() => circuitDef.CNI_Name;
+	public List<Output> GetOutputs() => circuitDef.CNI_Outputs;
 }

@@ -71,7 +71,7 @@
     
     
     <Target Name="StartGame" AfterTargets="SynchronizingModFolders">
-        <Exec Command="powershell -Command &quot;Start-Process 'steam://rungameid/457140'; Start-Sleep -Seconds 10; while (Get-Process 'OxygenNotIncluded' -ErrorAction SilentlyContinue) { Start-Sleep -Seconds 1 };&quot;" />
+        <Exec Command="powershell -Command &quot;Start-Process 'steam://rungameid/457140'; Start-Sleep -Seconds 20; while (Get-Process 'OxygenNotIncluded' -ErrorAction SilentlyContinue) { Start-Sleep -Seconds 1 };&quot;" />
     </Target>
     
     <Target Name="OpenLogFile" AfterTargets="StartGame">

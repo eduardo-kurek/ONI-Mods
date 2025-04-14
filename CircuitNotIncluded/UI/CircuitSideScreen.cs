@@ -12,7 +12,7 @@ public class CircuitSideScreen : SideScreenContent {
 	private Circuit? circuit = null;
 	private TextMeshProUGUI circuitName = null!;
 	private GameObject outputsPanel = null!;
-	private Color specialCharsColor = new Color(0.5294118f, 0.2724914f, 0.4009516f);
+	private readonly Color specialCharsColor = new Color(0.52f, 0.27f, 0.40f);
 	private bool builded = false;
 	
 	protected override void OnPrefabInit(){
@@ -26,6 +26,7 @@ public class CircuitSideScreen : SideScreenContent {
 		BuildCircuitName();
 		BuildOutputsLabel();
 		BuildOutputsPanel();
+		BuildEditButton();
 		builded = true;
 	}
 
@@ -64,6 +65,19 @@ public class CircuitSideScreen : SideScreenContent {
 		var layout = ContentContainer.GetComponent<VerticalLayoutGroup>().transform;
 		Builder.DarkText("Outputs", layout);
 	}
+
+	private void BuildEditButton(){
+		PButton editButton = new() {
+			Text = "Edit",
+			OnClick = OnEditButtonClicked
+		};
+		editButton.AddTo(ContentContainer);
+	}
+
+	private void OnEditButtonClicked(GameObject source){
+		Debug.Log("Edit button pressed");
+		var screen = CircuitScreen.Build(circuit!);
+	}
 	
 	public override void SetTarget(GameObject target){
 		circuit = target.GetComponent<Circuit>();
@@ -98,7 +112,9 @@ public class CircuitSideScreen : SideScreenContent {
 		foreach(var output in circuit!.GetOutputs()){
 			var originalText = $"{output.Port.OriginalId} = {output.Expression}";
 			var colorizedText = ColorizeSpecialChars(originalText);
-			var go = Builder.BlueText(colorizedText, layout.transform);
+			var go = Builder.DarkText(colorizedText, layout.transform);
+			var text = go.GetComponent<TextMeshProUGUI>();
+			text.color = new Color(0.15f, 0.15f, 0.15f);
 		}
 	}
 

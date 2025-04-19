@@ -3,12 +3,30 @@ using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.UI.GridLayoutGroup;
 
 namespace CircuitNotIncluded.UI;
 
 public class CircuitScreen : KModalScreen {
 	private static GameObject? parent;
-	private LocText title;
+
+	// The size of the port to be displayed on editor
+	private const int PORT_SIZE = 60;
+	
+	// The spacing between the ports on editor
+	private const int PORT_SPACING = 5;
+	
+	private static float TotalCircuitDisplaySize(int qtCells){
+		return qtCells * PORT_SIZE + PORT_SPACING * (qtCells + 1);
+	}
+	
+	private static float CircuitDisplaySizePerCell(int qtCells){
+		return PORT_SIZE + PORT_SPACING + (float)PORT_SPACING/qtCells;
+	}
+	
+	
+	public Circuit Circuit = null!;
+	private LocText title = null!;
 	
 	private static GameObject GetParent(){
 		if(parent == null)
@@ -18,7 +36,7 @@ public class CircuitScreen : KModalScreen {
 	
 	public static GameObject Build(Circuit circuit){
 		var go = new GameObject("CircuitScreen");
-		go.AddComponent<CircuitScreen>();
+		go.AddComponent<CircuitScreen>().Circuit = circuit;
 		var rt = go.AddComponent<RectTransform>();
 		rt.anchorMin = Vector2.zero;
 		rt.anchorMax = Vector2.one;
@@ -85,34 +103,82 @@ public class CircuitScreen : KModalScreen {
 			Direction = PanelDirection.Horizontal,
 			BackColor = new Color32(28, 32, 38, byte.MaxValue)
 		};
-		
-		var displayTab = new PPanel("Circuit"){
-			Alignment = TextAnchor.MiddleCenter
-		}; body.AddChild(displayTab);
 
-		var editorTab = new PPanel("Editor"){
-			Direction = PanelDirection.Vertical,
-			Spacing = 5,
-			Margin = new RectOffset(10, 10, 10, 10),
-			BackColor = Color.white
-		}; body.AddChild(editorTab);
 		
 		var obj = body.AddTo(container);
 		AddBorder(obj);
 		obj.AddOrGet<LayoutElement>().flexibleHeight = 1;
 		obj.AddOrGet<LayoutElement>().flexibleWidth = 1;
+		
+		BuildDisplayTab(obj);
+		BuildEditorTab(obj);
+	}
 
-		var display = obj.transform.GetChild(0).gameObject;
+	private void BuildDisplayTab(GameObject container){
+		var displayTab = new PPanel("Display");
+		
+		var display = displayTab.AddTo(container);
 		AddBorder(display);
 		display.AddOrGet<LayoutElement>().flexibleWidth = 1;
 		display.AddOrGet<LayoutElement>().flexibleHeight = 1;
 		
-		var editor = obj.transform.GetChild(1).gameObject;
+		BuildCircuitDisplay(display);
+	}
+
+	private void BuildCircuitDisplay(GameObject container){
+		var child = new GameObject();
+		child.AddComponent<RectTransform>();
+		var size = TotalCircuitDisplaySize(6);
+		child.AddOrGet<LayoutElement>().preferredWidth = size;
+		child.AddOrGet<LayoutElement>().preferredHeight = size;
+		var grid = child.AddComponent<GridLayoutGroup>();
+		grid.cellSize = new Vector2(PORT_SIZE, PORT_SIZE);
+		grid.spacing = new Vector2(PORT_SPACING, PORT_SPACING);
+		grid.padding = new RectOffset(PORT_SPACING, PORT_SPACING, PORT_SPACING, PORT_SPACING);
+		grid.childAlignment = TextAnchor.LowerLeft;
+		grid.startCorner = Corner.LowerLeft;
+		grid.startAxis = GridLayoutGroup.Axis.Horizontal;
+		
+		var img = child.AddComponent<Image>();
+		img.color = Color.red;
+		child.SetParent(container);
+
+		for(int i = 0; i < 36; i++){
+			BuildPort(child);
+		}
+	}
+
+
+	private void BuildPort(GameObject container){
+		GameObject port = new GameObject("Cell");
+		port.AddComponent<RectTransform>();
+		port.AddComponent<CircuitCell>();
+		var img = port.AddComponent<Image>();
+		img.color = Color.white;
+		port.SetParent(container);
+	}
+
+	private GameObject BuildCell(GameObject child){
+		GameObject cell = new GameObject("Cell");
+		var img = cell.AddComponent<Image>();
+		img.color = Color.white;
+		return cell;
+	}
+	
+	private void BuildEditorTab(GameObject container){
+		var editorTab = new PPanel("Editor"){
+			Direction = PanelDirection.Vertical,
+			Spacing = 5,
+			Margin = new RectOffset(10, 10, 10, 10),
+			BackColor = Color.white
+		};
+		
+		var editor = editorTab.AddTo(container);
 		AddBorder(editor);
 		editor.AddOrGet<LayoutElement>().preferredWidth = 300;
 		editor.AddOrGet<LayoutElement>().flexibleHeight = 1;
 	}
-
+	
 	private void BuildFooter(GameObject container){
 		var titleBar = new PPanel("Footer"){
 			Spacing = 15,

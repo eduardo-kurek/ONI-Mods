@@ -1,4 +1,5 @@
 using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.UI.Cells;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace CircuitNotIncluded.UI;
 
 public class CircuitScreen : KModalScreen {
 	private static GameObject? parent;
+	public static CircuitScreen Instance = null!;
 
 	// The size of the port to be displayed on editor
 	private const int PORT_SIZE = 60;
@@ -16,7 +18,7 @@ public class CircuitScreen : KModalScreen {
 	// The spacing between the ports on editor
 	private const int PORT_SPACING = 5;
 	
-	private static float TotalCircuitDisplaySize(int qtCells){
+	private static float CircuitDisplaySize(int qtCells){
 		return qtCells * PORT_SIZE + PORT_SPACING * (qtCells + 1);
 	}
 	
@@ -27,6 +29,7 @@ public class CircuitScreen : KModalScreen {
 	
 	public Circuit Circuit = null!;
 	private LocText title = null!;
+	private GameObject editorContent = null!;
 	
 	private static GameObject GetParent(){
 		if(parent == null)
@@ -35,8 +38,9 @@ public class CircuitScreen : KModalScreen {
 	}
 	
 	public static GameObject Build(Circuit circuit){
+		UnityEngine.Debug.Log("Circuit BuildingCircuit");
 		var go = new GameObject("CircuitScreen");
-		go.AddComponent<CircuitScreen>().Circuit = circuit;
+		go.AddComponent<CircuitScreen>().Initialize(circuit);
 		var rt = go.AddComponent<RectTransform>();
 		rt.anchorMin = Vector2.zero;
 		rt.anchorMax = Vector2.one;
@@ -46,8 +50,9 @@ public class CircuitScreen : KModalScreen {
 		return go;
 	}
 
-	protected override void OnPrefabInit(){
-		base.OnPrefabInit();
+	private void Initialize(Circuit circuit){
+		Circuit = circuit;
+		Instance = this;
 		PPanel contentPanel = new PPanel();
 		contentPanel.SetKleiBlueColor();
 		contentPanel.DynamicSize = true;
@@ -56,7 +61,7 @@ public class CircuitScreen : KModalScreen {
 		GameObject content = contentPanel.Build();
 		var outline = content.AddComponent<Outline>();
 		outline.effectColor = Color.black;
-      outline.effectDistance = new Vector2(1, 1);
+		outline.effectDistance = new Vector2(1, 1);
       
 		var rect = content.GetComponent<RectTransform>();	
 		rect.sizeDelta = new Vector2(1100, 700);
@@ -128,9 +133,10 @@ public class CircuitScreen : KModalScreen {
 	private void BuildCircuitDisplay(GameObject container){
 		var child = new GameObject();
 		child.AddComponent<RectTransform>();
-		var size = TotalCircuitDisplaySize(6);
-		child.AddOrGet<LayoutElement>().preferredWidth = size;
-		child.AddOrGet<LayoutElement>().preferredHeight = size;
+		var sizeX = CircuitDisplaySize(Circuit.GetWidth());
+		var sizeY = CircuitDisplaySize(Circuit.GetHeight());
+		child.AddOrGet<LayoutElement>().preferredWidth = sizeX;
+		child.AddOrGet<LayoutElement>().preferredHeight = sizeY;
 		var grid = child.AddComponent<GridLayoutGroup>();
 		grid.cellSize = new Vector2(PORT_SIZE, PORT_SIZE);
 		grid.spacing = new Vector2(PORT_SPACING, PORT_SPACING);
@@ -142,41 +148,52 @@ public class CircuitScreen : KModalScreen {
 		var img = child.AddComponent<Image>();
 		img.color = Color.red;
 		child.SetParent(container);
-
-		for(int i = 0; i < 36; i++){
-			BuildPort(child);
-		}
+		
+		BuildPorts(child);
 	}
 
-
-	private void BuildPort(GameObject container){
-		GameObject port = new GameObject("Cell");
+	private void BuildPorts(GameObject container){
+		for(int i = 0; i < Circuit.GetWidth() * Circuit.GetHeight(); i++){
+			var cellType = new EmptyCellType("title " + i);
+			BuildPort(container, cellType);
+		}
+	}
+	
+	private void BuildPort(GameObject container, CircuitCellType cellType){
+		var port = new GameObject("Cell");
 		port.AddComponent<RectTransform>();
-		port.AddComponent<CircuitCell>();
+		var cell = port.AddComponent<CircuitCell>().SetCellType(cellType);
+		cellType.SetParent(cell);
 		var img = port.AddComponent<Image>();
 		img.color = Color.white;
 		port.SetParent(container);
 	}
-
-	private GameObject BuildCell(GameObject child){
-		GameObject cell = new GameObject("Cell");
-		var img = cell.AddComponent<Image>();
-		img.color = Color.white;
-		return cell;
-	}
 	
 	private void BuildEditorTab(GameObject container){
-		var editorTab = new PPanel("Editor"){
-			Direction = PanelDirection.Vertical,
-			Spacing = 5,
-			Margin = new RectOffset(10, 10, 10, 10),
+		var tab = new PPanel("Editor"){
 			BackColor = Color.white
 		};
 		
-		var editor = editorTab.AddTo(container);
+		var editor = tab.AddTo(container);
 		AddBorder(editor);
 		editor.AddOrGet<LayoutElement>().preferredWidth = 300;
-		editor.AddOrGet<LayoutElement>().flexibleHeight = 1;
+		editor.GetComponent<LayoutElement>().flexibleHeight = 1;
+		
+		var editorContent = new PPanel("EditorContent") {
+			Margin = new RectOffset(10, 10, 10, 10),
+		};
+		var editorContentObj = editorContent.AddTo(editor);
+		AddBorder(editorContentObj);
+		editorContentObj.AddOrGet<LayoutElement>().flexibleWidth = 1;
+		editorContentObj.AddOrGet<LayoutElement>().flexibleHeight = 1;
+		this.editorContent = editorContentObj;
+		
+		var infoPanel = new PPanel("EditorInfo");
+		infoPanel.SetKleiPinkColor();
+		var infoPanelObj = infoPanel.AddTo(editor);
+		AddBorder(infoPanelObj);
+		infoPanelObj.AddOrGet<LayoutElement>().flexibleWidth = 1;
+		infoPanelObj.AddOrGet<LayoutElement>().preferredHeight = 200;
 	}
 	
 	private void BuildFooter(GameObject container){
@@ -215,8 +232,25 @@ public class CircuitScreen : KModalScreen {
 
 	private static void AddBorder(GameObject go){
 		var outline = go.AddComponent<Outline>();
-		outline.effectColor = Color.black;
+		outline.effectColor = Color.black; 
 		outline.effectDistance = new Vector2(1, 1);
+	}
+
+	public void OnCellClicked(CircuitCellType cellType){
+		var content = cellType.BuildEditorContent();
+		ChangeEditorContent(content);
+	}
+
+	private void ChangeEditorContent(GameObject content){
+		ClearEditorTab();
+		content.SetParent(editorContent);
+	}
+
+	private void ClearEditorTab(){
+		GameObjectDebugger.PrintGameObjectInfo(editorContent, true, 2);
+		foreach(Transform child in editorContent.transform){
+			Destroy(child.gameObject);
+		}
 	}
 	
 	private void SaveButtonClicked(){

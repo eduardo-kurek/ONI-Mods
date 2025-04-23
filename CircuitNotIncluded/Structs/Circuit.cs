@@ -64,5 +64,26 @@ public class Circuit : KMonoBehaviour {
 	}
 	
 	public string GetCNIName() => circuitDef.CNI_Name;
+	public int GetWidth() => circuitDef.WidthInCells;
+	public int GetHeight() => circuitDef.HeightInCells;
+
+	public void Print(){
+		Debug.Log($"Name: {circuitDef.CNI_Name}");
+		Debug.Log($"Width: {circuitDef.WidthInCells}");
+		Debug.Log($"Height: {circuitDef.HeightInCells}");
+		Debug.Log("Input ports:");
+		foreach(var i in circuitDef.CNI_InputPorts){
+			Debug.Log("Name: " + i.OriginalId);
+			Debug.Log("X: " + i.P.cellOffset.x);
+			Debug.Log("Y: " + i.P.cellOffset.y);
+		}
+		
+		Debug.Log("Output ports:");
+		foreach(var o in circuitDef.CNI_Outputs){
+			Debug.Log("Name: " + o.Port.OriginalId);
+			Debug.Log("X: " + o.Port.P.cellOffset.x);
+			Debug.Log("Y: " + o.Port.P.cellOffset.y);
+		}
+	}
 	public List<Output> GetOutputs() => circuitDef.CNI_Outputs;
 }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class EmptyCellType(CellOffset offset) : CircuitCellType {
+public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
 	protected override GameObject BuildContainer(){
 		GameObject container = base.BuildContainer();
 		var layout = container.GetComponent<VerticalLayoutGroup>();
@@ -34,18 +34,16 @@ public class EmptyCellType(CellOffset offset) : CircuitCellType {
 	}
 
 	private void PromoteToInput(){
-		CNIPort port = CNIPort.InputPort("id", offset,
-			"", "", "");
-		InputCellType type = new(port);
+		InputCellData data = new ();
+		data.id = "Default id";
+		InputCellType type = new(data, offset);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
 	}
 
 	private void PromoteToOutput(){
-		CNIPort port = CNIPort.InputPort("id", offset,
-			"", "", "");
-		Output output = new("expression", port);
-		OutputCellType type = new(output);
+		OutputCellData data = new ();
+		OutputCellType type = new(data, offset);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
 	}

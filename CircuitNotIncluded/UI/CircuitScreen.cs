@@ -170,7 +170,7 @@ public class CircuitScreen : KModalScreen
 	
 	private void BuildInputPorts(GameObject container){
 		foreach(CNIPort input in Circuit.GetInputPorts()){
-			InputCellType cellType = new(input);
+			var cellType = InputCellType.Create(input);
 			int index = cellType.GetIndex();
 			ChangeCellType(index, cellType);
 		}
@@ -178,7 +178,7 @@ public class CircuitScreen : KModalScreen
 
 	private void BuildOutputPorts(GameObject container){
 		foreach(Output output in Circuit.GetOutputs()){
-			OutputCellType cellType = new(output);
+			var cellType = OutputCellType.Create(output);
 			int index = cellType.GetIndex();
 			ChangeCellType(index, cellType);
 		}
@@ -205,7 +205,7 @@ public class CircuitScreen : KModalScreen
 
 		var editor = tab.AddTo(container);
 		AddBorder(editor);
-		editor.AddOrGet<LayoutElement>().preferredWidth = 300;
+		editor.AddOrGet<LayoutElement>().preferredWidth = 350;
 		editor.GetComponent<LayoutElement>().flexibleHeight = 1;
 
 		var editorContent = new PPanel("EditorContent") {
@@ -266,7 +266,7 @@ public class CircuitScreen : KModalScreen
 	}
 
 	public void OnCellClicked(CircuitCellType cellType){
-		var content = cellType.BuildEditorContent();
+		GameObject content = cellType.BuildEditorContent();
 		ChangeEditorContent(content);
 	}
 

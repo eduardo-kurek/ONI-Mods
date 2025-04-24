@@ -4,8 +4,23 @@ using UnityEngine;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class OutputCellType(Output output) : CircuitCellType {
-	private readonly Output output = output;
+public struct OutputCellData(
+	string id = "Id",
+	string description = "Description",
+	string activeDescription = "Active Description",
+	string inactiveDescription = "Inactive Description",
+	string expression = "")
+{
+	public string id = id;
+	public string description = description;
+	public string activeDescription = activeDescription;
+	public string inactiveDescription = inactiveDescription;
+	public string expression = expression;
+}
+
+public class OutputCellType(OutputCellData data, CellOffset offset) : CircuitCellType(offset) {
+	private OutputCellData data = data;
+	
 	public override GameObject BuildEditorContent(){
 		var panel = BuildContainer();
 		
@@ -23,11 +38,22 @@ public class OutputCellType(Output output) : CircuitCellType {
 		
 		return panel;
 	}
-	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(output.Port);
+	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);
 	
 	private void Delete(){
-		EmptyCellType type = new(output.Port.P.cellOffset);
+		EmptyCellType type = new(offset);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
+	}
+
+	public static OutputCellType Create(Output output){
+		OutputCellData data = new(
+			output.Port.OriginalId,
+			output.Port.P.description,
+			output.Port.P.activeDescription,
+			output.Port.P.inactiveDescription,
+			output.Expression
+		);
+		return new OutputCellType(data, output.Port.P.cellOffset);
 	}
 }

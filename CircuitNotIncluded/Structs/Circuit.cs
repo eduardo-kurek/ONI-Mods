@@ -3,8 +3,7 @@ using CircuitNotIncluded.UI.Cells;
 
 namespace CircuitNotIncluded.Structs;
 
-public class Circuit : KMonoBehaviour
-{
+public class Circuit : KMonoBehaviour {
 	private LogicPorts ports = null!;
 	private CircuitDef circuitDef = null!;
 	private DependencyTable dependencyTable = null!;
@@ -71,11 +70,11 @@ public class Circuit : KMonoBehaviour
 	public List<CNIPort> GetInputPorts() => circuitDef.CNI_InputPorts;
 	public List<Output> GetOutputs() => circuitDef.CNI_Outputs;
 
-	// Converts a 2D CNIPort offset to a linear offset.
+	// Converts a 2D CellOffset to a linear offset.
 	// The index starts on the left-bottom, and goes to the right-up.
-	public int ToLinearIndex(CNIPort port){
+	public int ToLinearIndex(CellOffset offset){
 		int width = GetWidth();
-		return width * port.P.cellOffset.y + port.P.cellOffset.x;
+		return width * offset.y + offset.x;
 	}
 
 	// Converts a linear index to a 2D CellOffset.

@@ -1,3 +1,4 @@
+using PeterHan.PLib.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,6 +13,9 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	private CircuitCellType type = null!;
 	private Outline outline = null!;
 	public static CircuitCell? Selected;
+	
+	public static readonly TextStyleSetting LabelStyle = PUITuning.Fonts.TextDarkStyle;
+	public static readonly TextStyleSetting TitleStyle = PUITuning.Fonts.TextDarkStyle.DeriveStyle(16);
 	
 	private void Start(){
 		outline = gameObject.AddComponent<Outline>();

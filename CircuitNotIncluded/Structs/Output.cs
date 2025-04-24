@@ -11,7 +11,7 @@ public struct Output {
 	
 	public Output(string expression, CNIPort port){
 		Expression = expression;
-		Port = port ?? throw new ArgumentNullException(nameof(port));
+		Port = port;
 		Tree = Utils.Parse(expression);
 		Evaluate = ExpressionCompiler.Compile(Tree);
 	}

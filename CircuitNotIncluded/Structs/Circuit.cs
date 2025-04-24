@@ -1,25 +1,27 @@
 using System.Runtime.CompilerServices;
+using CircuitNotIncluded.UI.Cells;
 
 namespace CircuitNotIncluded.Structs;
 
-public class Circuit : KMonoBehaviour {
+public class Circuit : KMonoBehaviour
+{
 	private LogicPorts ports = null!;
 	private CircuitDef circuitDef = null!;
 	private DependencyTable dependencyTable = null!;
 	private SymbolTable symbolTable = null!;
 	private LogicValueChanged lastChange;
-	
+
 	protected override void OnSpawn(){
 		ports = GetComponent<LogicPorts>();
 		circuitDef = (CircuitDef)GetComponent<Building>().Def;
 		dependencyTable = new DependencyTable(circuitDef);
 		symbolTable = new SymbolTable(ports, circuitDef);
-		
+
 		Subscribe((int)GameHashes.LogicEvent, data => {
 			lastChange = (LogicValueChanged)data;
 			OnNetworkValueChanged();
 		});
-		
+
 		ApplyChanges();
 	}
 
@@ -35,14 +37,14 @@ public class Circuit : KMonoBehaviour {
 	private bool ValueChanged(){
 		return lastChange.prevValue != lastChange.newValue;
 	}
-	
+
 	private void OnInputPortChanged(){
 		var inputId = GetInputPortId();
 		var outDependents = dependencyTable.GetOutputDependents(inputId);
 		foreach(Output output in outDependents)
 			output.Update(symbolTable);
 	}
-	
+
 	private HashedString GetInputPortId() => lastChange.portID;
 
 	public void ApplyChanges(){
@@ -57,15 +59,24 @@ public class Circuit : KMonoBehaviour {
 		ports.outputPorts = null;
 		ports.SendSignal("", 0);
 	}
-	
+
 	private void UpdateAllOutputs(){
 		foreach(Output output in circuitDef.CNI_Outputs)
 			output.Update(symbolTable);
 	}
-	
+
 	public string GetCNIName() => circuitDef.CNI_Name;
 	public int GetWidth() => circuitDef.WidthInCells;
 	public int GetHeight() => circuitDef.HeightInCells;
+	public List<CNIPort> GetInputPorts() => circuitDef.CNI_InputPorts;
+	public List<Output> GetOutputs() => circuitDef.CNI_Outputs;
+
+	// Converts a 2D CNIPort offset to a linear offset.
+	// The index starts on the left-bottom, and goes to the right-up.
+	public int ToLinearIndex(CNIPort port){
+		if(port == null) throw new ArgumentNullException(nameof(port));
+		return GetWidth() * port.P.cellOffset.y + port.P.cellOffset.x;
+	}
 
 	public void Print(){
 		Debug.Log($"Name: {circuitDef.CNI_Name}");
@@ -77,7 +88,7 @@ public class Circuit : KMonoBehaviour {
 			Debug.Log("X: " + i.P.cellOffset.x);
 			Debug.Log("Y: " + i.P.cellOffset.y);
 		}
-		
+
 		Debug.Log("Output ports:");
 		foreach(var o in circuitDef.CNI_Outputs){
 			Debug.Log("Name: " + o.Port.OriginalId);
@@ -85,5 +96,4 @@ public class Circuit : KMonoBehaviour {
 			Debug.Log("Y: " + o.Port.P.cellOffset.y);
 		}
 	}
-	public List<Output> GetOutputs() => circuitDef.CNI_Outputs;
 }

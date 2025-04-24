@@ -1,15 +1,16 @@
+using CircuitNotIncluded.Structs;
 using PeterHan.PLib.UI;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class EmptyCellType(string title) : CircuitCellType() {
+public class OutputCellType(Output output) : CircuitCellType {
+	private readonly Output output = output;
 	public override GameObject BuildEditorContent(){
 		var panel = BuildContainer();
 		
 		var label = new PLabel("Label") {
-			Text = "Empty" + title,
+			Text = "Output: ",
 			TextStyle = PUITuning.Fonts.TextDarkStyle,
 			FlexSize = new Vector2(1, 0)
 		};
@@ -17,4 +18,5 @@ public class EmptyCellType(string title) : CircuitCellType() {
 		
 		return panel;
 	}
+	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(output.Port);
 }

@@ -74,8 +74,15 @@ public class Circuit : KMonoBehaviour
 	// Converts a 2D CNIPort offset to a linear offset.
 	// The index starts on the left-bottom, and goes to the right-up.
 	public int ToLinearIndex(CNIPort port){
-		if(port == null) throw new ArgumentNullException(nameof(port));
-		return GetWidth() * port.P.cellOffset.y + port.P.cellOffset.x;
+		int width = GetWidth();
+		return width * port.P.cellOffset.y + port.P.cellOffset.x;
+	}
+
+	// Converts a linear index to a 2D CellOffset.
+	// The index starts on the left-bottom, and goes to the right-up.
+	public CellOffset ToCellOffset(int index){
+		int width = GetWidth();
+		return new CellOffset(index % width, index / width);
 	}
 
 	public void Print(){

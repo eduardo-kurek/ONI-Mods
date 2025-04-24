@@ -11,7 +11,7 @@ namespace CircuitNotIncluded.UI.Cells;
 public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	private CircuitCellType type = null!;
 	private Outline outline = null!;
-	private static CircuitCell? Selected;
+	public static CircuitCell? Selected;
 	
 	private void Start(){
 		outline = gameObject.AddComponent<Outline>();
@@ -22,6 +22,7 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 
 	public CircuitCell SetCellType(CircuitCellType type){
 		this.type = type;
+		this.type.SetParent(this);
 		return this;
 	}
 

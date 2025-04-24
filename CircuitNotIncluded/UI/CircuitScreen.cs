@@ -162,18 +162,16 @@ public class CircuitScreen : KModalScreen
 
 	private void BuildEmptyPorts(GameObject container){
 		for(int i = 0; i < Circuit.GetWidth() * Circuit.GetHeight(); i++){
-			var cellType = new EmptyCellType("title " + i);
+			CellOffset offset = Circuit.ToCellOffset(i);
+			EmptyCellType cellType = new(offset);
 			BuildNewPort(container, cellType);
 		}
 	}
 	
 	private void BuildInputPorts(GameObject container){
 		foreach(CNIPort input in Circuit.GetInputPorts()){
-			Debug.Log("Trying to build input port: " + input.OriginalId);
-			Debug.Log("Input port: " + input.P.cellOffset.x + ", " + input.P.cellOffset.y);
 			InputCellType cellType = new(input);
 			int index = cellType.GetIndex();
-			Debug.Log("Input port index: " + index);
 			ChangeCellType(index, cellType);
 		}
 	}
@@ -181,10 +179,7 @@ public class CircuitScreen : KModalScreen
 	private void BuildOutputPorts(GameObject container){
 		foreach(Output output in Circuit.GetOutputs()){
 			OutputCellType cellType = new(output);
-			Debug.Log("Trying to build output port: " + output.Port.OriginalId);
-			Debug.Log("Output port: " + output.Port.P.cellOffset.x + ", " + output.Port.P.cellOffset.y);
 			int index = cellType.GetIndex();
-			Debug.Log("Output port index: " + index);
 			ChangeCellType(index, cellType);
 		}
 	}
@@ -192,22 +187,14 @@ public class CircuitScreen : KModalScreen
 	private void BuildNewPort(GameObject container, CircuitCellType cellType){
 		var port = new GameObject("Cell");
 		port.AddComponent<RectTransform>();
-		var cell = port.AddComponent<CircuitCell>().SetCellType(cellType);
-		cellType.SetParent(cell);
-		var img = port.AddComponent<Image>();
-		img.color = Color.white;
+		port.AddComponent<CircuitCell>().SetCellType(cellType);
+		port.AddComponent<Image>().color = Color.white;
 		port.SetParent(container);
 	}
 	
 	public void ChangeCellType(int index, CircuitCellType cellType){
 		Transform child = displayCellGrid.transform.GetChild(index);
 		var cell = child.GetComponent<CircuitCell>();
-
-		if (cell == null) {
-			Debug.LogError($"O GameObject '{child.name}' no índice {index} não tem o componente CircuitCell.");
-			return;
-		}
-
 		cell.SetCellType(cellType);
 	}
 
@@ -302,5 +289,9 @@ public class CircuitScreen : KModalScreen
 	private void CancelButtonClicked(){
 		Debug.Log("Canceling state");
 		Deactivate();
+	}
+
+	protected override void OnDeactivate(){
+		CircuitCell.Selected = null;
 	}
 }

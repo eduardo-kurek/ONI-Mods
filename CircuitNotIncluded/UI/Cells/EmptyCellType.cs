@@ -4,16 +4,28 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class EmptyCellType(string title) : CircuitCellType() {
+public class EmptyCellType(string title) : CircuitCellType {
+	protected override GameObject BuildContainer(){
+		GameObject container = base.BuildContainer();
+		var layout = container.GetComponent<VerticalLayoutGroup>();
+		layout.childAlignment = TextAnchor.MiddleCenter;
+		layout.spacing = 10;
+		return container;
+	}
+	
 	public override GameObject BuildEditorContent(){
-		var panel = BuildContainer();
+		GameObject panel = BuildContainer();
+		RectOffset margin = new(10, 10, 10, 10);
 		
-		var label = new PLabel("Label") {
-			Text = "Empty" + title,
-			TextStyle = PUITuning.Fonts.TextDarkStyle,
-			FlexSize = new Vector2(1, 0)
-		};
-		label.AddTo(panel);
+		var createInput = new PButton() {
+			Margin = margin,
+			Text = "Create Input Port",
+		}; createInput.AddTo(panel);
+		
+		var createOutput = new PButton() {
+			Margin = margin,
+			Text = "Create Output Port"
+		}; createOutput.AddTo(panel);
 		
 		return panel;
 	}

@@ -9,7 +9,7 @@ public abstract class CircuitCellType {
 		this.parent = parent;
 	}
 	public abstract GameObject BuildEditorContent();
-	protected GameObject BuildContainer(){
+	protected virtual GameObject BuildContainer(){
 		var panel = new GameObject("Panel");
 		var layout = panel.AddComponent<VerticalLayoutGroup>();
 		layout.childAlignment = TextAnchor.UpperLeft;

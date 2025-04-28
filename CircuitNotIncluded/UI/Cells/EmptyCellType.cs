@@ -37,6 +37,7 @@ public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
 		InputCellData data = new ();
 		data.id = "Default id";
 		InputCellType type = new(data, offset);
+		CircuitScreen.InputCellTypes.Add(type);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
 	}
@@ -44,6 +45,7 @@ public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
 	private void PromoteToOutput(){
 		OutputCellData data = new ();
 		OutputCellType type = new(data, offset);
+		CircuitScreen.OutputCellTypes.Add(type);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
 	}

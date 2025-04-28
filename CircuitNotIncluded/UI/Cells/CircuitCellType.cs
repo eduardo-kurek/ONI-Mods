@@ -24,7 +24,8 @@ public abstract class CircuitCellType(CellOffset offset) {
 		return panel;
 	}
 
-	protected static void BuildTextField(GameObject parent, string label, string defaultValue, int maxLength){
+	protected static void BuildTextField(GameObject parent, string label, string defaultValue, 
+		int maxLength, PUIDelegates.OnTextChanged onTextChanged){
 		var panel = new PPanel() {
 			Direction = PanelDirection.Horizontal,
 			Spacing = 5,
@@ -41,7 +42,8 @@ public abstract class CircuitCellType(CellOffset offset) {
 			TextStyle = CircuitCell.LabelStyle,
 			FlexSize = new Vector2(1, 0),
 			MaxLength = maxLength,
-			TextAlignment = TextAlignmentOptions.Left
+			TextAlignment = TextAlignmentOptions.Left,
+			OnTextChanged = onTextChanged
 		}; panel.AddChild(text);
 		panel.AddTo(parent);
 	}

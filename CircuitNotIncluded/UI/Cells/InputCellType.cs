@@ -29,10 +29,25 @@ public class InputCellType(InputCellData data, CellOffset offset) : CircuitCellT
 			FlexSize = new Vector2(1, 0)
 		}; label.AddTo(panel);
 		
-		BuildTextField(panel, "Id: ", data.id, 20);
-		BuildTextField(panel, "Description: ", data.description, 255);
-		BuildTextField(panel, "Active Description: ", data.activeDescription, 255);
-		BuildTextField(panel, "Inactive Description: ", data.inactiveDescription, 255);
+		BuildTextField(panel, "Id: ", data.id, 5, 
+		(source, text) => {
+			data.id = text;
+		});
+		
+		BuildTextField(panel, "Description: ", data.description, 255,
+			(source, text) => {
+			data.description = text;
+		});
+		
+		BuildTextField(panel, "Active Description: ", data.activeDescription, 255,
+			(source, text) => {
+			data.activeDescription = text;
+		});
+		
+		BuildTextField(panel, "Inactive Description: ", data.inactiveDescription, 255, 
+			(source, text) => {
+			data.inactiveDescription = text;
+		});
 
 		var deleteButton = new PButton("DeleteButton") {
 			Text = "Delete Port",
@@ -43,12 +58,25 @@ public class InputCellType(InputCellData data, CellOffset offset) : CircuitCellT
 		return panel;
 	}
 
-	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);
-
 	private void Delete(){
+		CircuitScreen.InputCellTypes.Remove(this);
 		EmptyCellType type = new(offset);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
+	}
+	
+	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);
+	public string GetId() => data.id;
+	public CellOffset GetOffset() => offset;
+	
+	public CNIPort ToPort(){
+		return CNIPort.InputPort(
+			data.id, 
+			offset, 
+			data.description, 
+			data.activeDescription, 
+			data.inactiveDescription
+		);
 	}
 
 	public static InputCellType Create(CNIPort port){

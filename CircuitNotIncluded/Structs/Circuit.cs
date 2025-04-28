@@ -46,7 +46,12 @@ public class Circuit : KMonoBehaviour {
 
 	private HashedString GetInputPortId() => lastChange.portID;
 
-	public void ApplyChanges(){
+	public void Refresh(List<CNIPort> inputs){
+		circuitDef.CNI_InputPorts = inputs;
+		ApplyChanges();
+	}
+	
+	private void ApplyChanges(){
 		ports.inputPortInfo = circuitDef.CNI_InputPorts.Select(port => port.P).ToArray();
 		ports.outputPortInfo = circuitDef.CNI_Outputs.Select(output => output.Port.P).ToArray();
 		RefreshPhysicalPorts();

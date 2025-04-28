@@ -5,13 +5,11 @@ using UnityEngine;
 namespace CircuitNotIncluded.UI.Cells;
 
 public struct OutputCellData(
-	string id = "Id",
 	string description = "Description",
 	string activeDescription = "Active Description",
 	string inactiveDescription = "Inactive Description",
 	string expression = "")
 {
-	public string id = id;
 	public string description = description;
 	public string activeDescription = activeDescription;
 	public string inactiveDescription = inactiveDescription;
@@ -30,6 +28,26 @@ public class OutputCellType(OutputCellData data, CellOffset offset) : CircuitCel
 			FlexSize = new Vector2(1, 0)
 		}; label.AddTo(panel);
 		
+		BuildTextField(panel, "Description: ", data.description, 255, 
+			(source, text) => {
+			data.description = text;
+		});
+		
+		BuildTextField(panel, "Active Description: ", data.activeDescription, 255, 
+			(source, text) => {
+			data.activeDescription = text;
+		});
+		
+		BuildTextField(panel, "Inactive Description: ", data.inactiveDescription, 255, 
+			(source, text) => {
+			data.inactiveDescription = text;
+		});
+		
+		BuildTextField(panel, "Expression: ", data.expression, 255, 
+			(source, text) => {
+			data.expression = text;
+		});
+		
 		var deleteButton = new PButton("DeleteButton") {
 			Text = "Delete Port",
 			Margin = new RectOffset(10, 10, 10, 10),
@@ -41,6 +59,7 @@ public class OutputCellType(OutputCellData data, CellOffset offset) : CircuitCel
 	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);
 	
 	private void Delete(){
+		CircuitScreen.OutputCellTypes.Remove(this);
 		EmptyCellType type = new(offset);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
@@ -48,7 +67,6 @@ public class OutputCellType(OutputCellData data, CellOffset offset) : CircuitCel
 
 	public static OutputCellType Create(Output output){
 		OutputCellData data = new(
-			output.Port.OriginalId,
 			output.Port.P.description,
 			output.Port.P.activeDescription,
 			output.Port.P.inactiveDescription,

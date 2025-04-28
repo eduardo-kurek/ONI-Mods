@@ -1,10 +1,11 @@
+using System.Text.RegularExpressions;
 using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.UI.Cells;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
+using ProcGen.Map;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.UI.GridLayoutGroup;
 
 namespace CircuitNotIncluded.UI;
 
@@ -12,6 +13,8 @@ public class CircuitScreen : KModalScreen
 {
 	private static GameObject? parent;
 	public static CircuitScreen Instance = null!;
+	public static List<InputCellType> InputCellTypes = new List<InputCellType>();
+	public static List<OutputCellType> OutputCellTypes = new List<OutputCellType>();
 
 	// The size of the port to be displayed on editor
 	private const int PORT_SIZE = 60;
@@ -143,7 +146,7 @@ public class CircuitScreen : KModalScreen
 		grid.spacing = new Vector2(PORT_SPACING, PORT_SPACING);
 		grid.padding = new RectOffset(PORT_SPACING, PORT_SPACING, PORT_SPACING, PORT_SPACING);
 		grid.childAlignment = TextAnchor.LowerLeft;
-		grid.startCorner = Corner.LowerLeft;
+		grid.startCorner = GridLayoutGroup.Corner.LowerLeft;
 		grid.startAxis = GridLayoutGroup.Axis.Horizontal;
 
 		var img = child.AddComponent<Image>();
@@ -171,6 +174,7 @@ public class CircuitScreen : KModalScreen
 	private void BuildInputPorts(GameObject container){
 		foreach(CNIPort input in Circuit.GetInputPorts()){
 			var cellType = InputCellType.Create(input);
+			InputCellTypes.Add(cellType);
 			int index = cellType.GetIndex();
 			ChangeCellType(index, cellType);
 		}
@@ -179,6 +183,7 @@ public class CircuitScreen : KModalScreen
 	private void BuildOutputPorts(GameObject container){
 		foreach(Output output in Circuit.GetOutputs()){
 			var cellType = OutputCellType.Create(output);
+			OutputCellTypes.Add(cellType);
 			int index = cellType.GetIndex();
 			ChangeCellType(index, cellType);
 		}
@@ -282,8 +287,52 @@ public class CircuitScreen : KModalScreen
 	}
 
 	private void SaveButtonClicked(){
-		Debug.Log("Saving state");
-		Deactivate();
+		try{
+			var inputs = CheckInputPorts();
+			Circuit.Refresh(inputs);
+			Deactivate();
+		} catch (Exception e){
+			PUIElements.ShowMessageDialog(parent, e.Message);
+		}
+	}
+	
+	private static List<CNIPort> CheckInputPorts(){
+		Dictionary<string, CellOffset> ids = [];
+		string errMessage = "";
+		
+		foreach(InputCellType i in InputCellTypes){
+			string id = i.GetId().Trim();
+			
+			if(id.IsNullOrWhiteSpace()){
+				errMessage += $"Input id cannot be empty. Cell ({i.GetOffset().x}, {i.GetOffset().y}). \n";
+				continue;
+			}
+
+			if(id.Contains(" ")){
+				errMessage += $"Input id cannot contains spaces. Cell ({i.GetOffset().x}, {i.GetOffset().y}). \n";
+				continue;
+			}
+			
+			if(!char.IsLetter(id[0]) && id[0] != '_'){
+				errMessage += $"Input id must start with a letter or underline. Cell ({i.GetOffset().x}, {i.GetOffset().y}). \n";
+				continue;
+			}
+			
+			if(ids.ContainsKey(i.GetId())){
+				CellOffset oldOffset = ids[i.GetId()];
+				CellOffset newOffset = i.GetOffset();
+				errMessage += $"Duplicate input id: {i.GetId()} in cell ({newOffset.x}, {newOffset.y}). " +
+				              $"Already declared in ({oldOffset.x}, {oldOffset.y})\n";
+				continue;
+			}
+			ids.Add(i.GetId(), i.GetOffset());
+		}
+
+		if(errMessage != "") throw new Exception(errMessage);
+
+		List<CNIPort> inputs = [];
+		inputs.AddRange(InputCellTypes.Select(i => i.ToPort()));
+		return inputs;
 	}
 
 	private void CancelButtonClicked(){
@@ -293,5 +342,7 @@ public class CircuitScreen : KModalScreen
 
 	protected override void OnDeactivate(){
 		CircuitCell.Selected = null;
+		InputCellTypes.Clear();
+		OutputCellTypes.Clear();
 	}
 }

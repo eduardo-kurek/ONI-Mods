@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using CircuitNotIncluded.Grammar;
 using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.UI.Cells;
 using PeterHan.PLib.Core;
@@ -13,8 +14,8 @@ public class CircuitScreen : KModalScreen
 {
 	private static GameObject? parent;
 	public static CircuitScreen Instance = null!;
-	public static List<InputCellType> InputCellTypes = new List<InputCellType>();
-	public static List<OutputCellType> OutputCellTypes = new List<OutputCellType>();
+	public static List<InputCellType> InputCellTypes = [];
+	public static List<OutputCellType> OutputCellTypes = [];
 
 	// The size of the port to be displayed on editor
 	private const int PORT_SIZE = 60;
@@ -289,7 +290,8 @@ public class CircuitScreen : KModalScreen
 	private void SaveButtonClicked(){
 		try{
 			var inputs = CheckInputPorts();
-			Circuit.Refresh(inputs);
+			var outputs = CheckOutputPorts();
+			Circuit.Refresh(inputs, outputs);
 			Deactivate();
 		} catch (Exception e){
 			PUIElements.ShowMessageDialog(parent, e.Message);
@@ -335,6 +337,31 @@ public class CircuitScreen : KModalScreen
 		return inputs;
 	}
 
+	private static List<Output> CheckOutputPorts(){
+		string errMessage = "";
+		List<Output> outs = [];
+		HashSet<string> inputIds = [];
+		
+		foreach(InputCellType input in InputCellTypes){
+			inputIds.Add(input.GetId());
+		}
+		
+		foreach(OutputCellType outputCell in OutputCellTypes){
+			try{
+				Output output = outputCell.ToPort();
+				SemanticAnalyzer.Analyze(output, inputIds);
+				outs.Add(output);
+			}
+			catch(Exception e){
+				errMessage += $"Cell ({outputCell.X()}, {outputCell.Y()}). {e.Message}\n";
+			}
+		}
+		
+		if(errMessage != "") throw new Exception(errMessage);
+
+		return outs;
+	}
+	
 	private void CancelButtonClicked(){
 		Debug.Log("Canceling state");
 		Deactivate();
@@ -342,6 +369,7 @@ public class CircuitScreen : KModalScreen
 
 	protected override void OnDeactivate(){
 		CircuitCell.Selected = null;
+		OutputCellType.ResetAutomaticPortIds();
 		InputCellTypes.Clear();
 		OutputCellTypes.Clear();
 	}

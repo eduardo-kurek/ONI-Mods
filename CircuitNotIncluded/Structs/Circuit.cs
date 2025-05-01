@@ -46,8 +46,9 @@ public class Circuit : KMonoBehaviour {
 
 	private HashedString GetInputPortId() => lastChange.portID;
 
-	public void Refresh(List<CNIPort> inputs){
+	public void Refresh(List<CNIPort> inputs, List<Output> outputs){
 		circuitDef.CNI_InputPorts = inputs;
+		circuitDef.CNI_Outputs = outputs;
 		ApplyChanges();
 	}
 	
@@ -55,7 +56,7 @@ public class Circuit : KMonoBehaviour {
 		ports.inputPortInfo = circuitDef.CNI_InputPorts.Select(port => port.P).ToArray();
 		ports.outputPortInfo = circuitDef.CNI_Outputs.Select(output => output.Port.P).ToArray();
 		RefreshPhysicalPorts();
-		UpdateAllOutputs();
+		UpdateAllOutputsSignal();
 	}
 
 	// When you call SendSignal and the outputPorts is null, the game will call ports.CreatePhysicalPorts
@@ -64,7 +65,7 @@ public class Circuit : KMonoBehaviour {
 		ports.SendSignal("", 0);
 	}
 
-	private void UpdateAllOutputs(){
+	private void UpdateAllOutputsSignal(){
 		foreach(Output output in circuitDef.CNI_Outputs)
 			output.Update(symbolTable);
 	}

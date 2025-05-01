@@ -64,10 +64,20 @@ public class Utils {
 		}
 
 		public static ProgramContext Parse(string expression){
-			AntlrInputStream inputStream = new AntlrInputStream(expression);
-			ExpressionLexer lexer = new ExpressionLexer(inputStream);
-			ExpressionParser parser = new ExpressionParser(new CommonTokenStream(lexer));
-			return parser.program();
+			AntlrInputStream inputStream = new(expression);
+			ExpressionLexer lexer = new(inputStream);
+			CommonTokenStream tokens = new(lexer);
+			ExpressionParser parser = new(tokens);
+			
+			var syntaxAnalyzer = new SyntaxAnalyzer();
+			parser.RemoveErrorListeners();
+			parser.AddErrorListener(syntaxAnalyzer);
+			
+			ProgramContext tree = parser.program();
+			
+			syntaxAnalyzer.ThrowIfErrors();
+    
+			return tree;
 		}
 	
 }

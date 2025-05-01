@@ -18,6 +18,11 @@ public struct OutputCellData(
 
 public class OutputCellType(OutputCellData data, CellOffset offset) : CircuitCellType(offset) {
 	private OutputCellData data = data;
+	private static int PortCount = 1;
+
+	public static void ResetAutomaticPortIds(){
+		PortCount = 1;
+	}
 	
 	public override GameObject BuildEditorContent(){
 		var panel = BuildContainer();
@@ -57,12 +62,26 @@ public class OutputCellType(OutputCellData data, CellOffset offset) : CircuitCel
 		return panel;
 	}
 	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);
+	public string GetExpression() => data.expression.Trim();
+	public int X() => offset.x;
+	public int Y() => offset.y;
 	
 	private void Delete(){
 		CircuitScreen.OutputCellTypes.Remove(this);
 		EmptyCellType type = new(offset);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
+	}
+
+	public Output ToPort(){
+		CNIPort port = CNIPort.OutputPort(
+			"o" + PortCount++,
+			offset,
+			data.description,
+			data.activeDescription,
+			data.inactiveDescription
+		);
+		return new Output(data.expression.Trim(), port);
 	}
 
 	public static OutputCellType Create(Output output){

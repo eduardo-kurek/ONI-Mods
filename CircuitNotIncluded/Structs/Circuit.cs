@@ -49,6 +49,8 @@ public class Circuit : KMonoBehaviour {
 	public void Refresh(List<CNIPort> inputs, List<Output> outputs){
 		circuitDef.CNI_InputPorts = inputs;
 		circuitDef.CNI_Outputs = outputs;
+		dependencyTable = new DependencyTable(circuitDef);
+		symbolTable = new SymbolTable(ports, circuitDef);
 		ApplyChanges();
 	}
 	

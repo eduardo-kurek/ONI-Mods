@@ -29,7 +29,7 @@ public class InputCellType(InputCellData data, CellOffset offset) : CircuitCellT
 			FlexSize = new Vector2(1, 0)
 		}; label.AddTo(panel);
 		
-		BuildTextField(panel, "Id: ", data.id, 5, 
+		BuildTextField(panel, "Id: ", data.id, 50, 
 		(source, text) => {
 			data.id = text;
 		});
@@ -66,8 +66,10 @@ public class InputCellType(InputCellData data, CellOffset offset) : CircuitCellT
 	}
 	
 	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);
-	public string GetId() => data.id;
+	public string GetId() => data.id.Trim();
 	public CellOffset GetOffset() => offset;
+	public int X() => offset.x;
+	public int Y() => offset.y;
 	
 	public CNIPort ToPort(){
 		return CNIPort.InputPort(

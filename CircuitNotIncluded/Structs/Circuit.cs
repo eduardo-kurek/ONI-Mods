@@ -39,6 +39,8 @@ public class Circuit : KMonoBehaviour {
 
 	private void OnInputPortChanged(){
 		var inputId = GetInputPortId();
+		// debuga a porta que mudou e o sinal
+		Debug.Log($"Input port {inputId} changed from {lastChange.prevValue} to {lastChange.newValue}");
 		var outDependents = dependencyTable.GetOutputDependents(inputId);
 		foreach(Output output in outDependents)
 			output.Update(symbolTable);
@@ -49,6 +51,8 @@ public class Circuit : KMonoBehaviour {
 	public void Refresh(List<CNIPort> inputs, List<Output> outputs){
 		circuitDef.CNI_InputPorts = inputs;
 		circuitDef.CNI_Outputs = outputs;
+		dependencyTable = new DependencyTable(circuitDef);
+		symbolTable = new SymbolTable(ports, circuitDef);
 		ApplyChanges();
 	}
 	

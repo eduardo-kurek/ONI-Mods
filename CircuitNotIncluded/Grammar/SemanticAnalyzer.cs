@@ -17,7 +17,7 @@ public class SemanticAnalyzer : ExpressionBaseListener {
 		base.ExitIdFactor(context);
 		string id = context.ID().GetText();
 		if (!ids.Contains(id)){
-			errors += $"Input port {id} not found in the circuit.";
+			errors += $"Input port '{id}' not found in the circuit.\n";
 		}
 	}
 

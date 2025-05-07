@@ -5,6 +5,7 @@ using CircuitNotIncluded.UI.Cells;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
 using ProcGen.Map;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -294,7 +295,15 @@ public class CircuitScreen : KModalScreen
 			Circuit.Refresh(inputs, outputs);
 			Deactivate();
 		} catch (Exception e){
-			PUIElements.ShowMessageDialog(parent, e.Message);
+			var dialog = PUIElements.ShowMessageDialog(parent, e.Message);
+			GameObjectDebugger.PrintGameObjectInfo(dialog.gameObject, true, 3);
+			var go = dialog.transform.GetChild(1);
+			go.GetComponent<LayoutElement>().preferredWidth = 600;
+			go.GetComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+			
+			// Deleting Cancel Button
+			var cancelButton = go.GetChild(3).GetChild(2);
+			Destroy(cancelButton.gameObject);
 		}
 	}
 	
@@ -303,27 +312,33 @@ public class CircuitScreen : KModalScreen
 		string errMessage = "";
 		
 		foreach(InputCellType i in InputCellTypes){
-			string id = i.GetId().Trim();
+			string id = i.GetId();
 			
 			if(id.IsNullOrWhiteSpace()){
-				errMessage += $"Input id cannot be empty. Cell ({i.GetOffset().x}, {i.GetOffset().y}). \n";
+				errMessage += $"({i.X()}, {i.Y()}). Input id cannot be empty.\n";
 				continue;
 			}
 
 			if(id.Contains(" ")){
-				errMessage += $"Input id cannot contains spaces. Cell ({i.GetOffset().x}, {i.GetOffset().y}). \n";
+				errMessage += $"({i.X()}, {i.Y()}). Input id cannot contains spaces.\n";
 				continue;
 			}
 			
 			if(!char.IsLetter(id[0]) && id[0] != '_'){
-				errMessage += $"Input id must start with a letter or underline. Cell ({i.GetOffset().x}, {i.GetOffset().y}). \n";
+				errMessage += $"({i.X()}, {i.Y()}). Input id must start with a letter or underline.\n";
 				continue;
+			}
+			
+			for(int j = 1; j < id.Length; j++){
+				if (!Regex.IsMatch(id[j].ToString(), @"^[_a-zA-Z0-9]$")){
+					errMessage += $"({i.X()}, {i.Y()}). Input id has an invalid char at. {id[j]} must be a letter, underscore or number\n";
+				}
 			}
 			
 			if(ids.ContainsKey(i.GetId())){
 				CellOffset oldOffset = ids[i.GetId()];
 				CellOffset newOffset = i.GetOffset();
-				errMessage += $"Duplicate input id: {i.GetId()} in cell ({newOffset.x}, {newOffset.y}). " +
+				errMessage += $"({newOffset.x}, {newOffset.y}). Duplicated input id: {i.GetId()}." +
 				              $"Already declared in ({oldOffset.x}, {oldOffset.y})\n";
 				continue;
 			}
@@ -353,7 +368,7 @@ public class CircuitScreen : KModalScreen
 				outs.Add(output);
 			}
 			catch(Exception e){
-				errMessage += $"Cell ({outputCell.X()}, {outputCell.Y()}). {e.Message}\n";
+				errMessage += $"({outputCell.X()}, {outputCell.Y()}). Semantic errors: {e.Message}\n";
 			}
 		}
 		

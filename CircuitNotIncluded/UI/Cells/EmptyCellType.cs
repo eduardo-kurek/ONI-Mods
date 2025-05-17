@@ -9,7 +9,6 @@ public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
 	protected override GameObject BuildContainer(){
 		GameObject container = base.BuildContainer();
 		var layout = container.GetComponent<VerticalLayoutGroup>();
-		layout.childAlignment = TextAnchor.MiddleCenter;
 		layout.spacing = 10;
 		return container;
 	}
@@ -17,25 +16,37 @@ public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();
 		RectOffset margin = new(10, 10, 10, 10);
+
+		var coords = new PLabel("Coords") {
+			Text = $"Empty cell ({offset.x}, {offset.y})",
+			TextStyle = CircuitCell.TitleStyle,
+			FlexSize = new Vector2(1, 0)
+		}; coords.AddTo(panel);
+
+		var buttonPanel = new PPanel() {
+			FlexSize = Vector2.one,
+			Alignment = TextAnchor.MiddleCenter,
+			Spacing = 10
+		};
 		
 		var createInput = new PButton() {
 			Margin = margin,
 			Text = "Create Input Port",
 			OnClick = (go) => PromoteToInput()
-		}; createInput.AddTo(panel);
+		}; buttonPanel.AddChild(createInput);
 		
 		var createOutput = new PButton() {
 			Margin = margin,
 			Text = "Create Output Port",
 			OnClick = (go) => PromoteToOutput()
-		}; createOutput.AddTo(panel);
+		}; buttonPanel.AddChild(createOutput);
 		
+		buttonPanel.AddTo(panel);
 		return panel;
 	}
 
 	private void PromoteToInput(){
-		InputCellData data = new ();
-		data.id = "Default id";
+		InputCellData data = new () { id = "id" };
 		InputCellType type = new(data, offset);
 		CircuitScreen.InputCellTypes.Add(type);
 		parent.SetCellType(type);

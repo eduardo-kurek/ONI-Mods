@@ -27,9 +27,9 @@ public class OutputCellType(OutputCellData data, CellOffset offset) : CircuitCel
 	public override GameObject BuildEditorContent(){
 		var panel = BuildContainer();
 		
-		var label = new PLabel("Label") {
-			Text = "Output: ",
-			TextStyle = PUITuning.Fonts.TextDarkStyle,
+		var label = new PLabel("Coords") {
+			Text = $"Output port ({offset.x}, {offset.y})",
+			TextStyle = CircuitCell.TitleStyle,
 			FlexSize = new Vector2(1, 0)
 		}; label.AddTo(panel);
 		

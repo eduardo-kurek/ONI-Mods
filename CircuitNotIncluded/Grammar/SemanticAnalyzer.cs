@@ -22,7 +22,7 @@ public class SemanticAnalyzer : ExpressionBaseListener {
 	}
 
 	private void ThrowIfErrors(){
-		if(errors != "") throw new Exception(errors);
+		if(errors != "") throw new Exception($"Semantic errors: \n{string.Join("\n", errors)}");
 	}
 	
 	/*

@@ -60,6 +60,12 @@ public class CircuitScreen : KModalScreen
 	private void Initialize(Circuit circuit){
 		Circuit = circuit;
 		Instance = this;
+		
+		// Checking if the circuit is rotated
+		var or = Circuit.gameObject.GetComponent<Rotatable>().GetOrientation();
+		
+		Debug.Log("Circuit orientation: " + or);
+		
 		PPanel contentPanel = new PPanel();
 		contentPanel.SetKleiBlueColor();
 		contentPanel.DynamicSize = true;
@@ -356,11 +362,11 @@ public class CircuitScreen : KModalScreen
 		string errMessage = "";
 		List<Output> outs = [];
 		HashSet<string> inputIds = [];
-		
+
 		foreach(InputCellType input in InputCellTypes){
 			inputIds.Add(input.GetId());
 		}
-		
+
 		foreach(OutputCellType outputCell in OutputCellTypes){
 			try{
 				Output output = outputCell.ToPort();
@@ -368,7 +374,7 @@ public class CircuitScreen : KModalScreen
 				outs.Add(output);
 			}
 			catch(Exception e){
-				errMessage += $"({outputCell.X()}, {outputCell.Y()}). Semantic errors: {e.Message}\n";
+				errMessage += $"({outputCell.X()}, {outputCell.Y()}). {e.Message}\n";
 			}
 		}
 		

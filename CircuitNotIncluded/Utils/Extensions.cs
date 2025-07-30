@@ -14,6 +14,15 @@ public static class Extensions
 		return go;
 	}
 	
+	public static VerticalLayoutGroup VerticalLayoutGroup(this GameObject go){
+		return go.AddOrGet<VerticalLayoutGroup>();
+	}
+
+	public static VerticalLayoutGroup Spacing(this VerticalLayoutGroup layout, int spacing){
+		layout.spacing = spacing;
+		return layout;
+	}
+	
 	public static LayoutElement LayoutElement(this GameObject go){
 		return go.AddOrGet<LayoutElement>();
 	}
@@ -148,6 +157,11 @@ public static class Extensions
 		return panel;
 	}
 	
+	public static PPanel Alignment(this PPanel panel, TextAnchor alignment){
+		panel.Alignment = alignment;
+		return panel;
+	}
+	
 	public static PButton Text(this PButton button, string text){
 		button.Text = text;
 		return button;
@@ -190,6 +204,11 @@ public static class Extensions
 	
 	public static T Parent<T>(this T component, PPanel panel) where T : PTextComponent {
 		panel.AddChild(component);
+		return component;
+	}
+	
+	public static T FlexSize<T>(this T component, float x, float y) where T : PTextComponent {
+		component.FlexSize = new Vector2(x, y);
 		return component;
 	}
 

@@ -70,7 +70,7 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 	}
 	
 	public static EvaluateFunc Compile(string expression){
-		ProgramContext tree = Utils.Parse(expression);
+		ProgramContext tree = Utilss.Parse(expression);
 		return Compile(tree);
 	}
 }

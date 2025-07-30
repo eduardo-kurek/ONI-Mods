@@ -12,7 +12,7 @@ public struct Output {
 	public Output(string expression, CNIPort port){
 		Expression = expression;
 		Port = port;
-		Tree = Utils.Parse(expression);
+		Tree = Utilss.Parse(expression);
 		Evaluate = ExpressionCompiler.Compile(Tree);
 	}
 

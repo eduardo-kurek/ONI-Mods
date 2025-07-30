@@ -4,7 +4,7 @@ using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded;
 
-public class Utils {
+public class Utilss {
 	public static void AddBuildingStrings(string buildingId, string name, string description, string effect){
 			Strings.Add(new string[] {
 				"STRINGS.BUILDINGS.PREFABS." + buildingId.ToUpperInvariant() + ".NAME",
@@ -27,7 +27,7 @@ public class Utils {
 			Debug.Log(str + idBuilding + str2 + hashedString.ToString());
 			foreach(var planInfo in TUNING.BUILDINGS.PLANORDER){
 				if(planInfo.category == category){
-					Utils.AddPlanToCategory(planInfo, subcategory, idBuilding, addAfter);
+					Utilss.AddPlanToCategory(planInfo, subcategory, idBuilding, addAfter);
 					return;
 				}
 			}

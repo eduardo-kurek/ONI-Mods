@@ -63,7 +63,7 @@ internal sealed class CircuitManager {
 		
 		Assets.AddBuildingDef(def);
 		
-		Utils.AddBuildingStrings(def.PrefabID, def.CNI_Name, def.CNI_Description, def.CNI_Effect);
+		Utilss.AddBuildingStrings(def.PrefabID, def.CNI_Name, def.CNI_Description, def.CNI_Effect);
 		ModUtil.AddBuildingToPlanScreen("Automation", def.PrefabID, "wires", "LogicWire");
 		Debug.Log("Circuit registered successfully: " + def.PrefabID);
 	}

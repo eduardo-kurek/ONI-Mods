@@ -46,7 +46,7 @@ public class CircuitSideScreen : SideScreenContent {
 
 	private void BuildCircuitName(){
 		var layout = ContentContainer.GetComponent<VerticalLayoutGroup>().transform;
-		var go = Builder.PinkText("", layout);
+		var go = Utils.UI.PinkText("", layout);
 		circuitName = go.GetComponent<TextMeshProUGUI>();
 		circuitName.fontSize = 16;
 		circuitName.alignment = TextAlignmentOptions.Center;
@@ -63,7 +63,7 @@ public class CircuitSideScreen : SideScreenContent {
 
 	private void BuildOutputsLabel(){
 		var layout = ContentContainer.GetComponent<VerticalLayoutGroup>().transform;
-		Builder.DarkText("Outputs", layout);
+		Utils.UI.DarkText("Outputs", layout);
 	}
 
 	private void BuildEditButton(){
@@ -76,7 +76,7 @@ public class CircuitSideScreen : SideScreenContent {
 
 	private void OnEditButtonClicked(GameObject source){
 		Debug.Log("Edit button pressed");
-		var screen = CircuitScreen.Build(circuit!);
+		var screen = CircuitScreenBuilder.Build(circuit!);
 	}
 	
 	public override void SetTarget(GameObject target){
@@ -112,7 +112,7 @@ public class CircuitSideScreen : SideScreenContent {
 		foreach(var output in circuit!.GetOutputs()){
 			var originalText = $"{output.Port.OriginalId} = {output.Expression}";
 			var colorizedText = ColorizeSpecialChars(originalText);
-			var go = Builder.DarkText(colorizedText, layout.transform);
+			var go = Utils.UI.DarkText(colorizedText, layout.transform);
 			var text = go.GetComponent<TextMeshProUGUI>();
 			text.color = new Color(0.15f, 0.15f, 0.15f);
 		}

@@ -1,10 +1,11 @@
 using PeterHan.PLib.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-namespace CircuitNotIncluded.UI;
+namespace CircuitNotIncluded.Utils;
 
-public class Builder
+public static class UI
 {
 	public static GameObject LightText(string message, Transform? parent = null){
 		return Text(message, PUITuning.Fonts.UILightStyle, parent);

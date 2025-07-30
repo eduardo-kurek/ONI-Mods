@@ -1,81 +1,53 @@
 using CircuitNotIncluded.Structs;
-using PeterHan.PLib.UI;
 using UnityEngine;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public struct OutputCellData(
+public class OutputCellData(
+	string id = "Id",
 	string description = "Description",
 	string activeDescription = "Active Description",
 	string inactiveDescription = "Inactive Description",
-	string expression = "")
+	string expression = ""
+) : PortCellData(id, description, activeDescription, inactiveDescription)
 {
-	public string description = description;
-	public string activeDescription = activeDescription;
-	public string inactiveDescription = inactiveDescription;
 	public string expression = expression;
 }
 
-public class OutputCellType(OutputCellData data, CellOffset offset) : CircuitCellType(offset) {
-	private OutputCellData data = data;
-	private static int PortCount = 1;
-
-	public static void ResetAutomaticPortIds(){
-		PortCount = 1;
-	}
+public class OutputCellType(OutputCellData data, CellOffset offset) : PortCellType(data, offset) {
+	protected override string GetCellTitle(){ return "Output Port"; }
 	
 	public override GameObject BuildEditorContent(){
-		var panel = BuildContainer();
-		
-		var label = new PLabel("Coords") {
-			Text = $"Output port ({offset.x}, {offset.y})",
-			TextStyle = CircuitCell.TitleStyle,
-			FlexSize = new Vector2(1, 0)
-		}; label.AddTo(panel);
-		
-		BuildTextField(panel, "Description: ", data.description, 255, 
-			(source, text) => {
-			data.description = text;
-		});
-		
-		BuildTextField(panel, "Active Description: ", data.activeDescription, 255, 
-			(source, text) => {
-			data.activeDescription = text;
-		});
-		
-		BuildTextField(panel, "Inactive Description: ", data.inactiveDescription, 255, 
-			(source, text) => {
-			data.inactiveDescription = text;
-		});
-		
-		BuildTextField(panel, "Expression: ", data.expression, 255, 
-			(source, text) => {
-			data.expression = text;
-		});
-		
-		var deleteButton = new PButton("DeleteButton") {
-			Text = "Delete Port",
-			Margin = new RectOffset(10, 10, 10, 10),
-			OnClick = (go) => Delete()
-		}; deleteButton.AddTo(panel);
-		
+		GameObject panel = BuildContainer();
+		BuildIdField(panel);
+		BuildDescriptionField(panel);
+		BuildActiveDescriptionField(panel);
+		BuildInactiveDescription(panel);
+		BuildExpressionField(panel);
+		BuildDeleteButton(panel);
 		return panel;
 	}
+
+	private GameObject BuildExpressionField(GameObject container){
+		return BuildTextField(container, "Expression: ", data.expression, 255, 
+			(source, text) => {
+				data.expression = text;
+			});
+	}
+	
 	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);
 	public string GetExpression() => data.expression.Trim();
 	public int X() => offset.x;
 	public int Y() => offset.y;
 	
-	private void Delete(){
+	protected override void Delete(){
 		CircuitScreen.OutputCellTypes.Remove(this);
-		EmptyCellType type = new(offset);
-		parent.SetCellType(type);
-		parent.OnPointerClick(null!);
+		base.Delete();
 	}
 
 	public Output ToPort(){
 		CNIPort port = CNIPort.OutputPort(
-			"o" + PortCount++,
+			data.id,
 			offset,
 			data.description,
 			data.activeDescription,
@@ -86,6 +58,7 @@ public class OutputCellType(OutputCellData data, CellOffset offset) : CircuitCel
 
 	public static OutputCellType Create(Output output){
 		OutputCellData data = new(
+			output.Port.OriginalId,
 			output.Port.P.description,
 			output.Port.P.activeDescription,
 			output.Port.P.inactiveDescription,

@@ -1,68 +1,31 @@
 using CircuitNotIncluded.Structs;
-using PeterHan.PLib.UI;
-using TMPro;
 using UnityEngine;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public struct InputCellData(
-	string id = "Id", 
-	string description = "Description", 
-	string activeDescription = "Active Description", 
-	string inactiveDescription = "Inactive Description")
-{
-	public string id = id;
-	public string description = description;
-	public string activeDescription = activeDescription;
-	public string inactiveDescription = inactiveDescription;
-}
+public class InputCellData(
+	string id = "Id",
+	string description = "Description",
+	string activeDescription = "Active Description",
+	string inactiveDescription = "Inactive Description"
+) : PortCellData(id, description, activeDescription, inactiveDescription);
 
-public class InputCellType(InputCellData data, CellOffset offset) : CircuitCellType(offset) {
-	private InputCellData data = data;
+public class InputCellType(InputCellData data, CellOffset offset) : PortCellType(data, offset) {
+	protected override string GetCellTitle(){ return "Input Port"; }
 	
 	public override GameObject BuildEditorContent(){
-		var panel = BuildContainer();
-		
-		var label = new PLabel("Coords") {
-			Text = $"Input port ({offset.x}, {offset.y})",
-			TextStyle = CircuitCell.TitleStyle,
-			FlexSize = new Vector2(1, 0)
-		}; label.AddTo(panel);
-		
-		BuildTextField(panel, "Id: ", data.id, 50, 
-		(source, text) => {
-			data.id = text;
-		});
-		
-		BuildTextField(panel, "Description: ", data.description, 255,
-			(source, text) => {
-			data.description = text;
-		});
-		
-		BuildTextField(panel, "Active Description: ", data.activeDescription, 255,
-			(source, text) => {
-			data.activeDescription = text;
-		});
-		
-		BuildTextField(panel, "Inactive Description: ", data.inactiveDescription, 255, 
-			(source, text) => {
-			data.inactiveDescription = text;
-		});
-
-		var deleteButton = new PButton("DeleteButton") {
-			Text = "Delete Port",
-			Margin = new RectOffset(10, 10, 10, 10),
-			OnClick = (go) => Delete()
-		}; deleteButton.AddTo(panel); 
-		
+		GameObject panel = BuildContainer();
+		BuildIdField(panel);
+		BuildDescriptionField(panel);
+		BuildActiveDescriptionField(panel);
+		BuildInactiveDescription(panel);
+		BuildDeleteButton(panel);
 		return panel;
 	}
 
-	private void Delete(){
+	protected override void Delete(){
 		CircuitScreen.InputCellTypes.Remove(this);
-		EmptyCellType type = new(offset);
-		parent.SetCellType(type);
-		parent.OnPointerClick(null!);
+		base.Delete();
 	}
 	
 	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);

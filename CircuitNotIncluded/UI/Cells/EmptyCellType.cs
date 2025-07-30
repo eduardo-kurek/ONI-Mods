@@ -1,12 +1,12 @@
-using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.UI;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
 public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
+	protected override string GetCellTitle(){ return "Empty Cell"; }
+	
 	protected override GameObject BuildContainer(){
 		return base.BuildContainer()
 			.VerticalLayoutGroup()
@@ -16,19 +16,10 @@ public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
 	
 	public override GameObject BuildEditorContent(){
 		GameObject mainPanel = BuildContainer();
-		BuildCoordsLabel(mainPanel);
 		GameObject buttonsPanel = BuildButtonsPanel(mainPanel);
 		BuildCreateInputButton(buttonsPanel);
 		BuildCreateOutputButton(buttonsPanel);
 		return mainPanel;
-	}
-
-	private GameObject BuildCoordsLabel(GameObject container){
-		return new PLabel("Coords")
-			.Text($"Empty cell ({offset.x}, {offset.y})")
-			.Style(CircuitCell.TitleStyle)
-			.FlexSize(1, 0)
-			.AddTo(container);
 	}
 
 	private static GameObject BuildButtonsPanel(GameObject container){

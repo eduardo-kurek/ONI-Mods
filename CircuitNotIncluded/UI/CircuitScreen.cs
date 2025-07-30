@@ -141,7 +141,6 @@ public class CircuitScreen : KModalScreen
 
 	protected override void OnDeactivate(){
 		CircuitCell.Selected = null;
-		OutputCellType.ResetAutomaticPortIds();
 		InputCellTypes.Clear();
 		OutputCellTypes.Clear();
 	}

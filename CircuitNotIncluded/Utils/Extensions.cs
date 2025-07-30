@@ -1,5 +1,6 @@
 using CircuitNotIncluded.UI.Cells;
 using PeterHan.PLib.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,8 +19,20 @@ public static class Extensions
 		return go.AddOrGet<VerticalLayoutGroup>();
 	}
 
-	public static VerticalLayoutGroup Spacing(this VerticalLayoutGroup layout, int spacing){
+	public static T Spacing<T>(this T layout, int spacing) where T : HorizontalOrVerticalLayoutGroup {
 		layout.spacing = spacing;
+		return layout;
+	}
+	
+	public static T ChildForceExpandHeight<T>(this T layout, bool force) 
+		where T : HorizontalOrVerticalLayoutGroup {
+		layout.childForceExpandHeight = force;
+		return layout;
+	}
+	
+	public static T ChildForceExpandWidth<T>(this T layout, bool force) 
+		where T : HorizontalOrVerticalLayoutGroup {
+		layout.childForceExpandWidth = force;
 		return layout;
 	}
 	
@@ -78,7 +91,7 @@ public static class Extensions
 		return grid;
 	}
 	
-	public static GridLayoutGroup ChildAlignment(this GridLayoutGroup grid, TextAnchor value){
+	public static T ChildAlignment<T>(this T grid, TextAnchor value) where T : LayoutGroup{
 		grid.childAlignment = value;
 		return grid;
 	}
@@ -162,11 +175,6 @@ public static class Extensions
 		return panel;
 	}
 	
-	public static PButton Text(this PButton button, string text){
-		button.Text = text;
-		return button;
-	}
-	
 	public static PButton SetOnClick(this PButton button, PUIDelegates.OnButtonPressed onClick){
 		button.OnClick = onClick;
 		return button;
@@ -210,6 +218,36 @@ public static class Extensions
 	public static T FlexSize<T>(this T component, float x, float y) where T : PTextComponent {
 		component.FlexSize = new Vector2(x, y);
 		return component;
+	}
+	
+	public static PTextField Text(this PTextField field, string value) {
+		field.Text = value;
+		return field;
+	}
+	
+	public static PTextField Style(this PTextField field, TextStyleSetting style) {
+		field.TextStyle = style;
+		return field;
+	}
+	
+	public static PTextField FlexSize(this PTextField field, float x, float y) {
+		field.FlexSize = new Vector2(x, y);
+		return field;
+	}
+	
+	public static PTextField MaxLength(this PTextField field, int max) {
+		field.MaxLength = max;
+		return field;
+	}
+	
+	public static PTextField TextAlignment(this PTextField field, TextAlignmentOptions option) {
+		field.TextAlignment = option;
+		return field;
+	}
+	
+	public static PTextField SetOnTextChanged(this PTextField field, PUIDelegates.OnTextChanged e) {
+		field.OnTextChanged = e;
+		return field;
 	}
 
 }

@@ -1,19 +1,18 @@
 using Antlr4.Runtime.Tree;
 using CircuitNotIncluded.Structs;
+using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.Grammar;
 
 
 public class SemanticAnalyzer : ExpressionBaseListener {
 	private readonly HashSet<string> ids;
-	private readonly CellOffset offset;
 	private string errors = "";
-	private SemanticAnalyzer(HashSet<string> ids, CellOffset offset){
+	private SemanticAnalyzer(HashSet<string> ids){
 		this.ids = ids;
-		this.offset = offset;
 	}
 	
-	public override void ExitIdFactor(ExpressionParser.IdFactorContext context){
+	public override void ExitIdFactor(IdFactorContext context){
 		base.ExitIdFactor(context);
 		string id = context.ID().GetText();
 		if (!ids.Contains(id)){
@@ -29,9 +28,9 @@ public class SemanticAnalyzer : ExpressionBaseListener {
 	 * Checks if the input ports called by the expression is present in ids.
 	 * Throws an exception if any of the input ports is not found.
 	 */
-	public static void Analyze(Output output, HashSet<string> ids){
-		SemanticAnalyzer semanticAnalyzer = new(ids, output.Port.P.cellOffset);
-		ParseTreeWalker.Default.Walk(semanticAnalyzer, output.Tree);
+	public static void Analyze(ProgramContext tree, HashSet<string> ids){
+		SemanticAnalyzer semanticAnalyzer = new(ids);
+		ParseTreeWalker.Default.Walk(semanticAnalyzer, tree);
 		semanticAnalyzer.ThrowIfErrors();
 	}
 }

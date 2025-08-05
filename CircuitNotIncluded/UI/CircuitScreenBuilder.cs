@@ -53,20 +53,13 @@ public static class CircuitScreenBuilder
 	}
 	
 	private static void BuildScreen(GameObject go){
-		
-		UnityEngine.Debug.Log("Build Main container");
 		GameObject container = BuildMainContainer(go.gameObject);
-		
-		UnityEngine.Debug.Log("Build Header");
 		BuildHeader(container);
-		UnityEngine.Debug.Log("Build Body");
 		BuildBody(container);
-		UnityEngine.Debug.Log("Build Footer");
 		BuildFooter(container);
-		UnityEngine.Debug.Log("Finished");
 	}
 	
-	public static GameObject BuildMainContainer(GameObject parent){
+	private static GameObject BuildMainContainer(GameObject parent){
 		return new PPanel()
 			.SetKleiBlueColor()
 			.DynamicSize(true)
@@ -82,7 +75,7 @@ public static class CircuitScreenBuilder
 			.gameObject;
 	}
 	
-	public static void BuildHeader(GameObject container){
+	private static void BuildHeader(GameObject container){
 		GameObject header = BuildHeaderContainer(container);
 		GameObject title = BuildHeaderTitle(header);
 		Instance().title = header.GetComponentInChildren<LocText>();
@@ -107,7 +100,7 @@ public static class CircuitScreenBuilder
 			.AddTo(container);
 	}
 
-	public static void BuildBody(GameObject container){
+	private static void BuildBody(GameObject container){
 		GameObject body = new PPanel("Body")
 			.Direction(PanelDirection.Horizontal)
 			.BackColor(new Color32(28, 32, 38, byte.MaxValue))
@@ -190,25 +183,20 @@ public static class CircuitScreenBuilder
 		Circuit c = Circuit();
 		foreach(CNIPort input in c.GetInputPorts()){
 			var cellType = InputCellType.Create(input);
-			CircuitScreen.InputCellTypes.Add(cellType);
 			int index = cellType.GetIndex();
 			ChangeCellType(index, cellType);
+			Instance().OnInputCellCreated(cellType);
 		}
 	}
 
 	private static void PromoteOutputPorts(GameObject container){
 		Circuit c = Circuit();
 		foreach(Output output in c.GetOutputs()){
-			OutputCellType cellType = CreateOutputCellType(output);
+			var cellType = OutputCellType.Create(output);
 			int index = cellType.GetIndex();
 			ChangeCellType(index, cellType);
+			Instance().OnOutputCellCreated(cellType);
 		}
-	}
-
-	private static OutputCellType CreateOutputCellType(Output output){
-		var cellType = OutputCellType.Create(output);
-		CircuitScreen.OutputCellTypes.Add(cellType);
-		return cellType;
 	}
 	
 	private static void ChangeCellType(int index, CircuitCellType cellType){
@@ -256,7 +244,7 @@ public static class CircuitScreenBuilder
 			.gameObject;
 	}
 	
-	public static void BuildFooter(GameObject container){
+	private static void BuildFooter(GameObject container){
 		GameObject footer = new PPanel("Footer")
 			.Spacing(15)
 			.Direction(PanelDirection.Horizontal)

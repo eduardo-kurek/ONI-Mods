@@ -24,15 +24,10 @@ public class InputCellType(InputCellData data, CellOffset offset) : PortCellType
 	}
 
 	protected override void Delete(){
-		CircuitScreen.InputCellTypes.Remove(this);
 		base.Delete();
+		CircuitScreen.Instance.OnInputCellDeleted(this);
 	}
 	
-	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);
-	public string GetId() => data.id.Trim();
-	public CellOffset GetOffset() => offset;
-	public int X() => offset.x;
-	public int Y() => offset.y;
 	
 	public CNIPort ToPort(){
 		return CNIPort.InputPort(
@@ -52,5 +47,9 @@ public class InputCellType(InputCellData data, CellOffset offset) : PortCellType
 			port.P.inactiveDescription
 		);
 		return new InputCellType(data, port.P.cellOffset);
+	}
+
+	public static InputCellType Create(CellOffset offset){
+		return new InputCellType(new InputCellData(), offset);
 	}
 }

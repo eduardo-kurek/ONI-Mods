@@ -12,7 +12,7 @@ public class IdExtractor : ExpressionBaseListener {
 	}
 	
 	public static HashSet<string> Extract(ProgramContext tree){
-		IdExtractor idExtractor = new IdExtractor();
+		var idExtractor = new IdExtractor();
 		ParseTreeWalker.Default.Walk(idExtractor, tree);
 		return idExtractor.ids;
 	}

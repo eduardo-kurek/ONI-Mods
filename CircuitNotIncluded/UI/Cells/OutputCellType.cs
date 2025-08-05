@@ -1,5 +1,6 @@
 using CircuitNotIncluded.Structs;
 using UnityEngine;
+using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.UI.Cells;
 
@@ -41,11 +42,11 @@ public class OutputCellType(OutputCellData data, CellOffset offset) : PortCellTy
 	public int Y() => offset.y;
 	
 	protected override void Delete(){
-		CircuitScreen.OutputCellTypes.Remove(this);
 		base.Delete();
+		CircuitScreen.Instance.OnOutputCellDeleted(this);
 	}
-
-	public Output ToPort(){
+	
+	public Output ToPort(ProgramContext tree){
 		CNIPort port = CNIPort.OutputPort(
 			data.id,
 			offset,
@@ -53,7 +54,7 @@ public class OutputCellType(OutputCellData data, CellOffset offset) : PortCellTy
 			data.activeDescription,
 			data.inactiveDescription
 		);
-		return new Output(data.expression.Trim(), port);
+		return new Output(data.expression.Trim(), tree, port);
 	}
 
 	public static OutputCellType Create(Output output){
@@ -65,5 +66,9 @@ public class OutputCellType(OutputCellData data, CellOffset offset) : PortCellTy
 			output.Expression
 		);
 		return new OutputCellType(data, output.Port.P.cellOffset);
+	}
+	
+	public static OutputCellType Create(CellOffset offset){
+		return new OutputCellType(new OutputCellData(), offset);
 	}
 }

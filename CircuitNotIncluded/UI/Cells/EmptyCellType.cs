@@ -1,3 +1,4 @@
+using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.UI;
 using UnityEngine;
@@ -47,18 +48,16 @@ public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
 	}
 	
 	private void PromoteToInput(){
-		InputCellData data = new () { id = "id" };
-		InputCellType type = new(data, offset);
-		CircuitScreen.InputCellTypes.Add(type);
+		var type = InputCellType.Create(offset);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
+		CircuitScreen.Instance.OnInputCellCreated(type);
 	}
 
 	private void PromoteToOutput(){
-		OutputCellData data = new ();
-		OutputCellType type = new(data, offset);
-		CircuitScreen.OutputCellTypes.Add(type);
+		var type = OutputCellType.Create(offset);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
+		CircuitScreen.Instance.OnOutputCellCreated(type);
 	}
 }

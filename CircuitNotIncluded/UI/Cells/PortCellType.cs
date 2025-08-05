@@ -18,6 +18,11 @@ public class PortCellData(
 
 public abstract class PortCellType(PortCellData data, CellOffset offset) : CircuitCellType(offset)
 {
+	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);
+	public string GetId() => data.id.Trim();
+	public CellOffset GetOffset() => offset;
+	public int X() => offset.x;
+	public int Y() => offset.y;
 	
 	protected GameObject BuildIdField(GameObject container){
 		return BuildTextField(container, "Id: ", data.id, 50, 

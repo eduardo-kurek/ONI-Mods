@@ -2,13 +2,19 @@ using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
 public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
 	protected override string GetCellTitle(){ return "Empty Cell"; }
-	
-	protected override GameObject BuildContainer(){
+
+	public override void UpdateImage(Image img){
+		img.color = Color.grey;
+		img.sprite = null;
+	}
+
+	public override GameObject BuildContainer(){
 		return base.BuildContainer()
 			.VerticalLayoutGroup()
 			.Spacing(10)

@@ -12,6 +12,9 @@ public class InputCellData(
 
 public class InputCellType(InputCellData data, CellOffset offset) : PortCellType(data, offset) {
 	protected override string GetCellTitle(){ return "Input Port"; }
+	protected override Sprite GetPortSprite(){
+		return Assets.instance.logicModeUIData.inputSprite;
+	}
 	
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();

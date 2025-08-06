@@ -13,6 +13,7 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	private CircuitCellType type = null!;
 	private Outline outline = null!;
 	public static CircuitCell? Selected;
+	private Image image = null!;
 	
 	public static readonly TextStyleSetting LabelStyle = PUITuning.Fonts.TextDarkStyle;
 	public static readonly TextStyleSetting TitleStyle = PUITuning.Fonts.TextDarkStyle.DeriveStyle(16);
@@ -25,8 +26,10 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	}
 
 	public CircuitCell SetCellType(CircuitCellType type){
+		if (image == null) image = gameObject.AddOrGet<Image>();
 		this.type = type;
 		this.type.SetParent(this);
+		this.type.UpdateImage(image);
 		return this;
 	}
 

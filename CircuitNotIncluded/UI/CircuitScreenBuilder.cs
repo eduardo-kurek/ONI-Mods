@@ -15,8 +15,8 @@ public static class CircuitScreenBuilder
 	private static GameObject? parent;
 	private static TextStyleSetting? textStyleSetting;
 	
-	private const int PORT_SIZE = 60;
-	private const int PORT_SPACING = 5;
+	private const int PORT_SIZE = 40;
+	private const int PORT_SPACING = 8;
 	
 	private static float CircuitDisplaySize(int qtCells){
 		return qtCells * PORT_SIZE + PORT_SPACING * (qtCells + 1);
@@ -175,7 +175,6 @@ public static class CircuitScreenBuilder
 		new GameObject("Cell")
 			.RectTransform().gameObject
 			.CircuitCell().SetCellType(cellType).gameObject
-			.Image().Color(Color.white).gameObject
 			.SetParent(container);
 	}
 	

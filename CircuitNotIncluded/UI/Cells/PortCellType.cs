@@ -1,6 +1,7 @@
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
@@ -16,13 +17,19 @@ public class PortCellData(
 	public string inactiveDescription = inactiveDescription;
 }
 
-public abstract class PortCellType(PortCellData data, CellOffset offset) : CircuitCellType(offset)
-{
+public abstract class PortCellType(PortCellData data, CellOffset offset) : CircuitCellType(offset) {
 	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);
 	public string GetId() => data.id.Trim();
 	public CellOffset GetOffset() => offset;
 	public int X() => offset.x;
 	public int Y() => offset.y;
+
+	protected abstract Sprite GetPortSprite();
+
+	public override void UpdateImage(Image img){
+		img.color = Color.white;
+		img.sprite = GetPortSprite();
+	}
 	
 	protected GameObject BuildIdField(GameObject container){
 		return BuildTextField(container, "Id: ", data.id, 50, 

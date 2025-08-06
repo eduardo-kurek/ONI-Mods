@@ -17,6 +17,9 @@ public class OutputCellData(
 
 public class OutputCellType(OutputCellData data, CellOffset offset) : PortCellType(data, offset) {
 	protected override string GetCellTitle(){ return "Output Port"; }
+	protected override Sprite GetPortSprite(){
+		return Assets.instance.logicModeUIData.outputSprite;
+	}
 	
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();

@@ -2,6 +2,7 @@ using CircuitNotIncluded.Utils;
 using PeterHan.PLib.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
@@ -12,8 +13,9 @@ public abstract class CircuitCellType(CellOffset offset) {
 		this.parent = parent;
 	}
 	public abstract GameObject BuildEditorContent();
-	
-	protected virtual GameObject BuildContainer(){
+	public abstract void UpdateImage(Image img);
+
+	public virtual GameObject BuildContainer(){
 		GameObject container = new GameObject("Panel")
 			.VerticalLayoutGroup()
 			.ChildAlignment(TextAnchor.UpperLeft)

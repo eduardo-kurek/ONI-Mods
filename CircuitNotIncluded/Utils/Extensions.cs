@@ -68,6 +68,11 @@ public static class Extensions
 		return img;
 	}
 	
+	public static Image Sprite(this Image img, Sprite sprite){
+		img.sprite = sprite;
+		return img;
+	}
+	
 	public static CircuitCell CircuitCell(this GameObject go){
 		return go.AddOrGet<CircuitCell>();
 	}

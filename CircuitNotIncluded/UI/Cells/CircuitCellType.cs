@@ -66,4 +66,6 @@ public abstract class CircuitCellType(CellOffset offset) {
 
 		return panel;
 	}
+
+	public CellOffset GetOffset() => offset;
 }

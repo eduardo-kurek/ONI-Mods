@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using CircuitNotIncluded.UI.Cells;
+using TemplateClasses;
 
 namespace CircuitNotIncluded.Structs;
 
@@ -83,6 +84,13 @@ public class Circuit : KMonoBehaviour {
 	public int ToLinearIndex(CellOffset offset){
 		int width = GetWidth();
 		return width * offset.y + offset.x;
+	}
+
+	public int GetActualCell(CellOffset offset){
+		var component = base.GetComponent<Rotatable>();
+		if(component != null)
+			offset = component.GetRotatedCellOffset(offset);
+		return Grid.OffsetCell(Grid.PosToCell(transform.GetPosition()), offset);
 	}
 
 	// Converts a linear index to a 2D CellOffset.

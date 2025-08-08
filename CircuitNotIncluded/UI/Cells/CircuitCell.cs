@@ -47,4 +47,12 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	private void Deselect(){
 		outline.enabled = false;
 	}
+
+	public CircuitCellType GetCellType(){
+		return type;
+	}
+
+	public CellOffset GetOffset(){
+		return type.GetOffset();
+	}
 }

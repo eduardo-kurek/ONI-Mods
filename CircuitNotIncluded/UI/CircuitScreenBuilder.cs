@@ -147,19 +147,19 @@ public static class CircuitScreenBuilder
 			.StartCorner(GridLayoutGroup.Corner.LowerLeft)
 			.StartAxis(GridLayoutGroup.Axis.Horizontal)
 			.gameObject
-			.Image()
-			.Color(Color.red)
+			.Image().Color(Color.red)
 			.gameObject
 			.SetParent(container);
-
+		
 		Instance().displayCellGrid = grid;
 		BuildPorts(grid);
 	}
 
 	private static void BuildPorts(GameObject container){
 		BuildEmptyPorts(container);
-		PromoteInputPorts(container);
-		PromoteOutputPorts(container);
+		BuildInputPorts(container);
+		BuildOutputPorts(container);
+		BuildInvalidPorts(container);
 	}
 
 	private static void BuildEmptyPorts(GameObject container){
@@ -178,7 +178,7 @@ public static class CircuitScreenBuilder
 			.SetParent(container);
 	}
 	
-	private static void PromoteInputPorts(GameObject container){
+	private static void BuildInputPorts(GameObject container){
 		Circuit c = Circuit();
 		foreach(CNIPort input in c.GetInputPorts()){
 			var cellType = InputCellType.Create(input);
@@ -188,7 +188,7 @@ public static class CircuitScreenBuilder
 		}
 	}
 
-	private static void PromoteOutputPorts(GameObject container){
+	private static void BuildOutputPorts(GameObject container){
 		Circuit c = Circuit();
 		foreach(Output output in c.GetOutputs()){
 			var cellType = OutputCellType.Create(output);
@@ -200,6 +200,36 @@ public static class CircuitScreenBuilder
 	
 	private static void ChangeCellType(int index, CircuitCellType cellType){
 		GetCellOnGridByIndex(index).SetCellType(cellType);
+	}
+	
+	private static void BuildInvalidPorts(GameObject container){
+		var emptyCells = GetEmptyCellsFromGrid(container);
+		CreateInvalidPorts(emptyCells);
+	}
+
+	private static List<CircuitCell> GetEmptyCellsFromGrid(GameObject grid){
+		var allCells = grid.GetComponentsInChildren<CircuitCell>().ToList();
+		List<CircuitCell> emptyCells = [];
+		foreach(CircuitCell cell in allCells){
+			CircuitCellType type = cell.GetCellType();
+			if(type is EmptyCellType)
+				emptyCells.Add(cell);
+		}
+		return emptyCells;
+	}
+
+	private static void CreateInvalidPorts(List<CircuitCell> cells){
+		foreach(CircuitCell cell in cells){
+			if(!CellHasConflict(cell)) continue;
+			var invalidType = new InvalidCellType(cell.GetOffset());
+			cell.SetCellType(invalidType);
+		}
+	}
+
+	private static bool CellHasConflict(CircuitCell cell){
+		int globalCell = Circuit().GetActualCell(cell.GetOffset());
+		object endpointInCell = Game.Instance.logicCircuitSystem.GetEndpoint(globalCell);
+		return endpointInCell != null;
 	}
 
 	private static CircuitCell GetCellOnGridByIndex(int index){

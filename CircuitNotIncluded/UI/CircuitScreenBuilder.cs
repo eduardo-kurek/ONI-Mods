@@ -49,6 +49,7 @@ public static class CircuitScreenBuilder
 			.AddComponent<CircuitScreen>().Initialize(circuit).gameObject
 			.SetParent(GetRootParent());
 		BuildScreen(go);
+		GameObjectDebugger.PrintGameObjectInfo(circuit.gameObject);
 		return go;
 	}
 	
@@ -153,6 +154,8 @@ public static class CircuitScreenBuilder
 		
 		Instance().displayCellGrid = grid;
 		BuildPorts(grid);
+		Orientation orientation = GetOrientation(Circuit().gameObject);
+		ApplyOrientation(grid, orientation);
 	}
 
 	private static void BuildPorts(GameObject container){
@@ -303,5 +306,18 @@ public static class CircuitScreenBuilder
 			.Margin(10)
 			.SetOnClick(onClick)
 			.AddTo(container);
+	}
+
+	private static Orientation GetOrientation(GameObject go){
+		return go.GetComponent<Rotatable>().GetOrientation();
+	}
+
+	private static void ApplyOrientation(GameObject go, Orientation orientation){
+		go.transform.rotation = orientation switch {
+			Orientation.R90 => Quaternion.Euler(0f, 0f, -90f),
+			Orientation.R180 => Quaternion.Euler(0f, 0f, 180f),
+			Orientation.R270 => Quaternion.Euler(0f, 0f, 90f),
+			_ => go.transform.rotation
+		};
 	}
 }

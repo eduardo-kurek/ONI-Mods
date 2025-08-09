@@ -1,4 +1,6 @@
+using STRINGS;
 using TUNING;
+using BUILDINGS = TUNING.BUILDINGS;
 
 namespace CircuitNotIncluded.Structs;
 
@@ -56,6 +58,9 @@ public class CircuitDef : BuildingDef {
 		circuitDef.BaseTimeUntilRepair = -1f;
 		circuitDef.PermittedRotations = PermittedRotations.R360;
 		circuitDef.DragBuild = true;
+		
+		circuitDef.AddSearchTerms(SEARCH_TERMS.AUTOMATION);
+		GeneratedBuildings.RegisterWithOverlay(OverlayModes.Logic.HighlightItemIDs, id);
 		
 		return circuitDef;
 	}

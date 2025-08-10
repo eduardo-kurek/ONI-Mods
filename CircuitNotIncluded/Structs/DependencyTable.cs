@@ -8,13 +8,9 @@ public class DependencyTable {
 
 	private readonly Dictionary<HashedString, List<Output>> table = new();
 	
-	public DependencyTable(CircuitDef def){
-		Update(def);
-	}
-
-	private void Update(CircuitDef def){
-		InitializeEmptyTable(def.CNI_InputPorts);
-		InitializeDependecies(def.CNI_Outputs);
+	public DependencyTable(List<CNIPort> inputPorts, List<Output> outputPorts){
+		InitializeEmptyTable(inputPorts);
+		InitializeDependencies(outputPorts);
 	}
 
 	private void InitializeEmptyTable(List<CNIPort> inputPorts){
@@ -23,12 +19,12 @@ public class DependencyTable {
 		}
 	}
 
-	private void InitializeDependecies(List<Output> outputs){
+	private void InitializeDependencies(List<Output> outputs){
 		foreach(Output output in outputs)
-			AddDependecy(output);
+			AddDependency(output);
 	}
 	
-	private void AddDependecy(Output output){
+	private void AddDependency(Output output){
 		var inputPorts = IdExtractor.Extract(output.Tree);
 		foreach(string inputPort in inputPorts){
 			table[inputPort].Add(output);

@@ -4,9 +4,9 @@ public class SymbolTable {
 	private readonly LogicPorts ports;
 	private readonly Dictionary<string, HashedString> hashes = new();
 
-	public SymbolTable(LogicPorts ports, CircuitDef circuitDef){
+	public SymbolTable(LogicPorts ports, List<CNIPort> inputPorts){
 		this.ports = ports;
-		foreach(var port in circuitDef.CNI_InputPorts)
+		foreach(CNIPort port in inputPorts)
 			hashes.Add(port.OriginalId, port.P.id);
 	}
 	

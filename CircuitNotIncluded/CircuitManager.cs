@@ -1,4 +1,5 @@
 using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Utils;
 using Klei.AI;
 using UnityEngine;
 
@@ -38,8 +39,10 @@ internal sealed class CircuitManager {
 		baseTemplate.AddComponent<LoopingSounds>();
 		baseTemplate.AddComponent<InvalidPortReporter>();
 	}
+	
 
-	public void RegisterCircuit(CircuitDef def){
+	public void RegisterCircuit(string name, int width, int height, string anim){
+		BuildingDef def = CircuitDefFactory.Create(name, width, height, anim);
 		GameObject gameObject = UnityEngine.Object.Instantiate(baseTemplate!);
 		UnityEngine.Object.DontDestroyOnLoad(gameObject);
 		KPrefabID component = gameObject.GetComponent<KPrefabID>();
@@ -58,12 +61,12 @@ internal sealed class CircuitManager {
 			
 		def.PostProcess();
 		
-		LogicPorts ports = def.BuildingComplete.AddOrGet<LogicPorts>();
-		Circuit circuit = def.BuildingComplete.AddComponent<Circuit>();
+		def.BuildingComplete.AddComponent<LogicPorts>();
+		def.BuildingComplete.AddComponent<Circuit>();
 		
 		Assets.AddBuildingDef(def);
 		
-		Utilss.AddBuildingStrings(def.PrefabID, def.CNI_Name, def.CNI_Description, def.CNI_Effect);
+		Utilss.AddBuildingStrings(def.PrefabID, name, "Description", "Effect");
 		ModUtil.AddBuildingToPlanScreen("Automation", def.PrefabID, "wires", "LogicWire");
 		Debug.Log("Circuit registered successfully: " + def.PrefabID);
 	}

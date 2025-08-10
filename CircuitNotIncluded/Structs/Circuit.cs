@@ -5,24 +5,38 @@ using TemplateClasses;
 namespace CircuitNotIncluded.Structs;
 
 public class Circuit : KMonoBehaviour {
-	private LogicPorts ports = null!;
-	private CircuitDef circuitDef = null!;
+	private LogicPorts logicPorts = null!;
+	private BuildingDef def = null!;
 	private DependencyTable dependencyTable = null!;
 	private SymbolTable symbolTable = null!;
+	private List<CNIPort> inputPorts;
+	private List<Output> outputPorts;
 	private LogicValueChanged lastChange;
 
 	protected override void OnSpawn(){
-		ports = GetComponent<LogicPorts>();
-		circuitDef = (CircuitDef)GetComponent<Building>().Def;
-		dependencyTable = new DependencyTable(circuitDef);
-		symbolTable = new SymbolTable(ports, circuitDef);
+		InitMembers();
+		UpdatePorts([], []);
+		ApplyChanges();
+		SubscribeNetworkEvent();
+	}
 
+	private void InitMembers(){
+		logicPorts = GetComponent<LogicPorts>();
+		def = GetComponent<Building>().Def;
+	}
+
+	private void UpdatePorts(List<CNIPort> inputPorts, List<Output> outputPorts){
+		this.inputPorts = inputPorts;
+		this.outputPorts = outputPorts;
+		dependencyTable = new DependencyTable(inputPorts, outputPorts);
+		symbolTable = new SymbolTable(logicPorts, inputPorts);
+	}
+
+	private void SubscribeNetworkEvent(){
 		Subscribe((int)GameHashes.LogicEvent, data => {
 			lastChange = (LogicValueChanged)data;
 			OnNetworkValueChanged();
 		});
-
-		ApplyChanges();
 	}
 
 	private void OnNetworkValueChanged(){
@@ -48,36 +62,33 @@ public class Circuit : KMonoBehaviour {
 	private HashedString GetInputPortId() => lastChange.portID;
 
 	public void Refresh(List<CNIPort> inputs, List<Output> outputs){
-		circuitDef.CNI_InputPorts = inputs;
-		circuitDef.CNI_Outputs = outputs;
-		dependencyTable = new DependencyTable(circuitDef);
-		symbolTable = new SymbolTable(ports, circuitDef);
+		UpdatePorts(inputs, outputs);
 		ApplyChanges();
 	}
 	
 	private void ApplyChanges(){
-		ports.inputPortInfo = circuitDef.CNI_InputPorts.Select(port => port.P).ToArray();
-		ports.outputPortInfo = circuitDef.CNI_Outputs.Select(output => output.Port.P).ToArray();
+		logicPorts.inputPortInfo = inputPorts.Select(port => port.P).ToArray();
+		logicPorts.outputPortInfo = outputPorts.Select(output => output.Port.P).ToArray();
 		RefreshPhysicalPorts();
 		UpdateAllOutputsSignal();
 	}
 
 	// When you call SendSignal and the outputPorts is null, the game will call ports.CreatePhysicalPorts
 	private void RefreshPhysicalPorts(){
-		ports.outputPorts = null;
-		ports.SendSignal("", 0);
+		logicPorts.outputPorts = null;
+		logicPorts.SendSignal("", 0);
 	}
 
 	private void UpdateAllOutputsSignal(){
-		foreach(Output output in circuitDef.CNI_Outputs)
+		foreach(Output output in outputPorts)
 			output.Update(symbolTable);
 	}
 
-	public string GetCNIName() => circuitDef.CNI_Name;
-	public int GetWidth() => circuitDef.WidthInCells;
-	public int GetHeight() => circuitDef.HeightInCells;
-	public List<CNIPort> GetInputPorts() => circuitDef.CNI_InputPorts;
-	public List<Output> GetOutputs() => circuitDef.CNI_Outputs;
+	public string GetCNIName() => def.PrefabID;
+	public int GetWidth() => def.WidthInCells;
+	public int GetHeight() => def.HeightInCells;
+	public List<CNIPort> GetInputPorts() => inputPorts;
+	public List<Output> GetOutputs() => outputPorts;
 
 	// Converts a 2D CellOffset to a linear offset.
 	// The index starts on the left-bottom, and goes to the right-up.
@@ -101,18 +112,18 @@ public class Circuit : KMonoBehaviour {
 	}
 
 	public void Print(){
-		Debug.Log($"Name: {circuitDef.CNI_Name}");
-		Debug.Log($"Width: {circuitDef.WidthInCells}");
-		Debug.Log($"Height: {circuitDef.HeightInCells}");
+		Debug.Log($"Id: {def.PrefabID}");
+		Debug.Log($"Width: {def.WidthInCells}");
+		Debug.Log($"Height: {def.HeightInCells}");
 		Debug.Log("Input ports:");
-		foreach(var i in circuitDef.CNI_InputPorts){
+		foreach(CNIPort i in inputPorts){
 			Debug.Log("Name: " + i.OriginalId);
 			Debug.Log("X: " + i.P.cellOffset.x);
 			Debug.Log("Y: " + i.P.cellOffset.y);
 		}
 
 		Debug.Log("Output ports:");
-		foreach(var o in circuitDef.CNI_Outputs){
+		foreach(Output o in outputPorts){
 			Debug.Log("Name: " + o.Port.OriginalId);
 			Debug.Log("X: " + o.Port.P.cellOffset.x);
 			Debug.Log("Y: " + o.Port.P.cellOffset.y);

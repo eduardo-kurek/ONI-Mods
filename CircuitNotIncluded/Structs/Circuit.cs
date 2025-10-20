@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using CircuitNotIncluded.UI.Cells;
 using TemplateClasses;
+using UnityEngine;
 
 namespace CircuitNotIncluded.Structs;
 
@@ -109,6 +110,13 @@ public class Circuit : KMonoBehaviour {
 	public CellOffset ToCellOffset(int index){
 		int width = GetWidth();
 		return new CellOffset(index % width, index / width);
+	}
+
+	public Sprite GetOffSprite(){
+		var animFiles = def.AnimFiles;
+		Texture2D t = animFiles.First().textureList.First();
+		Rect r = new Rect(0, 0, t.width, t.height);
+		return Sprite.Create(t, r, new Vector2(0.5f, 0.5f));
 	}
 
 	public void Print(){

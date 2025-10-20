@@ -148,7 +148,7 @@ public static class CircuitScreenBuilder
 			.StartCorner(GridLayoutGroup.Corner.LowerLeft)
 			.StartAxis(GridLayoutGroup.Axis.Horizontal)
 			.gameObject
-			.Image().Color(Color.red)
+			.Image().Sprite(Circuit().GetOffSprite())
 			.gameObject
 			.SetParent(container);
 		

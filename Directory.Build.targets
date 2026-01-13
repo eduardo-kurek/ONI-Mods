@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-    
+
     <Target Name="EnsureLocalModFolderExists" Condition="!Exists('$(LocalModFolder)')" BeforeTargets="PreBuildEvent">
         <MakeDir Directories="$(LocalModFolder)" />
         <MakeDir Directories="$(LocalModFolder)\anim\assets" />
@@ -33,17 +33,16 @@
         </ItemGroup>
         <WriteLinesToFile File="$(ModInfoFile)" Overwrite="true" Lines="@(ModInfoFileLine)"/>
     </Target>
-    
+
     <Target Name="ILRepack" AfterTargets="Build">
         <ItemGroup>
             <InputAssemblies Include="$(TargetPath)" />
             <InputAssemblies Include="@(AssembliesToMerge)" />
         </ItemGroup>
-        
+
         <ILRepack OutputFile="$(TargetPath)"
                   InputAssemblies="@(InputAssemblies)"
                   LibraryPath="$(TargetDir)"
-                  TargetPlatformVersion="v4"
                   XmlDocumentation="true"
                   Internalize="true"
                   Parallel="true" />
@@ -52,13 +51,13 @@
     <Target Name="CopyAssemblyToLocalModFolder" AfterTargets="ILRepack">
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(LocalModFolder)" />
     </Target>
-    
+
     <Target Name="SynchronizingModFolders" AfterTargets="CopyAssemblyToLocalModFolder">
-        <Error Condition="!Exists('$(GameModFolder)')" 
+        <Error Condition="!Exists('$(GameModFolder)')"
                Text="The folder '$(GameModFolder)' doesn't exists. Your game may not 
                have been installed or this path is incorrect. Replace 'GameModFolder' in 
                Directory.Build.targets with the correct path" />
-        
+
         <MakeDir Directories="$(RemoteModFolder)" />
         <Exec Command="robocopy $(LocalModFolder) $(RemoteModFolder) /mir /xj /njs /s /xd /log+:$(TargetDir)robocopy_log.txt" IgnoreExitCode="true">
             <Output TaskParameter="ExitCode" PropertyName="RobocopyExitCode" />
@@ -68,14 +67,14 @@
                Text="Failed to sync remote mod folder with local mod folder.
                For more info, check log file in: $(TargetDir)robocopy_log.txt" />
     </Target>
-    
-    
+
+
     <Target Name="StartGame" AfterTargets="SynchronizingModFolders">
         <Exec Command="powershell -Command &quot;Start-Process 'steam://rungameid/457140'; Start-Sleep -Seconds 20; while (Get-Process 'OxygenNotIncluded' -ErrorAction SilentlyContinue) { Start-Sleep -Seconds 1 };&quot;" />
     </Target>
-    
+
     <Target Name="OpenLogFile" AfterTargets="StartGame">
         <Exec Command="$(EditorToOpenLog) &quot;$(PlayerLogFile)&quot;" />
     </Target>
-    
+
 </Project>

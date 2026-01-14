@@ -2,22 +2,30 @@ using System.Runtime.CompilerServices;
 using CircuitNotIncluded.UI.Cells;
 using TemplateClasses;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 namespace CircuitNotIncluded.Structs;
 
 public class Circuit : KMonoBehaviour {
+	private const int CELL_SIZE_PX = 100;
+	
 	private LogicPorts logicPorts = null!;
 	private BuildingDef def = null!;
 	private DependencyTable dependencyTable = null!;
 	private SymbolTable symbolTable = null!;
-	private List<CNIPort> inputPorts;
-	private List<Output> outputPorts;
-	private LogicValueChanged lastChange;
+	
+	public List<CNIPort> InputPorts { get; private set; } = null!;
+	public List<Output> OutputPorts { get; private set; } = null!;
+	private LogicValueChanged lastChange = null!;
+	
+	public string CNIName => def.PrefabID;
+	public int Width => def.WidthInCells;
+	public int Height => def.HeightInCells;
+	public List<Output> GetOutputs() => OutputPorts;
 
 	protected override void OnSpawn(){
 		InitMembers();
-		UpdatePorts([], []);
-		ApplyChanges();
+		SetPorts([], []);
 		SubscribeNetworkEvent();
 	}
 
@@ -26,11 +34,34 @@ public class Circuit : KMonoBehaviour {
 		def = GetComponent<Building>().Def;
 	}
 
-	private void UpdatePorts(List<CNIPort> inputPorts, List<Output> outputPorts){
-		this.inputPorts = inputPorts;
-		this.outputPorts = outputPorts;
+	public void SetPorts(List<CNIPort> inputPorts, List<Output> outputPorts){
+		InternalSetPorts(inputPorts, outputPorts);
+		RefreshCircuit();
+	}
+	
+	private void InternalSetPorts(List<CNIPort> inputPorts, List<Output> outputPorts){
+		InputPorts = inputPorts;
+		logicPorts.inputPortInfo = InputPorts.Select(port => port.P).ToArray();
+		OutputPorts = outputPorts;
+		logicPorts.outputPortInfo = OutputPorts.Select(output => output.Port.P).ToArray();
 		dependencyTable = new DependencyTable(inputPorts, outputPorts);
 		symbolTable = new SymbolTable(logicPorts, inputPorts);
+	}
+	
+	private void RefreshCircuit(){
+		RefreshPhysicalPorts();
+		RefreshSignals();
+	}
+
+	// When you call SendSignal and the outputPorts is null, the game will call ports.CreatePhysicalPorts
+	private void RefreshPhysicalPorts(){
+		logicPorts.outputPorts = null;
+		logicPorts.SendSignal("", 0);
+	}
+	
+	private void RefreshSignals(){
+		foreach(Output output in OutputPorts)
+			output.Update(symbolTable);
 	}
 
 	private void SubscribeNetworkEvent(){
@@ -45,96 +76,43 @@ public class Circuit : KMonoBehaviour {
 			OnInputPortChanged();
 	}
 
-	private bool IsInputPort(){
-		return dependencyTable.HasInputPort(lastChange.portID);
-	}
-
-	private bool ValueChanged(){
-		return lastChange.prevValue != lastChange.newValue;
-	}
+	private bool IsInputPort() => dependencyTable.HasInputPort(lastChange.portID);
+	private bool ValueChanged() => lastChange.prevValue != lastChange.newValue;
 
 	private void OnInputPortChanged(){
-		var inputId = GetInputPortId();
-		var outDependents = dependencyTable.GetOutputDependents(inputId);
+		HashedString lastChangedPortId = lastChange.portID;
+		UpdateAllDependentsOf(lastChangedPortId);
+	}
+
+	private void UpdateAllDependentsOf(HashedString portId){
+		var outDependents = dependencyTable.GetOutputDependents(portId);
 		foreach(Output output in outDependents)
 			output.Update(symbolTable);
 	}
 
-	private HashedString GetInputPortId() => lastChange.portID;
-
-	public void Refresh(List<CNIPort> inputs, List<Output> outputs){
-		UpdatePorts(inputs, outputs);
-		ApplyChanges();
-	}
-	
-	private void ApplyChanges(){
-		logicPorts.inputPortInfo = inputPorts.Select(port => port.P).ToArray();
-		logicPorts.outputPortInfo = outputPorts.Select(output => output.Port.P).ToArray();
-		RefreshPhysicalPorts();
-		UpdateAllOutputsSignal();
-	}
-
-	// When you call SendSignal and the outputPorts is null, the game will call ports.CreatePhysicalPorts
-	private void RefreshPhysicalPorts(){
-		logicPorts.outputPorts = null;
-		logicPorts.SendSignal("", 0);
-	}
-
-	private void UpdateAllOutputsSignal(){
-		foreach(Output output in outputPorts)
-			output.Update(symbolTable);
-	}
-
-	public string GetCNIName() => def.PrefabID;
-	public int GetWidth() => def.WidthInCells;
-	public int GetHeight() => def.HeightInCells;
-	public List<CNIPort> GetInputPorts() => inputPorts;
-	public List<Output> GetOutputs() => outputPorts;
-
-	// Converts a 2D CellOffset to a linear offset.
-	// The index starts on the left-bottom, and goes to the right-up.
-	public int ToLinearIndex(CellOffset offset){
-		int width = GetWidth();
-		return width * offset.y + offset.x;
-	}
-
-	public int GetActualCell(CellOffset offset){
-		var component = base.GetComponent<Rotatable>();
+	public int GetGlobalPositionCell(CellOffset offset){
+		var component = GetComponent<Rotatable>();
 		if(component != null)
 			offset = component.GetRotatedCellOffset(offset);
 		return Grid.OffsetCell(Grid.PosToCell(transform.GetPosition()), offset);
 	}
-
-	// Converts a linear index to a 2D CellOffset.
-	// The index starts on the left-bottom, and goes to the right-up.
-	public CellOffset ToCellOffset(int index){
-		int width = GetWidth();
-		return new CellOffset(index % width, index / width);
-	}
-
+	
 	public Sprite GetOffSprite(){
 		var animFiles = def.AnimFiles;
-		Texture2D t = animFiles.First().textureList.First();
-		Rect r = new Rect(0, 0, t.width, t.height);
-		return Sprite.Create(t, r, new Vector2(0.5f, 0.5f));
+		Texture2D texture = animFiles.First().textureList.First();
+		var rect = new Rect(0,
+			texture.height - (Height * CELL_SIZE_PX),
+			Width * CELL_SIZE_PX,
+			Height * CELL_SIZE_PX
+		);
+		return Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
 	}
-
-	public void Print(){
-		Debug.Log($"Id: {def.PrefabID}");
-		Debug.Log($"Width: {def.WidthInCells}");
-		Debug.Log($"Height: {def.HeightInCells}");
-		Debug.Log("Input ports:");
-		foreach(CNIPort i in inputPorts){
-			Debug.Log("Name: " + i.OriginalId);
-			Debug.Log("X: " + i.P.cellOffset.x);
-			Debug.Log("Y: " + i.P.cellOffset.y);
-		}
-
-		Debug.Log("Output ports:");
-		foreach(Output o in outputPorts){
-			Debug.Log("Name: " + o.Port.OriginalId);
-			Debug.Log("X: " + o.Port.P.cellOffset.x);
-			Debug.Log("Y: " + o.Port.P.cellOffset.y);
-		}
-	}
+	
+	// Converts a 2D CellOffset to a linear offset.
+	// The index starts on the left-bottom, and goes to the right-up.
+	public int ToLinearIndex(CellOffset offset) => Width * offset.y + offset.x;
+	
+	// Converts a linear index to a 2D CellOffset.
+	// The index starts on the left-bottom, and goes to the right-up.
+	public CellOffset ToCellOffset(int index) => new CellOffset(index % Width, index / Width);
 }

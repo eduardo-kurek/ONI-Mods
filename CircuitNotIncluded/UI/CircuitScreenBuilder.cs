@@ -5,7 +5,6 @@ using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
 using UnityEngine;
 using UnityEngine.UI;
-using static SetTextStyleSetting;
 
 namespace CircuitNotIncluded.UI;
 
@@ -130,8 +129,8 @@ public static class CircuitScreenBuilder
 
 	private static void BuildCircuitDisplay(GameObject container){
 		Circuit circuit = CircuitScreen.Instance.Circuit;
-		float sizeX = CircuitDisplaySize(circuit.GetWidth());
-		float sizeY = CircuitDisplaySize(circuit.GetHeight());
+		float sizeX = CircuitDisplaySize(circuit.Width);
+		float sizeY = CircuitDisplaySize(circuit.Height);
 
 		GameObject grid = new GameObject("CellGrid")
 			.LayoutElement()
@@ -167,7 +166,7 @@ public static class CircuitScreenBuilder
 
 	private static void BuildEmptyPorts(GameObject container){
 		Circuit c = Circuit();
-		for(int i = 0; i < c.GetWidth() * c.GetHeight(); i++){
+		for(int i = 0; i < c.Width * c.Height; i++){
 			var offset = c.ToCellOffset(i);
 			EmptyCellType cellType = new(offset);
 			BuildNewPort(container, cellType);
@@ -183,7 +182,7 @@ public static class CircuitScreenBuilder
 	
 	private static void BuildInputPorts(GameObject container){
 		Circuit c = Circuit();
-		foreach(CNIPort input in c.GetInputPorts()){
+		foreach(CNIPort input in c.InputPorts){
 			var cellType = InputCellType.Create(input);
 			int index = cellType.GetIndex();
 			ChangeCellType(index, cellType);
@@ -230,7 +229,7 @@ public static class CircuitScreenBuilder
 	}
 
 	private static bool CellHasConflict(CircuitCell cell){
-		int globalCell = Circuit().GetActualCell(cell.GetOffset());
+		int globalCell = Circuit().GetGlobalPositionCell(cell.GetOffset());
 		object endpointInCell = Game.Instance.logicCircuitSystem.GetEndpoint(globalCell);
 		return endpointInCell != null;
 	}

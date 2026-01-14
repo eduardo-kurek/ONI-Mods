@@ -91,7 +91,7 @@ public class CircuitSideScreen : SideScreenContent {
 	}
 
 	private void UpdateData(){
-		circuitName.text = circuit!.GetCNIName();
+		circuitName.text = circuit!.CNIName;
 		UpdateOutputs();
 	}
 

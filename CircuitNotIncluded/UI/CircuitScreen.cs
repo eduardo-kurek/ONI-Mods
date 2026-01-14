@@ -54,7 +54,7 @@ public class CircuitScreen : KModalScreen {
 		ValidationContext ctx = PortHandler.Validate(InputCellTypes, OutputCellTypes);
 		var inputs = ctx.ResultInput();
 		var outputs = ctx.ResultOutput();
-		Circuit.Refresh(inputs, outputs);
+		Circuit.SetPorts(inputs, outputs);
 	}
 
 	private static void ShowMessageDialog(string message){

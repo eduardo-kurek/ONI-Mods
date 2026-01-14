@@ -40,7 +40,12 @@ internal sealed class CircuitManager {
 		baseTemplate.AddComponent<InvalidPortReporter>();
 	}
 	
-
+	public void RegisterCircuit(int width, int height){
+		string name = $"Circuit {width}x{height}";
+		string anim = $"logic_circuit_{width}x{height}_kanim";
+		RegisterCircuit(name, width, height, anim);
+	}
+	
 	public void RegisterCircuit(string name, int width, int height, string anim){
 		BuildingDef def = CircuitDefFactory.Create(name, width, height, anim);
 		GameObject gameObject = UnityEngine.Object.Instantiate(baseTemplate!);

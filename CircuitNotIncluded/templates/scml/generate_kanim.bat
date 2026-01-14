@@ -1,0 +1,1 @@
+kanimal kanim --output ".\kanim" ".\logic_circuit_x.scml"

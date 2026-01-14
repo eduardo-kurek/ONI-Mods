@@ -1,0 +1,1 @@
+This folder contains the psd template for creating the sprites, and the scml template to generate the game anim files.

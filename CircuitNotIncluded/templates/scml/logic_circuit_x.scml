@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="r11">
     <folder id="0">
-        <file id="0" name="panel_0.png" width="100" height="300" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="1" name="place_0.png" width="100" height="300" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="0" name="panel_0.png" width="500" height="500" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="1" name="place_0.png" width="500" height="500" pivot_x="0.5" pivot_y="0.5"/>
         <file id="2" name="ui_0.png" width="127" height="127" pivot_x="0.502553" pivot_y="0.443657"/>
     </folder>
-    <entity id="0" name="logic_circuit_1x3">
+    <entity id="0" name="logic_circuit_5x5">
         <animation id="0" name="off" length="165" interval="33">
             <mainline>
                 <key id="0">
@@ -26,19 +26,19 @@
             </mainline>
             <timeline id="0" name="panel_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="0" y="150" angle="0"/>
+                    <object folder="0" file="0" y="250" angle="0"/>
                 </key>
                 <key id="1" time="33" spin="0">
-                    <object folder="0" file="0" y="150" angle="0"/>
+                    <object folder="0" file="0" y="250" angle="0"/>
                 </key>
                 <key id="2" time="66" spin="0">
-                    <object folder="0" file="0" y="150" angle="0"/>
+                    <object folder="0" file="0" y="250" angle="0"/>
                 </key>
                 <key id="3" time="99" spin="0">
-                    <object folder="0" file="0" y="150" angle="0"/>
+                    <object folder="0" file="0" y="250" angle="0"/>
                 </key>
                 <key id="4" time="132" spin="0">
-                    <object folder="0" file="0" y="150" angle="0"/>
+                    <object folder="0" file="0" y="250" angle="0"/>
                 </key>
             </timeline>
         </animation>
@@ -59,16 +59,16 @@
             </mainline>
             <timeline id="0" name="place_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="1" y="150" angle="0"/>
+                    <object folder="0" file="1" y="250" angle="0"/>
                 </key>
                 <key id="1" time="33" spin="0">
-                    <object folder="0" file="1" y="150" angle="0"/>
+                    <object folder="0" file="1" y="250" angle="0"/>
                 </key>
                 <key id="2" time="66" spin="0">
-                    <object folder="0" file="1" y="150" angle="0"/>
+                    <object folder="0" file="1" y="250" angle="0"/>
                 </key>
                 <key id="3" time="99" spin="0">
-                    <object folder="0" file="1" y="150" angle="0"/>
+                    <object folder="0" file="1" y="250" angle="0"/>
                 </key>
             </timeline>
         </animation>

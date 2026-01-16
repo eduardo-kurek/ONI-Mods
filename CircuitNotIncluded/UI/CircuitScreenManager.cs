@@ -25,21 +25,24 @@ public partial class CircuitScreenManager {
 			.SetParent(RootParent);
 
 		screen = go.AddComponent<CircuitScreen>();
-		screen.OnSave += SaveCircuit; 
+		screen.onSave += SaveCircuit; 
 		BuildScreen(go);
 		return go;
 	}
 	
-	private void SaveCircuit(List<InputCellType> inputs, List<OutputCellType> outputs){
+	private void SaveCircuit(List<InputCellState> inputs, List<OutputCellState> outputs){
+		Debug.Log("Saving circuit...");
 		ValidationContext ctx = PortHandler.Validate(inputs, outputs);
 		var inputsResult = ctx.ResultInput();
 		var outputsResult = ctx.ResultOutput();
 		circuit.SetPorts(inputsResult, outputsResult);
+		Debug.Log("None errors found.");
+		
 	}
 	
-	public void OnOutputCellCreated(OutputCellType data) => screen.OnOutputCellCreated(data);
-	public void OnOutputCellDeleted(OutputCellType data) => screen.OnOutputCellDeleted(data);
-	public void OnInputCellCreated(InputCellType data) => screen.OnInputCellCreated(data);
-	public void OnInputCellDeleted(InputCellType data) => screen.OnInputCellDeleted(data);
-	public void OnCellClicked(CircuitCellType data) => screen.OnCellClicked(data);
+	public void OnOutputCellCreated(OutputCellState data) => screen.AddOutputCell(data);
+	public void OnOutputCellDeleted(OutputCellState data) => screen.RemoveOutputCell(data);
+	public void OnInputCellCreated(InputCellState data) => screen.AddInputCell(data);
+	public void OnInputCellDeleted(InputCellState data) => screen.RemoveInputCell(data);
+	public void BuildSideScreen(CircuitCellState data) => screen.OnCellClicked(data);
 }

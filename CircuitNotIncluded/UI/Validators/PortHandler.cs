@@ -9,7 +9,7 @@ public abstract class PortHandler(PortHandler? next) {
 		this.next = next;
 	}
 
-	public void Handle(PortCellType cell, ValidationContext ctx){
+	public void Handle(PortCellState cell, ValidationContext ctx){
 		Clear(cell, ctx);
 		if(CanHandle(cell, ctx) && ErrorOccurred(cell, ctx)){
 			OnError(cell, ctx);
@@ -20,7 +20,7 @@ public abstract class PortHandler(PortHandler? next) {
 		Next(cell, ctx);
 	}
 
-	private bool MustChainNext(PortCellType cell, ValidationContext ctx){
+	private bool MustChainNext(PortCellState cell, ValidationContext ctx){
 		if(CanHandle(cell, ctx)) return false;
 		if(ErrorOccurred(cell, ctx)){
 			OnError(cell, ctx);
@@ -30,22 +30,22 @@ public abstract class PortHandler(PortHandler? next) {
 		return true;
 	}
 
-	protected virtual bool CanHandle(PortCellType cell, ValidationContext ctx) => true;
-	protected abstract bool ErrorOccurred(PortCellType cell, ValidationContext ctx);
+	protected virtual bool CanHandle(PortCellState cell, ValidationContext ctx) => true;
+	protected abstract bool ErrorOccurred(PortCellState cell, ValidationContext ctx);
 
-	private void Next(PortCellType cell, ValidationContext ctx){
+	private void Next(PortCellState cell, ValidationContext ctx){
 		next?.Handle(cell, ctx);
 	}
 	
-	private void RegisterError(PortCellType cell, ValidationContext ctx){
+	private void RegisterError(PortCellState cell, ValidationContext ctx){
 		ctx.AddError(cell, GetErrorMessage(cell, ctx));
 	}
 	
-	protected abstract string GetErrorMessage(PortCellType cell, ValidationContext ctx);
+	protected abstract string GetErrorMessage(PortCellState cell, ValidationContext ctx);
 
-	protected virtual void OnSuccess(PortCellType cell, ValidationContext ctx){ }
-	protected virtual void OnError(PortCellType cell, ValidationContext ctx){ }
-	protected virtual void Clear(PortCellType cell, ValidationContext ctx) { }
+	protected virtual void OnSuccess(PortCellState cell, ValidationContext ctx){ }
+	protected virtual void OnError(PortCellState cell, ValidationContext ctx){ }
+	protected virtual void Clear(PortCellState cell, ValidationContext ctx) { }
 
 	public static PortHandler? Create(List<PortHandler> handlers){
 		if(!handlers.Any()) return null;
@@ -70,17 +70,24 @@ public abstract class PortHandler(PortHandler? next) {
 		])!;
 	}
 
-	public static ValidationContext Validate(List<InputCellType> inputs, List<OutputCellType> outputs){
+	public static ValidationContext Validate(List<InputCellState> inputs, List<OutputCellState> outputs){
+		Debug.Log("Validating ports...");
 		PortHandler validator = CreateChain();
 		var context = new ValidationContext(inputs, outputs);
 
-		foreach(InputCellType i in inputs)
+		foreach(InputCellState i in inputs)
 			validator.Handle(i, context);
 		
-		foreach(OutputCellType o in outputs)
+		foreach(OutputCellState o in outputs)
 			validator.Handle(o, context);
 		
 		var errors = context.GetErrors();
+		Debug.Log("Erros found: " + errors.Count);
+
+		foreach(string err in errors){
+			Debug.Log("\t " + err);
+		}
+		
 		if(errors.Count > 0)
 			throw new Exception(string.Join("\n", errors));
 

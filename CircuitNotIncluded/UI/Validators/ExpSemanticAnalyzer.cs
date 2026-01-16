@@ -6,11 +6,11 @@ namespace CircuitNotIncluded.UI.Validators;
 
 public class ExpSemanticAnalyzer(PortHandler? next = null) : PortHandler(next) {
 	private string error = "";
-	protected override bool CanHandle(PortCellType cell, ValidationContext ctx){
-		return cell is OutputCellType;
+	protected override bool CanHandle(PortCellState cell, ValidationContext ctx){
+		return cell is OutputCellState;
 	}
-	protected override bool ErrorOccurred(PortCellType cell, ValidationContext ctx){
-		var outputCell = (OutputCellType)cell;
+	protected override bool ErrorOccurred(PortCellState cell, ValidationContext ctx){
+		var outputCell = (OutputCellState)cell;
 		ProgramContext tree = ctx.Parse(outputCell);
 		try{
 			SemanticAnalyzer.Analyze(tree, ctx.GetInputIds());
@@ -21,7 +21,7 @@ public class ExpSemanticAnalyzer(PortHandler? next = null) : PortHandler(next) {
 			return true;
 		}
 	}
-	protected override string GetErrorMessage(PortCellType cell, ValidationContext ctx){
+	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){
 		return error;
 	}
 }

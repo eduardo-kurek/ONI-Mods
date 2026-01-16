@@ -10,18 +10,18 @@ public class ValidationContext {
 	private readonly HashSet<string> InputIds = [];
 	private readonly HashSet<string> OutputIds = [];
 	
-	private readonly List<OutputCellType> Outputs;
-	private readonly List<InputCellType> Inputs;
+	private readonly List<OutputCellState> Outputs;
+	private readonly List<InputCellState> Inputs;
 	
 	public readonly Dictionary<string, CellOffset> DeclaredIds = [];
-	private readonly Dictionary<OutputCellType, ProgramContext> ParsedOutputs = [];
+	private readonly Dictionary<OutputCellState, ProgramContext> ParsedOutputs = [];
 
-	public ValidationContext(List<InputCellType> inputs, List<OutputCellType> outputs){
+	public ValidationContext(List<InputCellState> inputs, List<OutputCellState> outputs){
 		Inputs = inputs;
 		Outputs = outputs;
-		foreach(InputCellType i in inputs)
+		foreach(InputCellState i in inputs)
 			InputIds.Add(i.GetId());
-		foreach(OutputCellType o in outputs)
+		foreach(OutputCellState o in outputs)
 			OutputIds.Add(o.GetId());
 	}
 
@@ -33,11 +33,11 @@ public class ValidationContext {
 		return InputIds;
 	}
 	
-	public void AddError(PortCellType cell, string msg){
+	public void AddError(PortCellState cell, string msg){
 		Errors.Add($"({cell.X()}, {cell.Y()}). {msg}");
 	}
 	
-	public ProgramContext Parse(OutputCellType cell){
+	public ProgramContext Parse(OutputCellState cell){
 		if(ParsedOutputs.TryGetValue(cell, out ProgramContext output)) return output;
 		string expression = cell.GetExpression();
 		ProgramContext tree = Utilss.Parse(expression);

@@ -10,7 +10,8 @@ namespace CircuitNotIncluded.UI.Cells;
  * Handles the click events and the visual representation of the cell.
  */
 public class CircuitCell : MonoBehaviour, IPointerClickHandler {
-	private CircuitCellType type = null!;
+	private CircuitCellState? currentState;
+	
 	private Outline outline = null!;
 	public static CircuitCell? Selected;
 	private Image image = null!;
@@ -25,18 +26,10 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 		outline.enabled = false;
 	}
 
-	public CircuitCell SetCellType(CircuitCellType type){
-		if (image == null) image = gameObject.AddOrGet<Image>();
-		this.type = type;
-		this.type.SetParent(this);
-		this.type.UpdateImage(image);
-		return this;
-	}
-
 	public void OnPointerClick(PointerEventData eventData){
 		Selected?.Deselect();
 		Select();
-		CircuitScreenManager.Instance.OnCellClicked(type);
+		CircuitScreenManager.Instance.BuildSideScreen(currentState!);
 	}
 
 	private void Select(){
@@ -48,11 +41,26 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 		outline.enabled = false;
 	}
 
-	public CircuitCellType GetCellType(){
-		return type;
+	public CircuitCellState GetCellType(){
+		return currentState!;
 	}
 
 	public CellOffset GetOffset(){
-		return type.GetOffset();
+		return currentState!.GetOffset();
+	}
+
+	public CircuitCell TransitionTo(CircuitCellState newState){
+		currentState?.OnExit();
+		
+		newState.OnEnter(this);
+		if (image == null) image = gameObject.AddOrGet<Image>();
+		newState.UpdateImage(image);
+
+		if(Selected != null){
+			CircuitScreenManager.Instance.BuildSideScreen(newState);
+		}
+		
+		currentState = newState;
+		return this;
 	}
 }

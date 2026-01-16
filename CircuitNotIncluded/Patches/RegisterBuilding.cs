@@ -1,4 +1,3 @@
-using CircuitNotIncluded.Structs;
 using HarmonyLib;
 
 namespace CircuitNotIncluded.Patches;

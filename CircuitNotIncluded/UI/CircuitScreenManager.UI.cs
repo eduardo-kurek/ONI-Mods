@@ -153,42 +153,44 @@ public partial class CircuitScreenManager {
 		Circuit c = circuit;
 		for(int i = 0; i < c.Width * c.Height; i++){
 			CellOffset offset = c.ToCellOffset(i);
-			EmptyCellType cellType = new(offset);
-			BuildNewPort(container, cellType);
+			EmptyCellState cellState = new(offset);
+			BuildNewPort(container, cellState);
 		}
 	}
 	
-	private static void BuildNewPort(GameObject container, CircuitCellType cellType){
+	private static void BuildNewPort(GameObject container, CircuitCellState cellState){
 		new GameObject("Cell")
 			.RectTransform().gameObject
-			.CircuitCell().SetCellType(cellType).gameObject
+			.CircuitCell().TransitionTo(cellState).gameObject
 			.SetParent(container);
 	}
 	
 	private void BuildInputPorts(GameObject container){
 		Circuit c = circuit;
 		foreach(CNIPort input in c.InputPorts){
-			var cellType = InputCellType.Create(input);
+			var cellType = InputCellState.Create(input);
 			var offset = cellType.GetOffset();
 			int index = circuit.ToLinearIndex(offset);
 			ChangeCellType(index, cellType);
-			screen.OnInputCellCreated(cellType);
 		}
 	}
 
 	private void BuildOutputPorts(GameObject container){
 		Circuit c = circuit;
 		foreach(Output output in c.GetOutputs()){
-			var cellType = OutputCellType.Create(output);
+			var cellType = OutputCellState.Create(output);
 			var offset = cellType.GetOffset();
 			int index = circuit.ToLinearIndex(offset);
 			ChangeCellType(index, cellType);
-			screen.OnOutputCellCreated(cellType);
 		}
 	}
 	
-	private void ChangeCellType(int index, CircuitCellType cellType){
-		GetCellOnGridByIndex(index).SetCellType(cellType);
+	private void ChangeCellType(int index, CircuitCellState cellState){
+		GetCellOnGridByIndex(index).TransitionTo(cellState);
+	}
+	
+	private CircuitCell GetCellOnGridByIndex(int index){
+		return screen.displayCellGrid.transform.GetChild(index).GetComponent<CircuitCell>();
 	}
 	
 	private void BuildInvalidPorts(GameObject container){
@@ -200,8 +202,8 @@ public partial class CircuitScreenManager {
 		var allCells = grid.GetComponentsInChildren<CircuitCell>().ToList();
 		List<CircuitCell> emptyCells = [];
 		foreach(CircuitCell cell in allCells){
-			CircuitCellType type = cell.GetCellType();
-			if(type is EmptyCellType)
+			CircuitCellState state = cell.GetCellType();
+			if(state is EmptyCellState)
 				emptyCells.Add(cell);
 		}
 		return emptyCells;
@@ -210,8 +212,8 @@ public partial class CircuitScreenManager {
 	private void CreateInvalidPorts(List<CircuitCell> cells){
 		foreach(CircuitCell cell in cells){
 			if(!CellHasConflict(cell)) continue;
-			var invalidType = new InvalidCellType(cell.GetOffset());
-			cell.SetCellType(invalidType);
+			var invalidType = new InvalidCellState(cell.GetOffset());
+			cell.TransitionTo(invalidType);
 		}
 	}
 
@@ -219,10 +221,6 @@ public partial class CircuitScreenManager {
 		int globalCell = circuit.GetGlobalPositionCell(cell.GetOffset());
 		object endpointInCell = Game.Instance.logicCircuitSystem.GetEndpoint(globalCell);
 		return endpointInCell != null;
-	}
-
-	private CircuitCell GetCellOnGridByIndex(int index){
-		return screen.displayCellGrid.transform.GetChild(index).GetComponent<CircuitCell>();
 	}
 	
 	private void BuildEditorTab(GameObject container){

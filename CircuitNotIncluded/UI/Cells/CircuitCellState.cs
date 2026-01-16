@@ -6,16 +6,14 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public abstract class CircuitCellType(CellOffset offset) {
+public abstract class CircuitCellState(CellOffset offset) {
+	protected CircuitCell owner = null!;
 	protected CellOffset offset = offset;
-	protected CircuitCell parent;
-	public void SetParent(CircuitCell parent){
-		this.parent = parent;
-	}
+	
 	public abstract GameObject BuildEditorContent();
 	public abstract void UpdateImage(Image img);
 
-	public virtual GameObject BuildContainer(){
+	protected virtual GameObject BuildContainer(){
 		GameObject container = new GameObject("Panel")
 			.VerticalLayoutGroup()
 			.ChildAlignment(TextAnchor.UpperLeft)
@@ -66,6 +64,16 @@ public abstract class CircuitCellType(CellOffset offset) {
 
 		return panel;
 	}
+	
+	public void SetOwner(CircuitCell owner){
+		this.owner = owner;
+	}
 
 	public CellOffset GetOffset() => offset;
+
+	public virtual void OnEnter(CircuitCell owner){
+		this.owner = owner;
+	}
+	
+	public virtual void OnExit() {}
 }

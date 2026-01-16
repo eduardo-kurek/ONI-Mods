@@ -1,35 +1,28 @@
-using System.Text.RegularExpressions;
-using CircuitNotIncluded.Grammar;
-using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.UI.Cells;
-using CircuitNotIncluded.UI.Validators;
-using CircuitNotIncluded.Utils;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
-using ProcGen.Map;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI;
 
 public class CircuitScreen : KModalScreen {
-	private readonly List<InputCellType> InputCellTypes = [];
-	private readonly List<OutputCellType> OutputCellTypes = [];
+	private readonly List<InputCellState> InputCellTypes = [];
+	private readonly List<OutputCellState> OutputCellTypes = [];
 	
 	public LocText title = null!;
 	public GameObject editorContent = null!;
 	public GameObject displayCellGrid = null!;
-
-	public event Action<List<InputCellType>, List<OutputCellType>>? OnSave;
+	public delegate void OnSave(List<InputCellState> inputs, List<OutputCellState> outputs);
+	public OnSave? onSave;
 	
-	public void OnInputCellDeleted(InputCellType data){  InputCellTypes.Remove(data); }
-	public void OnInputCellCreated(InputCellType data){ InputCellTypes.Add(data); }
-	public void OnOutputCellDeleted(OutputCellType data){ OutputCellTypes.Remove(data); }
-	public void OnOutputCellCreated(OutputCellType data){ OutputCellTypes.Add(data); }
+	public void RemoveInputCell(InputCellState data) => InputCellTypes.Remove(data);
+	public void AddInputCell(InputCellState data) => InputCellTypes.Add(data);
+	public void RemoveOutputCell(OutputCellState data) => OutputCellTypes.Remove(data);
+	public void AddOutputCell(OutputCellState data) => OutputCellTypes.Add(data);
 	
-	public void OnCellClicked(CircuitCellType cellType){
-		GameObject content = cellType.BuildEditorContent();
+	public void OnCellClicked(CircuitCellState cellState){
+		GameObject content = cellState.BuildEditorContent();
 		foreach(Transform child in editorContent.transform)
 			Destroy(child.gameObject);
 		content.SetParent(editorContent);
@@ -37,7 +30,7 @@ public class CircuitScreen : KModalScreen {
 
 	public void SaveButtonClicked(){
 		try{
-			OnSave?.Invoke(InputCellTypes, OutputCellTypes);
+			onSave?.Invoke(InputCellTypes, OutputCellTypes);
 			Deactivate();
 		} catch (Exception e){
 			ShowMessageDialog(e.Message);

@@ -17,7 +17,7 @@ public class PortCellData(
 	public string inactiveDescription = inactiveDescription;
 }
 
-public abstract class PortCellType(PortCellData data, CellOffset offset) : CircuitCellType(offset) {
+public abstract class PortCellState(PortCellData data, CellOffset offset) : CircuitCellState(offset) {
 	public string GetId() => data.id.Trim();
 	public CellOffset GetOffset() => offset;
 	public int X() => offset.x;
@@ -67,8 +67,7 @@ public abstract class PortCellType(PortCellData data, CellOffset offset) : Circu
 	}
 
 	protected virtual void Delete(){
-		EmptyCellType type = new(offset);
-		parent.SetCellType(type);
-		parent.OnPointerClick(null!);
+		EmptyCellState state = new(offset);
+		owner.TransitionTo(state);
 	}
 }

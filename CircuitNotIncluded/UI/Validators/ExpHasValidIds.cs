@@ -7,16 +7,16 @@ namespace CircuitNotIncluded.UI.Validators;
 public class ExpHasValidIds(PortHandler? next = null) : PortHandler(next) {
 	private readonly HashSet<string> invalidIds = [];
 
-	protected override void Clear(PortCellType cell, ValidationContext ctx){
+	protected override void Clear(PortCellState cell, ValidationContext ctx){
 		invalidIds.Clear();
 	}
 
-	protected override bool ErrorOccurred(PortCellType cell, ValidationContext ctx){
-		return cell is OutputCellType output 
+	protected override bool ErrorOccurred(PortCellState cell, ValidationContext ctx){
+		return cell is OutputCellState output 
 		       && HasInvalidIds(output, ctx);
 	}
 	
-	private bool HasInvalidIds(OutputCellType output, ValidationContext ctx){
+	private bool HasInvalidIds(OutputCellState output, ValidationContext ctx){
 		ProgramContext tree = ctx.Parse(output);
 		var ids = IdExtractor.Extract(tree);
 		foreach(string id in ids.Where(ctx.HasOutputId))
@@ -28,7 +28,7 @@ public class ExpHasValidIds(PortHandler? next = null) : PortHandler(next) {
 		invalidIds.Add(id);
 	}
 
-	protected override string GetErrorMessage(PortCellType cell, ValidationContext ctx){
+	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){
 		return $"Only input port ids can be used in expressions ({string.Join(", ", invalidIds)}) ";
 	}
 }

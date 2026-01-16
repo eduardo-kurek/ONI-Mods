@@ -1,4 +1,3 @@
-using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.UI;
 using UnityEngine;
@@ -6,7 +5,7 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
+public class EmptyCellState(CellOffset offset) : CircuitCellState(offset) {
 	protected override string GetCellTitle(){ return "Empty Cell"; }
 
 	public override void UpdateImage(Image img){
@@ -14,7 +13,7 @@ public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
 		img.sprite = null;
 	}
 
-	public override GameObject BuildContainer(){
+	protected override GameObject BuildContainer(){
 		return base.BuildContainer()
 			.VerticalLayoutGroup()
 			.Spacing(10)
@@ -54,16 +53,12 @@ public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
 	}
 	
 	private void PromoteToInput(){
-		var type = InputCellType.Create(offset);
-		parent.SetCellType(type);
-		parent.OnPointerClick(null!);
-		CircuitScreenManager.Instance.OnInputCellCreated(type);
+		var inputType = InputCellState.Create(offset);
+		owner.TransitionTo(inputType);
 	}
 
 	private void PromoteToOutput(){
-		var type = OutputCellType.Create(offset);
-		parent.SetCellType(type);
-		parent.OnPointerClick(null!);
-		CircuitScreenManager.Instance.OnOutputCellCreated(type);
+		var outputType = OutputCellState.Create(offset);
+		owner.TransitionTo(outputType);
 	}
 }

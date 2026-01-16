@@ -10,7 +10,7 @@ public class InputCellData(
 	string inactiveDescription = "Inactive Description"
 ) : PortCellData(id, description, activeDescription, inactiveDescription);
 
-public class InputCellType(InputCellData data, CellOffset offset) : PortCellType(data, offset) {
+public class InputCellState(InputCellData data, CellOffset offset) : PortCellState(data, offset) {
 	protected override string GetCellTitle(){ return "Input Port"; }
 	protected override Sprite GetPortSprite(){
 		return Assets.instance.logicModeUIData.inputSprite;
@@ -28,9 +28,7 @@ public class InputCellType(InputCellData data, CellOffset offset) : PortCellType
 
 	protected override void Delete(){
 		base.Delete();
-		CircuitScreenManager.Instance.OnInputCellDeleted(this);
 	}
-	
 	
 	public CNIPort ToPort(){
 		return CNIPort.InputPort(
@@ -42,17 +40,26 @@ public class InputCellType(InputCellData data, CellOffset offset) : PortCellType
 		);
 	}
 
-	public static InputCellType Create(CNIPort port){
+	public static InputCellState Create(CNIPort port){
 		InputCellData data = new(
 			port.OriginalId,
 			port.P.description,
 			port.P.activeDescription,
 			port.P.inactiveDescription
 		);
-		return new InputCellType(data, port.P.cellOffset);
+		return new InputCellState(data, port.P.cellOffset);
 	}
 
-	public static InputCellType Create(CellOffset offset){
-		return new InputCellType(new InputCellData(), offset);
+	public static InputCellState Create(CellOffset offset){
+		return new InputCellState(new InputCellData(), offset);
+	}
+
+	public override void OnEnter(CircuitCell owner){
+		base.OnEnter(owner);
+		CircuitScreenManager.Instance.OnInputCellCreated(this);
+	}
+
+	public override void OnExit(){
+		CircuitScreenManager.Instance.OnInputCellDeleted(this);
 	}
 }

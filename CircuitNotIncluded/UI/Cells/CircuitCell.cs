@@ -36,7 +36,7 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	public void OnPointerClick(PointerEventData eventData){
 		Selected?.Deselect();
 		Select();
-		CircuitScreen.Instance.OnCellClicked(type);
+		CircuitScreenManager.Instance.OnCellClicked(type);
 	}
 
 	private void Select(){

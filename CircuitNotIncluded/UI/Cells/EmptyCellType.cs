@@ -57,13 +57,13 @@ public class EmptyCellType(CellOffset offset) : CircuitCellType(offset) {
 		var type = InputCellType.Create(offset);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
-		CircuitScreen.Instance.OnInputCellCreated(type);
+		CircuitScreenManager.Instance.OnInputCellCreated(type);
 	}
 
 	private void PromoteToOutput(){
 		var type = OutputCellType.Create(offset);
 		parent.SetCellType(type);
 		parent.OnPointerClick(null!);
-		CircuitScreen.Instance.OnOutputCellCreated(type);
+		CircuitScreenManager.Instance.OnOutputCellCreated(type);
 	}
 }

@@ -8,58 +8,44 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI;
 
-public static class CircuitScreenBuilder
-{
-	
-	private static GameObject? parent;
-	private static TextStyleSetting? textStyleSetting;
-	
+public partial class CircuitScreenManager {
 	private const int PORT_SIZE = 40;
 	private const int PORT_SPACING = 8;
-	
 	private static float CircuitDisplaySize(int qtCells){
 		return qtCells * PORT_SIZE + PORT_SPACING * (qtCells + 1);
 	}
-
-	public static GameObject GetRootParent(){
-		if(parent == null)
-			parent = GameObject.Find("MiddleCenter");
-		return parent;
+	
+	private static GameObject? parent;
+	public static GameObject RootParent {
+		get {
+			if(parent == null)
+				parent = GameObject.Find("MiddleCenter");
+			return parent;
+		}
 	}
-
-	private static CircuitScreen Instance(){ return CircuitScreen.Instance; }
-	private static Circuit Circuit(){ return Instance().Circuit; }
-	private static TextStyleSetting GetTextStyleSetting(){
-		if(textStyleSetting == null){
+	
+	private static TextStyleSetting? textStyleSetting;
+	private static TextStyleSetting TextStyle {
+		get {
+			if(textStyleSetting != null) return textStyleSetting;
 			textStyleSetting = PUITuning.Fonts.UILightStyle;
 			textStyleSetting.fontSize = 15;
+			return textStyleSetting;
 		}
-		return textStyleSetting;
-	} 
-	
-	public static GameObject Build(Circuit circuit){
-		UnityEngine.Debug.Log("Circuit BuildingCircuit");
-		GameObject go = new GameObject("CircuitScreen")
-			.RectTransform()
-			.AnchorMin(0, 0)
-			.AnchorMax(1, 1)
-			.OffsetMin(0, 0)
-			.OffsetMax(0, 0).gameObject
-			.AddComponent<CircuitScreen>().Initialize(circuit).gameObject
-			.SetParent(GetRootParent());
-		BuildScreen(go);
-		GameObjectDebugger.PrintGameObjectInfo(circuit.gameObject);
-		return go;
 	}
+}
+
+
+public partial class CircuitScreenManager {
 	
-	private static void BuildScreen(GameObject go){
+	private void BuildScreen(GameObject go){
 		GameObject container = BuildMainContainer(go.gameObject);
 		BuildHeader(container);
 		BuildBody(container);
 		BuildFooter(container);
 	}
 	
-	private static GameObject BuildMainContainer(GameObject parent){
+	private GameObject BuildMainContainer(GameObject parent){
 		return new PPanel()
 			.SetKleiBlueColor()
 			.DynamicSize(true)
@@ -75,13 +61,13 @@ public static class CircuitScreenBuilder
 			.gameObject;
 	}
 	
-	private static void BuildHeader(GameObject container){
+	private void BuildHeader(GameObject container){
 		GameObject header = BuildHeaderContainer(container);
 		GameObject title = BuildHeaderTitle(header);
-		Instance().title = header.GetComponentInChildren<LocText>();
+		screen.title = header.GetComponentInChildren<LocText>();
 	}
 
-	private static GameObject BuildHeaderContainer(GameObject container){
+	private GameObject BuildHeaderContainer(GameObject container){
 		return new PPanel("Header")
 			.SetKleiPinkColor()
 			.AddTo(container)
@@ -92,15 +78,15 @@ public static class CircuitScreenBuilder
 			.gameObject;
 	}
 
-	private static GameObject BuildHeaderTitle(GameObject container){
+	private GameObject BuildHeaderTitle(GameObject container){
 		return new PLabel("Title")
 			.Text("Circuit name")
 			.Margin(10)
-			.Style(GetTextStyleSetting())
+			.Style(TextStyle)
 			.AddTo(container);
 	}
 
-	private static void BuildBody(GameObject container){
+	private void BuildBody(GameObject container){
 		GameObject body = new PPanel("Body")
 			.Direction(PanelDirection.Horizontal)
 			.BackColor(new Color32(28, 32, 38, byte.MaxValue))
@@ -115,7 +101,7 @@ public static class CircuitScreenBuilder
 		BuildEditorTab(body);
 	}
 
-	private static void BuildDisplayTab(GameObject container){
+	private void BuildDisplayTab(GameObject container){
 		GameObject displayTab = new PPanel("Display")
 			.AddTo(container)
 			.AddOutline()
@@ -127,8 +113,7 @@ public static class CircuitScreenBuilder
 		BuildCircuitDisplay(displayTab);
 	}
 
-	private static void BuildCircuitDisplay(GameObject container){
-		Circuit circuit = CircuitScreen.Instance.Circuit;
+	private void BuildCircuitDisplay(GameObject container){
 		float sizeX = CircuitDisplaySize(circuit.Width);
 		float sizeY = CircuitDisplaySize(circuit.Height);
 
@@ -147,27 +132,27 @@ public static class CircuitScreenBuilder
 			.StartCorner(GridLayoutGroup.Corner.LowerLeft)
 			.StartAxis(GridLayoutGroup.Axis.Horizontal)
 			.gameObject
-			.Image().Sprite(Circuit().GetOffSprite())
+			.Image().Sprite(circuit.GetOffSprite())
 			.gameObject
 			.SetParent(container);
 		
-		Instance().displayCellGrid = grid;
+		screen.displayCellGrid = grid;
 		BuildPorts(grid);
-		Orientation orientation = GetOrientation(Circuit().gameObject);
+		Orientation orientation = GetOrientation(circuit.gameObject);
 		ApplyOrientation(grid, orientation);
 	}
 
-	private static void BuildPorts(GameObject container){
+	private void BuildPorts(GameObject container){
 		BuildEmptyPorts(container);
 		BuildInputPorts(container);
 		BuildOutputPorts(container);
 		BuildInvalidPorts(container);
 	}
 
-	private static void BuildEmptyPorts(GameObject container){
-		Circuit c = Circuit();
+	private void BuildEmptyPorts(GameObject container){
+		Circuit c = circuit;
 		for(int i = 0; i < c.Width * c.Height; i++){
-			var offset = c.ToCellOffset(i);
+			CellOffset offset = c.ToCellOffset(i);
 			EmptyCellType cellType = new(offset);
 			BuildNewPort(container, cellType);
 		}
@@ -180,36 +165,38 @@ public static class CircuitScreenBuilder
 			.SetParent(container);
 	}
 	
-	private static void BuildInputPorts(GameObject container){
-		Circuit c = Circuit();
+	private void BuildInputPorts(GameObject container){
+		Circuit c = circuit;
 		foreach(CNIPort input in c.InputPorts){
 			var cellType = InputCellType.Create(input);
-			int index = cellType.GetIndex();
+			var offset = cellType.GetOffset();
+			int index = circuit.ToLinearIndex(offset);
 			ChangeCellType(index, cellType);
-			Instance().OnInputCellCreated(cellType);
+			screen.OnInputCellCreated(cellType);
 		}
 	}
 
-	private static void BuildOutputPorts(GameObject container){
-		Circuit c = Circuit();
+	private void BuildOutputPorts(GameObject container){
+		Circuit c = circuit;
 		foreach(Output output in c.GetOutputs()){
 			var cellType = OutputCellType.Create(output);
-			int index = cellType.GetIndex();
+			var offset = cellType.GetOffset();
+			int index = circuit.ToLinearIndex(offset);
 			ChangeCellType(index, cellType);
-			Instance().OnOutputCellCreated(cellType);
+			screen.OnOutputCellCreated(cellType);
 		}
 	}
 	
-	private static void ChangeCellType(int index, CircuitCellType cellType){
+	private void ChangeCellType(int index, CircuitCellType cellType){
 		GetCellOnGridByIndex(index).SetCellType(cellType);
 	}
 	
-	private static void BuildInvalidPorts(GameObject container){
+	private void BuildInvalidPorts(GameObject container){
 		var emptyCells = GetEmptyCellsFromGrid(container);
 		CreateInvalidPorts(emptyCells);
 	}
 
-	private static List<CircuitCell> GetEmptyCellsFromGrid(GameObject grid){
+	private List<CircuitCell> GetEmptyCellsFromGrid(GameObject grid){
 		var allCells = grid.GetComponentsInChildren<CircuitCell>().ToList();
 		List<CircuitCell> emptyCells = [];
 		foreach(CircuitCell cell in allCells){
@@ -220,7 +207,7 @@ public static class CircuitScreenBuilder
 		return emptyCells;
 	}
 
-	private static void CreateInvalidPorts(List<CircuitCell> cells){
+	private void CreateInvalidPorts(List<CircuitCell> cells){
 		foreach(CircuitCell cell in cells){
 			if(!CellHasConflict(cell)) continue;
 			var invalidType = new InvalidCellType(cell.GetOffset());
@@ -228,17 +215,17 @@ public static class CircuitScreenBuilder
 		}
 	}
 
-	private static bool CellHasConflict(CircuitCell cell){
-		int globalCell = Circuit().GetGlobalPositionCell(cell.GetOffset());
+	private bool CellHasConflict(CircuitCell cell){
+		int globalCell = circuit.GetGlobalPositionCell(cell.GetOffset());
 		object endpointInCell = Game.Instance.logicCircuitSystem.GetEndpoint(globalCell);
 		return endpointInCell != null;
 	}
 
-	private static CircuitCell GetCellOnGridByIndex(int index){
-		return Instance().displayCellGrid.transform.GetChild(index).GetComponent<CircuitCell>();
+	private CircuitCell GetCellOnGridByIndex(int index){
+		return screen.displayCellGrid.transform.GetChild(index).GetComponent<CircuitCell>();
 	}
 	
-	private static void BuildEditorTab(GameObject container){
+	private void BuildEditorTab(GameObject container){
 		GameObject editor = new PPanel("Editor")
 			.BackColor(Color.white)
 			.AddTo(container)
@@ -250,7 +237,7 @@ public static class CircuitScreenBuilder
 
 		GameObject content = BuildEditorContent(editor);
 		BuildInfoPanel(editor);
-		Instance().editorContent = content;
+		screen.editorContent = content;
 	}
 
 	private static GameObject BuildEditorContent(GameObject container){
@@ -264,7 +251,7 @@ public static class CircuitScreenBuilder
 			.gameObject;
 	}
 
-	private static GameObject BuildInfoPanel(GameObject container){
+	private GameObject BuildInfoPanel(GameObject container){
 		return new PPanel("EditorInfo")
 			.SetKleiPinkColor()
 			.AddTo(container)
@@ -275,7 +262,7 @@ public static class CircuitScreenBuilder
 			.gameObject;
 	}
 	
-	private static void BuildFooter(GameObject container){
+	private void BuildFooter(GameObject container){
 		GameObject footer = new PPanel("Footer")
 			.Spacing(15)
 			.Direction(PanelDirection.Horizontal)
@@ -290,18 +277,18 @@ public static class CircuitScreenBuilder
 		BuildCancelButton(footer);
 	}
 
-	private static GameObject BuildSaveButton(GameObject container){
-		return BuildButton(container, "Save", (go) => { Instance().SaveButtonClicked(); });
+	private GameObject BuildSaveButton(GameObject container){
+		return BuildButton(container, "Save", (go) => { screen.SaveButtonClicked(); });
 	}
 
-	private static GameObject BuildCancelButton(GameObject container){
-		return BuildButton(container, "Cancel", (go) => { Instance().CancelButtonClicked(); });
+	private GameObject BuildCancelButton(GameObject container){
+		return BuildButton(container, "Cancel", (go) => { screen.CancelButtonClicked(); });
 	}
 
-	private static GameObject BuildButton(GameObject container, string text, PUIDelegates.OnButtonPressed onClick){
+	private GameObject BuildButton(GameObject container, string text, PUIDelegates.OnButtonPressed onClick){
 		return new PButton()
 			.Text(text)
-			.Style(GetTextStyleSetting())
+			.Style(TextStyle)
 			.Margin(10)
 			.SetOnClick(onClick)
 			.AddTo(container);
@@ -311,7 +298,7 @@ public static class CircuitScreenBuilder
 		return go.GetComponent<Rotatable>().GetOrientation();
 	}
 
-	private static void ApplyOrientation(GameObject go, Orientation orientation){
+	private void ApplyOrientation(GameObject go, Orientation orientation){
 		go.transform.rotation = orientation switch {
 			Orientation.R90 => Quaternion.Euler(0f, 0f, -90f),
 			Orientation.R180 => Quaternion.Euler(0f, 0f, 180f),
@@ -319,4 +306,5 @@ public static class CircuitScreenBuilder
 			_ => go.transform.rotation
 		};
 	}
+	
 }

@@ -75,8 +75,7 @@ public class CircuitSideScreen : SideScreenContent {
 	}
 
 	private void OnEditButtonClicked(GameObject source){
-		Debug.Log("Edit button pressed");
-		var screen = CircuitScreenBuilder.Build(circuit!);
+		CircuitScreenManager.Instance.Build(circuit!);
 	}
 	
 	public override void SetTarget(GameObject target){

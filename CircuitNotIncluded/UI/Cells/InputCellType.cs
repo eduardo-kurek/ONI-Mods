@@ -28,14 +28,14 @@ public class InputCellType(InputCellData data, CellOffset offset) : PortCellType
 
 	protected override void Delete(){
 		base.Delete();
-		CircuitScreen.Instance.OnInputCellDeleted(this);
+		CircuitScreenManager.Instance.OnInputCellDeleted(this);
 	}
 	
 	
 	public CNIPort ToPort(){
 		return CNIPort.InputPort(
-			data.id, 
-			offset, 
+			data.id,
+			offset,
 			data.description, 
 			data.activeDescription, 
 			data.inactiveDescription

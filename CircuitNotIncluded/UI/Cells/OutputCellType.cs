@@ -39,14 +39,13 @@ public class OutputCellType(OutputCellData data, CellOffset offset) : PortCellTy
 			});
 	}
 	
-	public int GetIndex() => CircuitScreen.Instance.Circuit.ToLinearIndex(offset);
 	public string GetExpression() => data.expression.Trim();
-	public int X() => offset.x;
-	public int Y() => offset.y;
+	public int X => offset.x;
+	public int Y => offset.y;
 	
 	protected override void Delete(){
 		base.Delete();
-		CircuitScreen.Instance.OnOutputCellDeleted(this);
+		CircuitScreenManager.Instance.OnOutputCellDeleted(this);
 	}
 	
 	public Output ToPort(ProgramContext tree){

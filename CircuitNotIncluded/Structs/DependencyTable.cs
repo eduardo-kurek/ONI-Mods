@@ -7,32 +7,32 @@ namespace CircuitNotIncluded.Structs;
 // In other words, which output ports are influenced by each input port
 public class DependencyTable {
 
-	private readonly Dictionary<HashedString, List<Output>> table = new();
+	private readonly Dictionary<HashedString, List<OutputPort>> table = new();
 	
-	public DependencyTable(List<CNIPort> inputPorts, List<Output> outputPorts){
+	public DependencyTable(List<InputPort> inputPorts, List<OutputPort> outputPorts){
 		InitializeEmptyTable(inputPorts);
 		InitializeDependencies(outputPorts);
 	}
 
-	private void InitializeEmptyTable(List<CNIPort> inputPorts){
-		foreach(CNIPort port in inputPorts){
-			table[port.P.id] = [];
+	private void InitializeEmptyTable(List<InputPort> inputPorts){
+		foreach(InputPort port in inputPorts){
+			table[port.HashedId] = [];
 		}
 	}
 
-	private void InitializeDependencies(List<Output> outputs){
-		foreach(Output output in outputs)
+	private void InitializeDependencies(List<OutputPort> outputs){
+		foreach(OutputPort output in outputs)
 			AddDependency(output);
 	}
 	
-	private void AddDependency(Output output){
-		var inputPorts = Compiler.ExtractIds(output.Tree);
+	private void AddDependency(OutputPort outputPort){
+		var inputPorts = Compiler.ExtractIds(outputPort.Tree);
 		foreach(string inputPort in inputPorts){
-			table[inputPort].Add(output);
+			table[inputPort].Add(outputPort);
 		}
 	}
 	
-	public List<Output> GetOutputDependents(HashedString inputPortId){
+	public List<OutputPort> GetOutputDependents(HashedString inputPortId){
 		return table[inputPortId];
 	}
 

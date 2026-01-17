@@ -51,14 +51,14 @@ public class ValidationContext {
 		return Errors;
 	}
 
-	public List<CNIPort> ResultInput(){
-		List<CNIPort> result = [];
+	public List<InputPort> ResultInput(){
+		List<InputPort> result = [];
 		result.AddRange(Inputs.Select(i => i.ToPort()));
 		return result;
 	}
 
-	public List<Output> ResultOutput(){
-		List<Output> result = [];
+	public List<OutputPort> ResultOutput(){
+		List<OutputPort> result = [];
 		result.AddRange(Outputs.Select(i => i.ToPort(ParsedOutputs[i])));
 		return result;
 	}

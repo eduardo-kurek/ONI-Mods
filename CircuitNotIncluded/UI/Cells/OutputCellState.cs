@@ -44,26 +44,26 @@ public class OutputCellState(OutputCellData data, CellOffset offset) : PortCellS
 	public int X => offset.x;
 	public int Y => offset.y;
 	
-	public Output ToPort(ProgramContext tree){
-		CNIPort port = CNIPort.OutputPort(
+	public OutputPort ToPort(ProgramContext tree){
+		PortInfo info = new PortInfo(
 			data.id,
 			offset,
 			data.description,
 			data.activeDescription,
 			data.inactiveDescription
 		);
-		return new Output(data.expression.Trim(), tree, port);
+		return OutputPort.Create(data.expression.Trim(), tree, info);
 	}
 
-	public static OutputCellState Create(Output output){
+	public static OutputCellState Create(OutputPort outputPort){
 		OutputCellData data = new(
-			output.Port.OriginalId,
-			output.Port.P.description,
-			output.Port.P.activeDescription,
-			output.Port.P.inactiveDescription,
-			output.Expression
+			outputPort.OriginalId,
+			outputPort.WrappedPort.description,
+			outputPort.WrappedPort.activeDescription,
+			outputPort.WrappedPort.inactiveDescription,
+			outputPort.Expression
 		);
-		return new OutputCellState(data, output.Port.P.cellOffset);
+		return new OutputCellState(data, outputPort.WrappedPort.cellOffset);
 	}
 	
 	public static OutputCellState Create(CellOffset offset){

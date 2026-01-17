@@ -109,7 +109,7 @@ public class CircuitSideScreen : SideScreenContent {
 	private void CreateOutputs(){
 		var layout = outputsPanel.GetComponent<VerticalLayoutGroup>();
 		foreach(var output in circuit!.GetOutputs()){
-			var originalText = $"{output.Port.OriginalId} = {output.Expression}";
+			var originalText = $"{output.OriginalId} = {output.Expression}";
 			var colorizedText = ColorizeSpecialChars(originalText);
 			var go = Utils.UI.DarkText(colorizedText, layout.transform);
 			var text = go.GetComponent<TextMeshProUGUI>();

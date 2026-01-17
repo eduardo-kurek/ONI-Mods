@@ -30,24 +30,25 @@ public class InputCellState(InputCellData data, CellOffset offset) : PortCellSta
 		base.Delete();
 	}
 	
-	public CNIPort ToPort(){
-		return CNIPort.InputPort(
+	public InputPort ToPort(){
+		PortInfo info = new PortInfo(
 			data.id,
 			offset,
-			data.description, 
-			data.activeDescription, 
+			data.description,
+			data.activeDescription,
 			data.inactiveDescription
 		);
+		return InputPort.Create(info);
 	}
 
-	public static InputCellState Create(CNIPort port){
+	public static InputCellState Create(InputPort port){
 		InputCellData data = new(
 			port.OriginalId,
-			port.P.description,
-			port.P.activeDescription,
-			port.P.inactiveDescription
+			port.WrappedPort.description,
+			port.WrappedPort.activeDescription,
+			port.WrappedPort.inactiveDescription
 		);
-		return new InputCellState(data, port.P.cellOffset);
+		return new InputCellState(data, port.WrappedPort.cellOffset);
 	}
 
 	public static InputCellState Create(CellOffset offset){

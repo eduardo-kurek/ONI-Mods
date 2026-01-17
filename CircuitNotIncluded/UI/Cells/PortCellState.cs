@@ -1,3 +1,4 @@
+using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.UI;
 using UnityEngine;
@@ -5,20 +6,8 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class PortCellData(
-	string id = "Id",
-	string description = "Description",
-	string activeDescription = "Active Description",
-	string inactiveDescription = "Inactive Description")
-{
-	public string id = id;
-	public string description = description;
-	public string activeDescription = activeDescription;
-	public string inactiveDescription = inactiveDescription;
-}
-
-public abstract class PortCellState(PortCellData data, CellOffset offset) : CircuitCellState(offset) {
-	public string GetId() => data.id.Trim();
+public abstract class PortCellState(PortInfo info, CellOffset offset) : CircuitCellState(offset) {
+	public string GetId() => info.Id.Trim();
 	public CellOffset GetOffset() => offset;
 	public int X() => offset.x;
 	public int Y() => offset.y;
@@ -31,30 +20,30 @@ public abstract class PortCellState(PortCellData data, CellOffset offset) : Circ
 	}
 	
 	protected GameObject BuildIdField(GameObject container){
-		return BuildTextField(container, "Id: ", data.id, 50, 
+		return BuildTextField(container, "Id: ", info.Id, 50, 
 			(source, text) => {
-				data.id = text;
+				info.Id = text;
 			});
 	}
 
 	protected GameObject BuildDescriptionField(GameObject container){
-		return BuildTextField(container, "Description: ", data.description, 255,
+		return BuildTextField(container, "Description: ", info.Description, 255,
 			(source, text) => {
-				data.description = text;
+				info.Description = text;
 			});
 	}
 
 	protected GameObject BuildActiveDescriptionField(GameObject container){
-		return BuildTextField(container, "Active Description: ", data.activeDescription, 255,
+		return BuildTextField(container, "Active Description: ", info.ActiveDescription, 255,
 			(source, text) => {
-				data.activeDescription = text;
+				info.ActiveDescription = text;
 			});
 	}
 
 	protected GameObject BuildInactiveDescription(GameObject container){
-		return BuildTextField(container, "Inactive Description: ", data.inactiveDescription, 255, 
+		return BuildTextField(container, "Inactive Description: ", info.InactiveDescription, 255, 
 			(source, text) => {
-				data.inactiveDescription = text;
+				info.InactiveDescription = text;
 			});
 	}
 	

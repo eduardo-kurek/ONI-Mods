@@ -3,14 +3,7 @@ using UnityEngine;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class InputCellData(
-	string id = "Id",
-	string description = "Description",
-	string activeDescription = "Active Description",
-	string inactiveDescription = "Inactive Description"
-) : PortCellData(id, description, activeDescription, inactiveDescription);
-
-public class InputCellState(InputCellData data, CellOffset offset) : PortCellState(data, offset) {
+public class InputCellState(PortInfo info, CellOffset offset) : PortCellState(info, offset) {
 	protected override string GetCellTitle(){ return "Input Port"; }
 	protected override Sprite GetPortSprite(){
 		return Assets.instance.logicModeUIData.inputSprite;
@@ -31,28 +24,16 @@ public class InputCellState(InputCellData data, CellOffset offset) : PortCellSta
 	}
 	
 	public InputPort ToPort(){
-		PortInfo info = new PortInfo(
-			data.id,
-			offset,
-			data.description,
-			data.activeDescription,
-			data.inactiveDescription
-		);
 		return InputPort.Create(info);
 	}
 
 	public static InputCellState Create(InputPort port){
-		InputCellData data = new(
-			port.OriginalId,
-			port.WrappedPort.description,
-			port.WrappedPort.activeDescription,
-			port.WrappedPort.inactiveDescription
-		);
-		return new InputCellState(data, port.WrappedPort.cellOffset);
+		return new InputCellState(port.GetInfo(), port.WrappedPort.cellOffset);
 	}
 
 	public static InputCellState Create(CellOffset offset){
-		return new InputCellState(new InputCellData(), offset);
+		PortInfo info = PortInfo.Default(offset);
+		return new InputCellState(info, offset);
 	}
 
 	public override void OnEnter(CircuitCell owner){

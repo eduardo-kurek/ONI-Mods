@@ -17,4 +17,14 @@ public class CNIPort {
 		OriginalId = id;
 		P = port;
 	}
+
+	public PortInfo GetInfo(){
+		return new PortInfo(
+			OriginalId,
+			WrappedPort.cellOffset,
+			WrappedPort.description,
+			WrappedPort.activeDescription,
+			WrappedPort.inactiveDescription
+		);
+	}
 }

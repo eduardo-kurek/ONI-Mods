@@ -4,18 +4,9 @@ using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class OutputCellData(
-	string id = "Id",
-	string description = "Description",
-	string activeDescription = "Active Description",
-	string inactiveDescription = "Inactive Description",
-	string expression = ""
-) : PortCellData(id, description, activeDescription, inactiveDescription)
-{
-	public string expression = expression;
-}
 
-public class OutputCellState(OutputCellData data, CellOffset offset) : PortCellState(data, offset) {
+public class OutputCellState(string expression, PortInfo info, CellOffset offset) : PortCellState(info, offset) {
+	private string Expression = expression;
 	
 	protected override string GetCellTitle(){ return "Output Port"; }
 	protected override Sprite GetPortSprite(){
@@ -34,40 +25,34 @@ public class OutputCellState(OutputCellData data, CellOffset offset) : PortCellS
 	}
 
 	private GameObject BuildExpressionField(GameObject container){
-		return BuildTextField(container, "Expression: ", data.expression, 255, 
+		return BuildTextField(container, "Expression: ", Expression, 255, 
 			(source, text) => {
-				data.expression = text;
+				Expression = text;
 			});
 	}
 	
-	public string GetExpression() => data.expression.Trim();
+	public string GetExpression() => Expression.Trim();
 	public int X => offset.x;
 	public int Y => offset.y;
 	
 	public OutputPort ToPort(ProgramContext tree){
-		PortInfo info = new PortInfo(
-			data.id,
-			offset,
-			data.description,
-			data.activeDescription,
-			data.inactiveDescription
-		);
-		return OutputPort.Create(data.expression.Trim(), tree, info);
+		return OutputPort.Create(Expression, tree, info);
 	}
 
 	public static OutputCellState Create(OutputPort outputPort){
-		OutputCellData data = new(
+		PortInfo info = new PortInfo(
 			outputPort.OriginalId,
+			outputPort.WrappedPort.cellOffset,
 			outputPort.WrappedPort.description,
 			outputPort.WrappedPort.activeDescription,
-			outputPort.WrappedPort.inactiveDescription,
-			outputPort.Expression
+			outputPort.WrappedPort.inactiveDescription
 		);
-		return new OutputCellState(data, outputPort.WrappedPort.cellOffset);
+		return new OutputCellState(outputPort.Expression, info, outputPort.WrappedPort.cellOffset);
 	}
 	
 	public static OutputCellState Create(CellOffset offset){
-		return new OutputCellState(new OutputCellData(), offset);
+		PortInfo info = PortInfo.Default(offset);
+		return new OutputCellState(string.Empty, info, offset);
 	}
 
 	public override void OnEnter(CircuitCell owner){

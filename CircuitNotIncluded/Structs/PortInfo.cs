@@ -7,9 +7,19 @@ public class PortInfo(
 	string activeDescription,
 	string inactiveDescription
 ){
-	public string Id { get; } = id;
-	public CellOffset Offset { get; } = offset;
-	public string Description { get; } = description;
-	public string ActiveDescription { get; } = activeDescription;
-	public string InactiveDescription { get; } = inactiveDescription;
+	public string Id = id;
+	public CellOffset Offset = offset;
+	public string Description = description;
+	public string ActiveDescription = activeDescription;
+	public string InactiveDescription = inactiveDescription;
+
+	public static PortInfo Default(CellOffset offset){
+		return new PortInfo(
+			"Id", 
+			offset, 
+			"Description", 
+			"Active Description", 
+			"Inactive Description"
+		);
+	}
 }

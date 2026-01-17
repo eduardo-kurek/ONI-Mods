@@ -2,7 +2,7 @@ using System.Reflection.Emit;
 using CircuitNotIncluded.Structs;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
-namespace CircuitNotIncluded.Grammar;
+namespace CircuitNotIncluded.Grammar.Visitors;
 using EvaluateFunc = Func<SymbolTable, int>;
 
 public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
@@ -70,7 +70,7 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 	}
 	
 	public static EvaluateFunc Compile(string expression){
-		ProgramContext tree = Utilss.Parse(expression);
+		ProgramContext tree = Compiler.Parse(expression);
 		return Compile(tree);
 	}
 }

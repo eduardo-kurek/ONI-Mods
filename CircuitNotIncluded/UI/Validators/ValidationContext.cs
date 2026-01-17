@@ -1,5 +1,7 @@
+using CircuitNotIncluded.Grammar;
 using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.UI.Cells;
+using CircuitNotIncluded.Utils;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.UI.Validators;
@@ -40,7 +42,7 @@ public class ValidationContext {
 	public ProgramContext Parse(OutputCellState cell){
 		if(ParsedOutputs.TryGetValue(cell, out ProgramContext output)) return output;
 		string expression = cell.GetExpression();
-		ProgramContext tree = Utilss.Parse(expression);
+		ProgramContext tree = Compiler.Parse(expression);
 		ParsedOutputs.Add(cell, tree);
 		return tree;
 	}

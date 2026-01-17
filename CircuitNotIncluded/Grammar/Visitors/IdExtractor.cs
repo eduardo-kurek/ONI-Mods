@@ -1,7 +1,7 @@
 using Antlr4.Runtime.Tree;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
-namespace CircuitNotIncluded.Grammar;
+namespace CircuitNotIncluded.Grammar.Visitors;
 
 public class IdExtractor : ExpressionBaseListener {
 	private readonly HashSet<string> ids = new();
@@ -15,10 +15,5 @@ public class IdExtractor : ExpressionBaseListener {
 		var idExtractor = new IdExtractor();
 		ParseTreeWalker.Default.Walk(idExtractor, tree);
 		return idExtractor.ids;
-	}
-	
-	public static HashSet<string> Extract(string expression){
-		ProgramContext tree = Utilss.Parse(expression);
-		return Extract(tree);
 	}
 }

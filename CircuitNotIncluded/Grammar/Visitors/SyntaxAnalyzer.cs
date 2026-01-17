@@ -1,7 +1,6 @@
 using Antlr4.Runtime;
-using static CircuitNotIncluded.Grammar.ExpressionParser;
 
-namespace CircuitNotIncluded.Grammar;
+namespace CircuitNotIncluded.Grammar.Visitors;
 
 public class SyntaxAnalyzer : BaseErrorListener {
 	private List<string> errors = [];

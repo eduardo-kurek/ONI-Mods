@@ -1,8 +1,7 @@
 using Antlr4.Runtime.Tree;
-using CircuitNotIncluded.Structs;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
-namespace CircuitNotIncluded.Grammar;
+namespace CircuitNotIncluded.Grammar.Visitors;
 
 
 public class SemanticAnalyzer : ExpressionBaseListener {

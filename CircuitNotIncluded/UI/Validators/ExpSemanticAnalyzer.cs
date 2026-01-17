@@ -12,11 +12,11 @@ public class ExpSemanticAnalyzer(PortHandler? next = null) : PortHandler(next) {
 	protected override bool ErrorOccurred(PortCellState cell, ValidationContext ctx){
 		var outputCell = (OutputCellState)cell;
 		ProgramContext tree = ctx.Parse(outputCell);
-		try{
-			SemanticAnalyzer.Analyze(tree, ctx.GetInputIds());
+		try {
+			Compiler.SemanticAnalyze(tree, ctx.GetInputIds());
 			return false;
 		}
-		catch(Exception e){
+		catch(Exception e) {
 			error = e.Message;
 			return true;
 		}

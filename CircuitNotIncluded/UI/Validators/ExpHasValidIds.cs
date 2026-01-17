@@ -1,4 +1,5 @@
 using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors;
 using CircuitNotIncluded.UI.Cells;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
@@ -18,7 +19,7 @@ public class ExpHasValidIds(PortHandler? next = null) : PortHandler(next) {
 	
 	private bool HasInvalidIds(OutputCellState output, ValidationContext ctx){
 		ProgramContext tree = ctx.Parse(output);
-		var ids = IdExtractor.Extract(tree);
+		var ids = Compiler.ExtractIds(tree);
 		foreach(string id in ids.Where(ctx.HasOutputId))
 			AddInvalidId(id);
 		return invalidIds.Any();

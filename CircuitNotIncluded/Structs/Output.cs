@@ -1,27 +1,28 @@
 using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.Structs;
 using EvaluateFunc = Func<SymbolTable, int>;
 
 public struct Output {
-	public string Expression { get; }
 	public CNIPort Port { get; }
+	public string Expression { get; }
 	public EvaluateFunc Evaluate { get; }
 	public ProgramContext Tree { get; }
 	
 	public Output(string expression, CNIPort port){
-		Expression = expression;
 		Port = port;
-		Tree = Utilss.Parse(expression);
-		Evaluate = ExpressionCompiler.Compile(Tree);
+		Expression = expression;
+		Tree = Compiler.Parse(expression);
+		Evaluate = Compiler.Compile(Tree);
 	}
 
 	public Output(string expression, ProgramContext tree, CNIPort port){
-		Expression = expression;
 		Port = port;
+		Expression = expression;
 		Tree = tree;
-		Evaluate = ExpressionCompiler.Compile(Tree);
+		Evaluate = Compiler.Compile(Tree);
 	}
 
 	public void Update(SymbolTable table){

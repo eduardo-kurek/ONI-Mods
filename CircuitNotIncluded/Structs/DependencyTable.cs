@@ -1,4 +1,5 @@
 using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors;
 
 namespace CircuitNotIncluded.Structs;
 
@@ -25,7 +26,7 @@ public class DependencyTable {
 	}
 	
 	private void AddDependency(Output output){
-		var inputPorts = IdExtractor.Extract(output.Tree);
+		var inputPorts = Compiler.ExtractIds(output.Tree);
 		foreach(string inputPort in inputPorts){
 			table[inputPort].Add(output);
 		}

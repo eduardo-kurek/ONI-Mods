@@ -9,12 +9,12 @@ namespace CircuitNotIncluded;
  * This class is equivalent to `BuildingConfigManager` in the original game,
  * But is exclusive to the mod and is used to manage the circuits.
  */
-internal sealed class CircuitManager {
+internal sealed class CircuitConfigManager {
 	private GameObject? baseTemplate;
-	private static readonly Lazy<CircuitManager> instance = new(() => new CircuitManager());
-	public static CircuitManager Instance => instance.Value;
+	private static readonly Lazy<CircuitConfigManager> instance = new(() => new CircuitConfigManager());
+	public static CircuitConfigManager Instance => instance.Value;
 
-	private CircuitManager(){
+	private CircuitConfigManager(){
 		InitializeBaseTemplate();
 	}
 
@@ -71,9 +71,9 @@ internal sealed class CircuitManager {
 		
 		Assets.AddBuildingDef(def);
 		
-		Utilss.AddBuildingStrings(def.PrefabID, name, "Description", "Effect");
+		CNIUtil.AddBuildingStrings(def.PrefabID, name, "Description", "Effect");
 		ModUtil.AddBuildingToPlanScreen("Automation", def.PrefabID, "wires", "LogicWire");
-		Debug.Log("Circuit registered successfully: " + def.PrefabID);
+		CNIUtil.Log("Circuit registered successfully: " + def.PrefabID);
 	}
 	
 }

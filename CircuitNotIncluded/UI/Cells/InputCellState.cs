@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class InputCellState(PortInfo info, CellOffset offset) : PortCellState(info, offset) {
+public class InputCellState(PortInfo info) : PortCellState(info) {
+	private readonly PortInfo Info = info;
 	protected override string GetCellTitle(){ return "Input Port"; }
 	protected override Sprite GetPortSprite(){
 		return Assets.instance.logicModeUIData.inputSprite;
@@ -24,16 +25,16 @@ public class InputCellState(PortInfo info, CellOffset offset) : PortCellState(in
 	}
 	
 	public InputPort ToPort(){
-		return InputPort.Create(info);
+		return InputPort.Create(Info);
 	}
 
 	public static InputCellState Create(InputPort port){
-		return new InputCellState(port.GetInfo(), port.WrappedPort.cellOffset);
+		return new InputCellState(port.GetInfo());
 	}
 
 	public static InputCellState Create(CellOffset offset){
 		PortInfo info = PortInfo.Default(offset);
-		return new InputCellState(info, offset);
+		return new InputCellState(info);
 	}
 
 	public override void OnEnter(CircuitCell owner){

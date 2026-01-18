@@ -5,9 +5,10 @@ using static CircuitNotIncluded.Grammar.ExpressionParser;
 namespace CircuitNotIncluded.UI.Cells;
 
 
-public class OutputCellState(string expression, PortInfo info, CellOffset offset) : PortCellState(info, offset) {
+public class OutputCellState(string expression, PortInfo info) : PortCellState(info) {
 	private string Expression = expression;
-	
+	private readonly PortInfo Info = info;
+
 	protected override string GetCellTitle(){ return "Output Port"; }
 	protected override Sprite GetPortSprite(){
 		return Assets.instance.logicModeUIData.outputSprite;
@@ -36,7 +37,7 @@ public class OutputCellState(string expression, PortInfo info, CellOffset offset
 	public int Y => offset.y;
 	
 	public OutputPort ToPort(ProgramContext tree){
-		return OutputPort.Create(Expression, tree, info);
+		return OutputPort.Create(Expression, tree, Info);
 	}
 
 	public static OutputCellState Create(OutputPort outputPort){
@@ -47,12 +48,12 @@ public class OutputCellState(string expression, PortInfo info, CellOffset offset
 			outputPort.WrappedPort.activeDescription,
 			outputPort.WrappedPort.inactiveDescription
 		);
-		return new OutputCellState(outputPort.Expression, info, outputPort.WrappedPort.cellOffset);
+		return new OutputCellState(outputPort.Expression, info);
 	}
 	
 	public static OutputCellState Create(CellOffset offset){
 		PortInfo info = PortInfo.Default(offset);
-		return new OutputCellState(string.Empty, info, offset);
+		return new OutputCellState(string.Empty, info);
 	}
 
 	public override void OnEnter(CircuitCell owner){

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public abstract class PortCellState(PortInfo info, CellOffset offset) : CircuitCellState(offset) {
+public abstract class PortCellState(PortInfo info) : CircuitCellState(info.Offset) {
 	public string GetId() => info.Id.Trim();
 	public CellOffset GetOffset() => offset;
 	public int X() => offset.x;

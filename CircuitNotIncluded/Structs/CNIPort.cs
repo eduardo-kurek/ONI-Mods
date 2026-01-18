@@ -7,15 +7,17 @@ namespace CircuitNotIncluded.Structs;
  * Contains the original id (not hashed) of the port and the Port object itself.
  */
 public class CNIPort {
-	private readonly Port P;
+	public Port WrappedPort { get; }
 	public string OriginalId { get; private set; }
-	public HashedString HashedId => P.id;
+	public HashedString HashedId => WrappedPort.id;
+	public string Description => WrappedPort.description;
+	public string ActiveDescription => WrappedPort.activeDescription;
+	public string InactiveDescription => WrappedPort.inactiveDescription;
+	public CellOffset Offset => WrappedPort.cellOffset;
 	
-	public Port WrappedPort => P;
-	
-	protected CNIPort(string id, Port port){
+	protected CNIPort(string id, Port wrappedPort){
 		OriginalId = id;
-		P = port;
+		WrappedPort = wrappedPort;
 	}
 
 	public PortInfo GetInfo(){

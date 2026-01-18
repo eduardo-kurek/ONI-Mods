@@ -2,7 +2,7 @@ namespace CircuitNotIncluded.Structs;
 using static LogicPorts;
 
 public class InputPort : CNIPort {
-	private InputPort(string id, Port port) : base(id, port) {}
+	private InputPort(string id, Port wrappedPort) : base(id, wrappedPort) {}
 	
 	public static InputPort Create(PortInfo info){
 		var port = Port.InputPort(

@@ -41,14 +41,7 @@ public class OutputCellState(string expression, PortInfo info) : PortCellState(i
 	}
 
 	public static OutputCellState Create(OutputPort outputPort){
-		PortInfo info = new PortInfo(
-			outputPort.OriginalId,
-			outputPort.WrappedPort.cellOffset,
-			outputPort.WrappedPort.description,
-			outputPort.WrappedPort.activeDescription,
-			outputPort.WrappedPort.inactiveDescription
-		);
-		return new OutputCellState(outputPort.Expression, info);
+		return new OutputCellState(outputPort.Expression, outputPort.GetInfo());
 	}
 	
 	public static OutputCellState Create(CellOffset offset){

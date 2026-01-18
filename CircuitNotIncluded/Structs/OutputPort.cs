@@ -10,8 +10,8 @@ public class OutputPort : CNIPort {
 	public EvaluateFunc EvaluateFunc { get; }
 	public ProgramContext Tree { get; }
 
-	private OutputPort(string expression, ProgramContext tree, string id, Port port)
-		: base(id, port)
+	private OutputPort(string expression, ProgramContext tree, string id, Port wrappedPort)
+		: base(id, wrappedPort)
 	{
 		Expression = expression;
 		Tree = tree;

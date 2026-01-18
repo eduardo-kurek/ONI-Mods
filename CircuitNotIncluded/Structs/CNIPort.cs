@@ -7,25 +7,26 @@ namespace CircuitNotIncluded.Structs;
  * Contains the original id (not hashed) of the port and the Port object itself.
  */
 public class CNIPort {
-	public string OriginalId;
-	public readonly Port P;
+	public Port WrappedPort { get; }
+	public string OriginalId { get; private set; }
+	public HashedString HashedId => WrappedPort.id;
+	public string Description => WrappedPort.description;
+	public string ActiveDescription => WrappedPort.activeDescription;
+	public string InactiveDescription => WrappedPort.inactiveDescription;
+	public CellOffset Offset => WrappedPort.cellOffset;
 	
-	public static implicit operator Port(CNIPort cniPort) => cniPort.P;
-
-	private CNIPort(string id, Port port){
+	protected CNIPort(string id, Port wrappedPort){
 		OriginalId = id;
-		P = port;
+		WrappedPort = wrappedPort;
 	}
 
-	public static CNIPort InputPort(string id, CellOffset cell_offset, string description, string activeDescription, 
-		string inactiveDescription, bool show_wire_missing_icon = false, bool display_custom_name = false){
-		var port = Port.InputPort(id, cell_offset, description, activeDescription, inactiveDescription, show_wire_missing_icon, display_custom_name);
-		return new CNIPort(id, port);
-	}
-	
-	public static CNIPort OutputPort(string id, CellOffset cell_offset, string description, string activeDescription, 
-		string inactiveDescription, bool show_wire_missing_icon = false, bool display_custom_name = false){
-		var port = Port.OutputPort(id, cell_offset, description, activeDescription, inactiveDescription, show_wire_missing_icon, display_custom_name);
-		return new CNIPort(id, port);
+	public PortInfo GetInfo(){
+		return new PortInfo(
+			OriginalId,
+			WrappedPort.cellOffset,
+			WrappedPort.description,
+			WrappedPort.activeDescription,
+			WrappedPort.inactiveDescription
+		);
 	}
 }

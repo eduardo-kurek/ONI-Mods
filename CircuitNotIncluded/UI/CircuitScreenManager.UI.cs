@@ -132,7 +132,7 @@ public partial class CircuitScreenManager {
 			.StartCorner(GridLayoutGroup.Corner.LowerLeft)
 			.StartAxis(GridLayoutGroup.Axis.Horizontal)
 			.gameObject
-			.Image().Sprite(circuit.GetOffSprite())
+			.Image().Sprite(circuit.GetCircuitSprite())
 			.gameObject
 			.SetParent(container);
 		
@@ -167,7 +167,7 @@ public partial class CircuitScreenManager {
 	
 	private void BuildInputPorts(GameObject container){
 		Circuit c = circuit;
-		foreach(CNIPort input in c.InputPorts){
+		foreach(InputPort input in c.InputPorts){
 			var cellType = InputCellState.Create(input);
 			var offset = cellType.GetOffset();
 			int index = circuit.ToLinearIndex(offset);
@@ -177,7 +177,7 @@ public partial class CircuitScreenManager {
 
 	private void BuildOutputPorts(GameObject container){
 		Circuit c = circuit;
-		foreach(Output output in c.GetOutputs()){
+		foreach(OutputPort output in c.GetOutputs()){
 			var cellType = OutputCellState.Create(output);
 			var offset = cellType.GetOffset();
 			int index = circuit.ToLinearIndex(offset);

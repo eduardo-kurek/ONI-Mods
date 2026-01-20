@@ -10,7 +10,7 @@ public class OutputPort : CNIPort {
 	public EvaluateFunc EvaluateFunc { get; }
 	public ProgramContext Tree { get; }
 
-	private OutputPort(string expression, ProgramContext tree, string id, Port wrappedPort)
+	private OutputPort(string expression, ProgramContext tree, string id, CellOffset offset, Port wrappedPort)
 		: base(id, wrappedPort)
 	{
 		Expression = expression;
@@ -20,10 +20,10 @@ public class OutputPort : CNIPort {
 
 	public int Evaluate(SymbolTable table) => EvaluateFunc(table);
 	
-	public static OutputPort Create(string expression, ProgramContext tree, PortInfo info){
+	public static OutputPort Create(string expression, ProgramContext tree, CellOffset offset, PortInfo info){
 		var port = Port.OutputPort(
-			info.Id, info.Offset, info.Description, info.ActiveDescription, info.InactiveDescription
+			info.Id, offset, info.Description, info.ActiveDescription, info.InactiveDescription
 		);
-		return new OutputPort(expression, tree, info.Id, port);
+		return new OutputPort(expression, tree, info.Id, offset, port);
 	}
 }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class EmptyCellState(CellOffset offset) : CircuitCellState(offset) {
+public class EmptyCellState : CircuitCellState {
 	protected override string GetCellTitle(){ return "Empty Cell"; }
 
 	public override void UpdateImage(Image img){
@@ -53,12 +53,12 @@ public class EmptyCellState(CellOffset offset) : CircuitCellState(offset) {
 	}
 	
 	private void PromoteToInput(){
-		var inputType = InputCellState.Create(offset);
-		owner.TransitionTo(inputType);
+		var inputType = InputCellState.Create();
+		Owner.TransitionTo(inputType);
 	}
 
 	private void PromoteToOutput(){
-		var outputType = OutputCellState.Create(offset);
-		owner.TransitionTo(outputType);
+		var outputType = OutputCellState.Create();
+		Owner.TransitionTo(outputType);
 	}
 }

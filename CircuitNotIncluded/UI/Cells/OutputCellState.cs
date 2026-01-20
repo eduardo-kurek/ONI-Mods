@@ -33,19 +33,17 @@ public class OutputCellState(string expression, PortInfo info) : PortCellState(i
 	}
 	
 	public string GetExpression() => Expression.Trim();
-	public int X => offset.x;
-	public int Y => offset.y;
 	
 	public OutputPort ToPort(ProgramContext tree){
-		return OutputPort.Create(Expression, tree, Info);
+		return OutputPort.Create(Expression, tree, Owner.Offset, Info);
 	}
 
 	public static OutputCellState Create(OutputPort outputPort){
 		return new OutputCellState(outputPort.Expression, outputPort.GetInfo());
 	}
 	
-	public static OutputCellState Create(CellOffset offset){
-		PortInfo info = PortInfo.Default(offset);
+	public static OutputCellState Create(){
+		PortInfo info = PortInfo.Default();
 		return new OutputCellState(string.Empty, info);
 	}
 

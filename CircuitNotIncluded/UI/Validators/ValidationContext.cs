@@ -1,7 +1,6 @@
 using CircuitNotIncluded.Grammar;
 using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.UI.Cells;
-using CircuitNotIncluded.Utils;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.UI.Validators;
@@ -36,7 +35,7 @@ public class ValidationContext {
 	}
 	
 	public void AddError(PortCellState cell, string msg){
-		Errors.Add($"({cell.X()}, {cell.Y()}). {msg}");
+		Errors.Add($"({cell.GetOffset().x}, {cell.GetOffset().y}). {msg}");
 	}
 	
 	public ProgramContext Parse(OutputCellState cell){

@@ -6,12 +6,9 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public abstract class PortCellState(PortInfo info) : CircuitCellState(info.Offset) {
+public abstract class PortCellState(PortInfo info) : CircuitCellState {
 	public string GetId() => info.Id.Trim();
-	public CellOffset GetOffset() => offset;
-	public int X() => offset.x;
-	public int Y() => offset.y;
-
+	
 	protected abstract Sprite GetPortSprite();
 
 	public override void UpdateImage(Image img){
@@ -56,7 +53,7 @@ public abstract class PortCellState(PortInfo info) : CircuitCellState(info.Offse
 	}
 
 	protected virtual void Delete(){
-		EmptyCellState state = new(offset);
-		owner.TransitionTo(state);
+		EmptyCellState state = new();
+		Owner.TransitionTo(state);
 	}
 }

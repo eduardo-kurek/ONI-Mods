@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class InvalidCellState(CellOffset offset) : CircuitCellState(offset) {
+public class InvalidCellState : CircuitCellState {
 	public override GameObject BuildEditorContent(){
 		GameObject mainContainer = BuildContainer();
 		GameObject textContainer = BuildTextContainer(mainContainer);

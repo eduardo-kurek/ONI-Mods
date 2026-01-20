@@ -153,15 +153,15 @@ public partial class CircuitScreenManager {
 		Circuit c = circuit;
 		for(int i = 0; i < c.Width * c.Height; i++){
 			CellOffset offset = c.ToCellOffset(i);
-			EmptyCellState cellState = new(offset);
-			BuildNewPort(container, cellState);
+			EmptyCellState cellState = new();
+			BuildNewPort(container, cellState, offset);
 		}
 	}
 	
-	private static void BuildNewPort(GameObject container, CircuitCellState cellState){
+	private static void BuildNewPort(GameObject container, CircuitCellState cellState, CellOffset offset){
 		new GameObject("Cell")
 			.RectTransform().gameObject
-			.CircuitCell().TransitionTo(cellState).gameObject
+			.CircuitCell(offset).TransitionTo(cellState).gameObject
 			.SetParent(container);
 	}
 	
@@ -169,8 +169,7 @@ public partial class CircuitScreenManager {
 		Circuit c = circuit;
 		foreach(InputPort input in c.InputPorts){
 			var cellType = InputCellState.Create(input);
-			var offset = cellType.GetOffset();
-			int index = circuit.ToLinearIndex(offset);
+			int index = circuit.ToLinearIndex(input.Offset);
 			ChangeCellType(index, cellType);
 		}
 	}
@@ -179,8 +178,7 @@ public partial class CircuitScreenManager {
 		Circuit c = circuit;
 		foreach(OutputPort output in c.GetOutputs()){
 			var cellType = OutputCellState.Create(output);
-			var offset = cellType.GetOffset();
-			int index = circuit.ToLinearIndex(offset);
+			int index = circuit.ToLinearIndex(output.Offset);
 			ChangeCellType(index, cellType);
 		}
 	}
@@ -212,13 +210,13 @@ public partial class CircuitScreenManager {
 	private void CreateInvalidPorts(List<CircuitCell> cells){
 		foreach(CircuitCell cell in cells){
 			if(!CellHasConflict(cell)) continue;
-			var invalidType = new InvalidCellState(cell.GetOffset());
+			var invalidType = new InvalidCellState();
 			cell.TransitionTo(invalidType);
 		}
 	}
 
 	private bool CellHasConflict(CircuitCell cell){
-		int globalCell = circuit.GetGlobalPositionCell(cell.GetOffset());
+		int globalCell = circuit.GetGlobalPositionCell(cell.Offset);
 		object endpointInCell = Game.Instance.logicCircuitSystem.GetEndpoint(globalCell);
 		return endpointInCell != null;
 	}

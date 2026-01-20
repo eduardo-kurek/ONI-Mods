@@ -113,12 +113,21 @@ public class Circuit : KMonoBehaviour {
 		);
 		return Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
 	}
+
+	/**
+	 * When the circuit has width greater or equal than 3,
+	 * its origin is not (0,0) anymore, but turns into negative values. Examples:
+	 * 3x3 -> (-1,0); 4x4 -> (-1,0)
+	 * 5x5 -> (-2,0); 6x6 -> (-2,0) and so on.
+	 * The following formula is to get this offset value
+	 */
+	private int OriginOffset => (Width - 1) / 2;
 	
 	// Converts a 2D CellOffset to a linear offset.
 	// The index starts on the left-bottom, and goes to the right-up.
-	public int ToLinearIndex(CellOffset offset) => Width * offset.y + offset.x;
+	public int ToLinearIndex(CellOffset offset) => Width * offset.y + offset.x + OriginOffset;
 	
 	// Converts a linear index to a 2D CellOffset.
 	// The index starts on the left-bottom, and goes to the right-up.
-	public CellOffset ToCellOffset(int index) => new CellOffset(index % Width, index / Width);
+	public CellOffset ToCellOffset(int index) => new((index % Width) - OriginOffset, index / Width);
 }

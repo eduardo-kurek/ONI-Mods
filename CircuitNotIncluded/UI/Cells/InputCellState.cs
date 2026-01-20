@@ -25,15 +25,15 @@ public class InputCellState(PortInfo info) : PortCellState(info) {
 	}
 	
 	public InputPort ToPort(){
-		return InputPort.Create(Info);
+		return InputPort.Create(Owner.Offset, Info);
 	}
 
 	public static InputCellState Create(InputPort port){
 		return new InputCellState(port.GetInfo());
 	}
 
-	public static InputCellState Create(CellOffset offset){
-		PortInfo info = PortInfo.Default(offset);
+	public static InputCellState Create(){
+		PortInfo info = PortInfo.Default();
 		return new InputCellState(info);
 	}
 

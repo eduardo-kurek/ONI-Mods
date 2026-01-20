@@ -11,6 +11,7 @@ namespace CircuitNotIncluded.UI.Cells;
  */
 public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	private CircuitCellState? currentState;
+	public CellOffset Offset { get; private set; }
 	
 	private Outline outline = null!;
 	public static CircuitCell? Selected;
@@ -18,6 +19,11 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	
 	public static readonly TextStyleSetting LabelStyle = PUITuning.Fonts.TextDarkStyle;
 	public static readonly TextStyleSetting TitleStyle = PUITuning.Fonts.TextDarkStyle.DeriveStyle(16);
+	
+	public CircuitCell Init(CellOffset offset){
+		Offset = offset;
+		return this;
+	}
 	
 	private void Start(){
 		outline = gameObject.AddComponent<Outline>();
@@ -43,10 +49,6 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 
 	public CircuitCellState GetCellType(){
 		return currentState!;
-	}
-
-	public CellOffset GetOffset(){
-		return currentState!.GetOffset();
 	}
 
 	public CircuitCell TransitionTo(CircuitCellState newState){

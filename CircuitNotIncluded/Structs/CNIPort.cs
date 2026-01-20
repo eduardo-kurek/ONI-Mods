@@ -8,6 +8,7 @@ namespace CircuitNotIncluded.Structs;
  */
 public class CNIPort {
 	public Port WrappedPort { get; }
+	
 	public string OriginalId { get; private set; }
 	public HashedString HashedId => WrappedPort.id;
 	public string Description => WrappedPort.description;
@@ -23,7 +24,6 @@ public class CNIPort {
 	public PortInfo GetInfo(){
 		return new PortInfo(
 			OriginalId,
-			WrappedPort.cellOffset,
 			WrappedPort.description,
 			WrappedPort.activeDescription,
 			WrappedPort.inactiveDescription

@@ -6,9 +6,8 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public abstract class CircuitCellState(CellOffset offset) {
-	protected CircuitCell owner = null!;
-	protected CellOffset offset = offset;
+public abstract class CircuitCellState {
+	public CircuitCell Owner { get; private set; } = null!;
 	
 	public abstract GameObject BuildEditorContent();
 	public abstract void UpdateImage(Image img);
@@ -31,13 +30,11 @@ public abstract class CircuitCellState(CellOffset offset) {
 
 	private GameObject BuildCoordsLabel(GameObject container){
 		return new PLabel("Coords")
-			.Text($"{GetCellTitle()} ({offset.x}, {offset.y})")
+			.Text($"{GetCellTitle()} ({GetOffset().x}, {GetOffset().y})")
 			.Style(CircuitCell.TitleStyle)
 			.FlexSize(1, 0)
 			.AddTo(container);
 	}
-
-	protected abstract string GetCellTitle();
 	
 	protected GameObject BuildTextField(GameObject parent, string labelText, string defaultValue, 
 		int maxLength, PUIDelegates.OnTextChanged onTextChanged){
@@ -64,16 +61,16 @@ public abstract class CircuitCellState(CellOffset offset) {
 
 		return panel;
 	}
-	
-	public void SetOwner(CircuitCell owner){
-		this.owner = owner;
+
+	public CellOffset GetOffset() {
+		return Owner.Offset;
 	}
-
-	public CellOffset GetOffset() => offset;
-
+	
 	public virtual void OnEnter(CircuitCell owner){
-		this.owner = owner;
+		Owner = owner;
 	}
 	
 	public virtual void OnExit() {}
+
+	protected abstract string GetCellTitle();
 }

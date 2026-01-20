@@ -73,8 +73,8 @@ public static class Extensions
 		return img;
 	}
 	
-	public static CircuitCell CircuitCell(this GameObject go){
-		return go.AddOrGet<CircuitCell>();
+	public static CircuitCell CircuitCell(this GameObject go, CellOffset offset) {
+		return go.AddOrGet<CircuitCell>().Init(offset);
 	}
 	
 	public static GridLayoutGroup GridLayoutGroup(this GameObject go){

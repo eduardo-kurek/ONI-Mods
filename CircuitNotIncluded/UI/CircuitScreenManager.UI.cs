@@ -79,11 +79,16 @@ public partial class CircuitScreenManager {
 	}
 
 	private GameObject BuildHeaderTitle(GameObject container){
-		return new PLabel("Title")
-			.Text("Circuit name")
+		var panel = new PPanel("Title Panel")
 			.Margin(10)
-			.Style(TextStyle)
 			.AddTo(container);
+		
+		return new PTextField("Title")
+			.Text(circuitNameBuffer)
+			.MinWidth(300)
+			.MaxLength(100)
+			.SetOnTextChanged((go, source) => { circuitNameBuffer = source; })
+			.AddTo(panel);
 	}
 
 	private void BuildBody(GameObject container){

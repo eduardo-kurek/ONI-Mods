@@ -19,7 +19,7 @@ public class Circuit : KMonoBehaviour {
 	
 	private LogicValueChanged lastChange = null!;
 	
-	public string CNIName => def.PrefabID;
+	public string CNIName { get; set; } = "Circuit Name";
 	public int Width => def.WidthInCells;
 	public int Height => def.HeightInCells;
 	public List<OutputPort> GetOutputs() => OutputPorts;

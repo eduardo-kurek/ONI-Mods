@@ -52,6 +52,7 @@ internal sealed class CircuitConfigManager {
 		UnityEngine.Object.DontDestroyOnLoad(gameObject);
 		KPrefabID component = gameObject.GetComponent<KPrefabID>();
 		component.PrefabTag = def.Tag;
+		component.AddTag(GameTags.OverlayBehindConduits);					
 		component.SetDlcRestrictions(def);
 		gameObject.name = def.PrefabID + "Template";
 		gameObject.GetComponent<Building>().Def = def;

@@ -12,6 +12,7 @@ namespace CircuitNotIncluded.UI.Cells;
 public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	private CircuitCellState? currentState;
 	public CellOffset Offset { get; private set; }
+	public int DisplayIndex { get; private set; }
 	
 	private Outline outline = null!;
 	public static CircuitCell? Selected;
@@ -20,8 +21,9 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	public static readonly TextStyleSetting LabelStyle = PUITuning.Fonts.TextDarkStyle;
 	public static readonly TextStyleSetting TitleStyle = PUITuning.Fonts.TextDarkStyle.DeriveStyle(16);
 	
-	public CircuitCell Init(CellOffset offset){
+	public CircuitCell Init(CellOffset offset, int displayIndex){
 		Offset = offset;
+		DisplayIndex = displayIndex;
 		return this;
 	}
 	
@@ -35,6 +37,7 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	public void OnPointerClick(PointerEventData eventData){
 		Selected?.Deselect();
 		Select();
+		// Build sideScreen that references the cell pressed
 		CircuitScreenManager.Instance.BuildSideScreen(currentState!);
 	}
 

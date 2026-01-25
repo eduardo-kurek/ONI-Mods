@@ -245,6 +245,11 @@ public static class Extensions
 		return field;
 	}
 	
+	public static PTextField MinWidth(this PTextField field, int min) {
+		field.MinWidth = min;
+		return field;
+	}
+	
 	public static PTextField TextAlignment(this PTextField field, TextAlignmentOptions option) {
 		field.TextAlignment = option;
 		return field;

@@ -125,9 +125,16 @@ public class Circuit : KMonoBehaviour {
 	
 	// Converts a 2D CellOffset to a linear offset.
 	// The index starts on the left-bottom, and goes to the right-up.
-	public int ToLinearIndex(CellOffset offset) => Width * offset.y + offset.x + OriginOffset;
+	public int ToGridIndex(CellOffset offset) => Width * offset.y + offset.x + OriginOffset;
+
+	// Converts a 2D CellOffset to a display index (Top-Left).
+	public int ToDisplayIndex(CellOffset offset) {
+		CellOffset mirrored = offset;
+		mirrored.y = (Height - 1) - offset.y;
+		return ToGridIndex(mirrored);
+	}
 	
 	// Converts a linear index to a 2D CellOffset.
 	// The index starts on the left-bottom, and goes to the right-up.
-	public CellOffset ToCellOffset(int index) => new((index % Width) - OriginOffset, index / Width);
+	public CellOffset ToCellOffset(int index) => new(index % Width - OriginOffset, index / Width);
 }

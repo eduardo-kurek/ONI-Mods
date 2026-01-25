@@ -35,7 +35,7 @@ public class ValidationContext {
 	}
 	
 	public void AddError(PortCellState cell, string msg){
-		Errors.Add($"({cell.GetOffset().x}, {cell.GetOffset().y}). {msg}");
+		Errors.Add($"({cell.GetDisplayIndex()}). {msg}");
 	}
 	
 	public ProgramContext Parse(OutputCellState cell){

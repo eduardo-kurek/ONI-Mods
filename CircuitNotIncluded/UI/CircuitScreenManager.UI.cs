@@ -154,14 +154,14 @@ public partial class CircuitScreenManager {
 		for(int i = 0; i < c.Width * c.Height; i++){
 			CellOffset offset = c.ToCellOffset(i);
 			EmptyCellState cellState = new();
-			BuildNewPort(container, cellState, offset);
+			BuildNewPort(container, cellState, offset, circuit.ToDisplayIndex(offset));
 		}
 	}
 	
-	private static void BuildNewPort(GameObject container, CircuitCellState cellState, CellOffset offset){
+	private static void BuildNewPort(GameObject container, CircuitCellState cellState, CellOffset offset, int displayIndex){
 		new GameObject("Cell")
 			.RectTransform().gameObject
-			.CircuitCell(offset).TransitionTo(cellState).gameObject
+			.CircuitCell(offset, displayIndex).TransitionTo(cellState).gameObject
 			.SetParent(container);
 	}
 	
@@ -169,7 +169,7 @@ public partial class CircuitScreenManager {
 		Circuit c = circuit;
 		foreach(InputPort input in c.InputPorts){
 			var cellType = InputCellState.Create(input);
-			int index = circuit.ToLinearIndex(input.Offset);
+			int index = circuit.ToGridIndex(input.Offset);
 			ChangeCellType(index, cellType);
 		}
 	}
@@ -178,7 +178,7 @@ public partial class CircuitScreenManager {
 		Circuit c = circuit;
 		foreach(OutputPort output in c.GetOutputs()){
 			var cellType = OutputCellState.Create(output);
-			int index = circuit.ToLinearIndex(output.Offset);
+			int index = circuit.ToGridIndex(output.Offset);
 			ChangeCellType(index, cellType);
 		}
 	}

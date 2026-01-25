@@ -9,6 +9,8 @@ namespace CircuitNotIncluded.UI.Cells;
 public abstract class CircuitCellState {
 	public CircuitCell Owner { get; private set; } = null!;
 	
+	
+	
 	public abstract GameObject BuildEditorContent();
 	public abstract void UpdateImage(Image img);
 
@@ -30,7 +32,7 @@ public abstract class CircuitCellState {
 
 	private GameObject BuildCoordsLabel(GameObject container){
 		return new PLabel("Coords")
-			.Text($"{GetCellTitle()} ({GetOffset().x}, {GetOffset().y})")
+			.Text($"{GetCellTitle()} ({Owner.DisplayIndex})")
 			.Style(CircuitCell.TitleStyle)
 			.FlexSize(1, 0)
 			.AddTo(container);
@@ -64,6 +66,10 @@ public abstract class CircuitCellState {
 
 	public CellOffset GetOffset() {
 		return Owner.Offset;
+	}
+
+	public int GetDisplayIndex() {
+		return Owner.DisplayIndex;
 	}
 	
 	public virtual void OnEnter(CircuitCell owner){

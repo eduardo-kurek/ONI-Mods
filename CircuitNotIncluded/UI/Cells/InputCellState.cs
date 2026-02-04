@@ -5,10 +5,8 @@ namespace CircuitNotIncluded.UI.Cells;
 
 public class InputCellState(PortInfo info) : PortCellState(info) {
 	private readonly PortInfo Info = info;
-	protected override string GetCellTitle(){ return "Input Port"; }
-	protected override Sprite GetPortSprite(){
-		return Assets.instance.logicModeUIData.inputSprite;
-	}
+	protected override string CellTitle => "Input Port";
+	protected override Sprite PortSprite => Assets.instance.logicModeUIData.inputSprite;
 	
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();
@@ -18,10 +16,6 @@ public class InputCellState(PortInfo info) : PortCellState(info) {
 		BuildInactiveDescription(panel);
 		BuildDeleteButton(panel);
 		return panel;
-	}
-
-	protected override void Delete(){
-		base.Delete();
 	}
 	
 	public InputPort ToPort(){

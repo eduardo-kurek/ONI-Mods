@@ -7,17 +7,17 @@ public class IdNotDuplicated(PortHandler? next = null) : PortHandler(next) {
 		=> IsDuplicated(cell, ctx);
 	
 	private static bool IsDuplicated(PortCellState cell, ValidationContext ctx) 
-		=> ctx.DeclaredIds.ContainsKey(cell.GetId());
+		=> ctx.DeclaredIds.ContainsKey(cell.Id);
 	
 	protected override void OnSuccess(PortCellState cell, ValidationContext ctx) 
 		=> Register(cell, ctx);
 	
 	private static void Register(PortCellState cell, ValidationContext ctx){
-		ctx.DeclaredIds[cell.GetId()] = cell.GetOffset();
+		ctx.DeclaredIds[cell.Id] = cell.GetOffset();
 	}
 	
 	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){
-		string id = cell.GetId();
+		string id = cell.Id;
 		CellOffset offset = ctx.DeclaredIds[id];
 		return $"Duplicated port id: {id}. Already declared in ({offset.x}, {offset.y}).";
 	}

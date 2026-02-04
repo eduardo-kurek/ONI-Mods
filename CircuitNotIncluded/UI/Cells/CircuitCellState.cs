@@ -9,8 +9,6 @@ namespace CircuitNotIncluded.UI.Cells;
 public abstract class CircuitCellState {
 	public CircuitCell Owner { get; private set; } = null!;
 	
-	
-	
 	public abstract GameObject BuildEditorContent();
 	public abstract void UpdateImage(Image img);
 
@@ -32,7 +30,7 @@ public abstract class CircuitCellState {
 
 	private GameObject BuildCoordsLabel(GameObject container){
 		return new PLabel("Coords")
-			.Text($"{GetCellTitle()} ({Owner.DisplayIndex})")
+			.Text($"{CellTitle} ({Owner.DisplayIndex})")
 			.Style(CircuitCell.TitleStyle)
 			.FlexSize(1, 0)
 			.AddTo(container);
@@ -78,5 +76,5 @@ public abstract class CircuitCellState {
 	
 	public virtual void OnExit() {}
 
-	protected abstract string GetCellTitle();
+	protected abstract string CellTitle { get; }
 }

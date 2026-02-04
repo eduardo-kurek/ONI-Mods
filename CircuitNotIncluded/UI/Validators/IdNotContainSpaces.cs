@@ -4,7 +4,7 @@ namespace CircuitNotIncluded.UI.Validators;
 
 public class IdNotContainSpaces(PortHandler? next = null) : PortHandler(next) {
 	protected override bool ErrorOccurred(PortCellState cell, ValidationContext ctx){
-		return cell.GetId().Contains(" ");
+		return cell.Id.Contains(" ");
 	}
 	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){
 		return "Port cannot contain spaces.";

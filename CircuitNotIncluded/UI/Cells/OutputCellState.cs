@@ -8,11 +8,8 @@ namespace CircuitNotIncluded.UI.Cells;
 public class OutputCellState(string expression, PortInfo info) : PortCellState(info) {
 	private string Expression = expression;
 	private readonly PortInfo Info = info;
-
-	protected override string GetCellTitle(){ return "Output Port"; }
-	protected override Sprite GetPortSprite(){
-		return Assets.instance.logicModeUIData.outputSprite;
-	}
+	protected override string CellTitle => "Output Port";
+	protected override Sprite PortSprite => Assets.instance.logicModeUIData.outputSprite;
 	
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();

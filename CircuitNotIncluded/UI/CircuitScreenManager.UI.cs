@@ -181,7 +181,7 @@ public partial class CircuitScreenManager {
 
 	private void BuildOutputPorts(GameObject container){
 		Circuit c = circuit;
-		foreach(OutputPort output in c.GetOutputs()){
+		foreach(OutputPort output in c.OutputPorts){
 			var cellType = OutputCellState.Create(output);
 			int index = circuit.ToGridIndex(output.Offset);
 			ChangeCellType(index, cellType);

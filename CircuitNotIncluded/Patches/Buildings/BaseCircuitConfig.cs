@@ -53,7 +53,6 @@ public abstract class BaseCircuitConfig : IBuildingConfig {
 	}
 
 	public override void DoPostConfigureComplete(GameObject go){
-		go.AddComponent<LogicPorts>();
 		go.AddComponent<Circuit>();
 		go.GetComponent<KPrefabID>().AddTag(GameTags.OverlayBehindConduits);
 		CNIUtil.AddBuildingStrings(Name, Name, "Description", "Effect");

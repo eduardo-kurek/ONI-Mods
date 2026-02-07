@@ -22,7 +22,7 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 	public override object? VisitIdFactor(IdFactorContext context){
 		il.Emit(OpCodes.Ldarg_0);
 		il.Emit(OpCodes.Ldstr, context.ID().GetText());
-		il.Emit(OpCodes.Call, typeof(SymbolTable).GetMethod("GetInputValue")!);
+		il.Emit(OpCodes.Call, typeof(SymbolTable).GetMethod("GetValue")!);
 		return null;
 	}
 

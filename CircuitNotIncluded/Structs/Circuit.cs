@@ -1,17 +1,20 @@
-using System.Runtime.CompilerServices;
-using CircuitNotIncluded.UI.Cells;
-using TemplateClasses;
+using CircuitNotIncluded.Grammar;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace CircuitNotIncluded.Structs;
 
-public class Circuit : KMonoBehaviour, IInputSource {
+public class Circuit : KMonoBehaviour {
 	private const int SPRITE_TILE_SIZE = 100;
 	
 	private BuildingDef def = null!;
-	private DependencyTable dependencyTable = null!;
-	private SymbolTable symbolTable = null!;
+	private DependencyTable dependencyTable = new();
+	private readonly SymbolTable symbolTable = new();
+
+	private bool connected = false;
+	
+	private List<CircuitEventHandler> handlers = [];
+	private Dictionary<HashedString, CircuitEventSender> senders = new();
+	
 	
 	public List<InputPort> InputPorts { get; private set; } = null!;
 	public List<OutputPort> OutputPorts { get; private set; } = null!;
@@ -36,11 +39,75 @@ public class Circuit : KMonoBehaviour, IInputSource {
 	private void InternalSetPorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
 		InputPorts = inputPorts;
 		OutputPorts = outputPorts;
-		dependencyTable = new DependencyTable(inputPorts, outputPorts);
-		symbolTable = new SymbolTable(this, inputPorts);
+		symbolTable.Clear();
+		
+		Disconnect();
+		
+		handlers.Clear();
+		senders.Clear();
+
+		foreach(InputPort inputPort in inputPorts){
+			CircuitEventHandler handler = new(this, inputPort);
+			handlers.Add(handler);
+		}
+
+		foreach(OutputPort outputPort in outputPorts){
+			CircuitEventSender sender = new(this, outputPort);
+			senders.Add(outputPort.HashedId, sender);
+		}
+		
+		Connect();
+
+		dependencyTable.Clear();
+		
+		foreach (var outputPort in outputPorts) {
+			var usedInputIds = Compiler.ExtractIds(outputPort.Tree);
+
+			foreach (string inputId in usedInputIds) {
+				dependencyTable.RegisterDependency(inputId, outputPort.HashedId);
+			}
+		}
 	}
 
-	public int GetGlobalPositionCell(CellOffset offset){
+	public void OnInputPortChanged(string inputId, int newValue){
+		if (symbolTable.GetValue(inputId) == newValue) return;
+		
+		symbolTable.SetValue(inputId, newValue);
+		
+		var dependents = dependencyTable.GetOutputDependents(inputId);
+		foreach(var senderId in dependents) {
+			
+			if (senders.TryGetValue(senderId, out var sender)) {
+				sender.Refresh(symbolTable);
+			}
+		}
+	}
+
+	private void Connect(){
+		if(connected) return;
+		
+		foreach(CircuitEventHandler handler in handlers)
+			handler.Connect();
+		
+		foreach(CircuitEventSender handler in senders.Values)
+			handler.Connect();
+
+		connected = true;
+	}
+
+	private void Disconnect(){
+		if(!connected) return;
+		
+		foreach(CircuitEventHandler handler in handlers)
+			handler.Disconnect();
+		
+		foreach(CircuitEventSender handler in senders.Values)
+			handler.Disconnect();
+		
+		connected = false;
+	}
+
+	public int GetActualCell(CellOffset offset){
 		var component = GetComponent<Rotatable>();
 		if(component != null)
 			offset = component.GetRotatedCellOffset(offset);
@@ -56,10 +123,6 @@ public class Circuit : KMonoBehaviour, IInputSource {
 			Height * SPRITE_TILE_SIZE
 		);
 		return Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
-	}
-	
-	public int GetInputPortValue(HashedString portId){
-		return 0;
 	}
 
 	/**

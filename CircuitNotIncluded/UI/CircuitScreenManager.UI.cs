@@ -221,7 +221,7 @@ public partial class CircuitScreenManager {
 	}
 
 	private bool CellHasConflict(CircuitCell cell){
-		int globalCell = circuit.GetGlobalPositionCell(cell.Offset);
+		int globalCell = circuit.GetActualCell(cell.Offset);
 		object endpointInCell = Game.Instance.logicCircuitSystem.GetEndpoint(globalCell);
 		return endpointInCell != null;
 	}

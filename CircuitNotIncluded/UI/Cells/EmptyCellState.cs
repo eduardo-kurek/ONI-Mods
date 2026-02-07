@@ -6,11 +6,10 @@ using UnityEngine.UI;
 namespace CircuitNotIncluded.UI.Cells;
 
 public class EmptyCellState : CircuitCellState {
-	protected override string GetCellTitle(){ return "Empty Cell"; }
+	protected override string CellTitle => "Empty Cell";
 
 	public override void UpdateImage(Image img){
 		img.color = Color.grey;
-		img.sprite = null;
 	}
 
 	protected override GameObject BuildContainer(){

@@ -1,16 +1,9 @@
 namespace CircuitNotIncluded.Structs;
 
 public class SymbolTable {
-	private readonly LogicPorts ports;
-	private readonly Dictionary<string, HashedString> hashes = new();
-
-	public SymbolTable(LogicPorts ports, List<InputPort> inputPorts){
-		this.ports = ports;
-		foreach(InputPort port in inputPorts)
-			hashes.Add(port.OriginalId, port.HashedId);
-	}
+	private readonly Dictionary<string, int> values = [];
 	
-	public int GetInputValue(string id){
-		return ports.GetInputValue(hashes[id]);
-	}
+	public int GetValue(string id) => values.TryGetValue(id, out int value) ? value : 0;
+	public void SetValue(string id, int value) => values[id] = value;
+	public void Clear() => values.Clear();
 }

@@ -21,9 +21,9 @@ public class ValidationContext {
 		Inputs = inputs;
 		Outputs = outputs;
 		foreach(InputCellState i in inputs)
-			InputIds.Add(i.GetId());
+			InputIds.Add(i.Id);
 		foreach(OutputCellState o in outputs)
-			OutputIds.Add(o.GetId());
+			OutputIds.Add(o.Id);
 	}
 
 	public bool HasOutputId(string id) {

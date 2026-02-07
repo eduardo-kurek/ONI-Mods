@@ -7,7 +7,7 @@ using EvaluateFunc = Func<SymbolTable, int>;
 
 public class OutputPort : CNIPort {
 	public string Expression { get; }
-	public EvaluateFunc EvaluateFunc { get; }
+	private EvaluateFunc EvaluateFunc { get; }
 	public ProgramContext Tree { get; }
 
 	private OutputPort(string expression, ProgramContext tree, string id, CellOffset offset, Port wrappedPort)

@@ -1,102 +1,126 @@
-using System.Runtime.CompilerServices;
-using CircuitNotIncluded.UI.Cells;
-using TemplateClasses;
+using CircuitNotIncluded.Grammar;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
+using static EventSystem;
 
 namespace CircuitNotIncluded.Structs;
 
 public class Circuit : KMonoBehaviour {
 	private const int SPRITE_TILE_SIZE = 100;
 	
-	private LogicPorts logicPorts = null!;
+	
 	private BuildingDef def = null!;
-	private DependencyTable dependencyTable = null!;
-	private SymbolTable symbolTable = null!;
-	
-	public List<InputPort> InputPorts { get; private set; } = null!;
-	public List<OutputPort> OutputPorts { get; private set; } = null!;
-	
-	private LogicValueChanged lastChange = null!;
-	
 	public string CNIName { get; set; } = "Circuit Name";
 	public int Width => def.WidthInCells;
 	public int Height => def.HeightInCells;
-	public List<OutputPort> GetOutputs() => OutputPorts;
+	
+	public List<CircuitInput> Inputs { get; } = [];
+	public List<CircuitOutput> Outputs { get; } = [];
+	private IEnumerable<CircuitPort> allPorts => Inputs.Concat<CircuitPort>(Outputs);
+	
+	private readonly DependencyTable dependencyTable = new();
+	private readonly SymbolTable symbolTable = new();
+	
+	private static readonly IntraObjectHandler<Circuit> OnBuildingBrokenDelegate = new (delegate(Circuit component, object data){
+		component.Connect();
+	});
+	
+	private static readonly IntraObjectHandler<Circuit> OnBuildingFullyRepairedDelegate = new (delegate(Circuit component, object data){
+		component.Disconnect();
+	});
+
+	private bool connected;
+	private bool cleaningUp;
 
 	protected override void OnSpawn(){
 		InitMembers();
 		SetPorts([], []);
-		SubscribeNetworkEvent();
+		SetUpEvents();
 	}
 
 	private void InitMembers(){
-		logicPorts = GetComponent<LogicPorts>();
 		def = GetComponent<Building>().Def;
 	}
 
 	public void SetPorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
-		InternalSetPorts(inputPorts, outputPorts);
-		RefreshCircuit();
-	}
-	
-	private void InternalSetPorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
-		InputPorts = inputPorts;
-		logicPorts.inputPortInfo = InputPorts.Select(port => port.WrappedPort).ToArray();
-		OutputPorts = outputPorts;
-		logicPorts.outputPortInfo = OutputPorts.Select(output => output.WrappedPort).ToArray();
-		dependencyTable = new DependencyTable(inputPorts, outputPorts);
-		symbolTable = new SymbolTable(logicPorts, inputPorts);
-	}
-	
-	private void RefreshCircuit(){
-		RefreshPhysicalPorts();
-		RefreshSignals(OutputPorts);
+		ResetCircuit();
+		CreatePorts(inputPorts, outputPorts);
+		RebuildDependencyGraph();
 	}
 
-	// When you call SendSignal and the outputPorts is null, the game will call ports.CreatePhysicalPorts
-	private void RefreshPhysicalPorts(){
-		logicPorts.outputPorts = null;
-		logicPorts.SendSignal("", 0);
+	private void ResetCircuit(){
+		symbolTable.Clear();
+		dependencyTable.Clear();
+		Disconnect();
+		Inputs.Clear();
+		Outputs.Clear();
 	}
 	
-	private void RefreshSignals(List<OutputPort> outputs){
-		foreach(OutputPort output in outputs){
-			int result = output.Evaluate(symbolTable);
-			SendSignalToOutput(output, result);
+	private void Disconnect(){
+		if(!connected) return;
+		foreach(CircuitPort port in allPorts) 
+			port.Disconnect();
+		connected = false;
+	}
+
+	private void CreatePorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
+		foreach(InputPort inputPort in inputPorts){
+			CircuitInput input = new(this, inputPort);
+			Inputs.Add(input);
+		}
+
+		foreach(OutputPort outputPort in outputPorts){
+			CircuitOutput output = new(this, outputPort, symbolTable);
+			Outputs.Add(output);
+		}
+		
+		BuildingHP component = GetComponent<BuildingHP>();
+		if (component == null || !component.IsBroken)
+			Connect();
+	}
+	
+	private void Connect(){
+		if(connected) return;
+		foreach(CircuitPort port in allPorts) 
+			port.Connect();
+		connected = true;
+	}
+	
+	private void RebuildDependencyGraph(){
+		foreach (CircuitOutput output in Outputs) {
+			var usedInputIds = Compiler.ExtractIds(output.outputPort.Tree);
+
+			foreach(string inputId in usedInputIds)
+				dependencyTable.RegisterDependency(inputId, output);
 		}
 	}
 
-	private void SendSignalToOutput(OutputPort outputPort, int signal){
-		logicPorts.SendSignal(outputPort.HashedId, signal);
+	private void SetUpEvents(){
+		Subscribe((int)GameHashes.BuildingBroken, OnBuildingBrokenDelegate);
+		Subscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
+	}
+	
+	protected override void OnCleanUp(){
+		cleaningUp = true;
+		Disconnect();
+		CleanUpEvents();
 	}
 
-	private void SubscribeNetworkEvent(){
-		Subscribe((int)GameHashes.LogicEvent, data => {
-			lastChange = (LogicValueChanged)data;
-			OnNetworkValueChanged();
-		});
+	private void CleanUpEvents(){
+		Unsubscribe((int)GameHashes.BuildingBroken, OnBuildingBrokenDelegate);
+		Unsubscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
 	}
 
-	private void OnNetworkValueChanged(){
-		if(IsInputPort() && ValueChanged())
-			OnInputPortChanged();
+	public void OnInputPortChanged(string inputId, int newValue){
+		if(cleaningUp) return;
+		if (symbolTable.GetValue(inputId) == newValue) return;
+		symbolTable.SetValue(inputId, newValue);
+		
+		var dependents = dependencyTable.GetOutputDependents(inputId);
+		foreach(CircuitOutput output in dependents)
+			output.Refresh();
 	}
 
-	private bool IsInputPort() => dependencyTable.HasInputPort(lastChange.portID);
-	private bool ValueChanged() => lastChange.prevValue != lastChange.newValue;
-
-	private void OnInputPortChanged(){
-		HashedString lastChangedPortId = lastChange.portID;
-		RefreshAllDependentsOf(lastChangedPortId);
-	}
-
-	private void RefreshAllDependentsOf(HashedString portId){
-		var outDependents = dependencyTable.GetOutputDependents(portId);
-		RefreshSignals(outDependents);
-	}
-
-	public int GetGlobalPositionCell(CellOffset offset){
+	public int GetActualCell(CellOffset offset){
 		var component = GetComponent<Rotatable>();
 		if(component != null)
 			offset = component.GetRotatedCellOffset(offset);

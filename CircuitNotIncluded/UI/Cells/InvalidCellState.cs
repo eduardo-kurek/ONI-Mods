@@ -6,6 +6,8 @@ using UnityEngine.UI;
 namespace CircuitNotIncluded.UI.Cells;
 
 public class InvalidCellState : CircuitCellState {
+	protected override string CellTitle => "Invalid Cell";
+	
 	public override GameObject BuildEditorContent(){
 		GameObject mainContainer = BuildContainer();
 		GameObject textContainer = BuildTextContainer(mainContainer);
@@ -29,8 +31,6 @@ public class InvalidCellState : CircuitCellState {
 	}
 	
 	public override void UpdateImage(Image img){
-		img.sprite = null;
 		img.color = Color.magenta;
 	}
-	protected override string GetCellTitle() => "Invalid Cell";
 }

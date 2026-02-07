@@ -59,6 +59,7 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 		
 		newState.OnEnter(this);
 		if (image == null) image = gameObject.AddOrGet<Image>();
+		ResetCellImage(image);
 		newState.UpdateImage(image);
 
 		if(Selected != null){
@@ -67,5 +68,10 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 		
 		currentState = newState;
 		return this;
+	}
+
+	private static void ResetCellImage(Image image){
+		image.sprite = null;
+		image.color = Color.white;
 	}
 }

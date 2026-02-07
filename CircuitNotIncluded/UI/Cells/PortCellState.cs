@@ -7,13 +7,13 @@ using UnityEngine.UI;
 namespace CircuitNotIncluded.UI.Cells;
 
 public abstract class PortCellState(PortInfo info) : CircuitCellState {
-	public string GetId() => info.Id.Trim();
+	public string Id => info.Id.Trim();
 	
-	protected abstract Sprite GetPortSprite();
+	protected abstract Sprite PortSprite { get; }
 
 	public override void UpdateImage(Image img){
 		img.color = Color.white;
-		img.sprite = GetPortSprite();
+		img.sprite = PortSprite;
 	}
 	
 	protected GameObject BuildIdField(GameObject container){
@@ -44,7 +44,7 @@ public abstract class PortCellState(PortInfo info) : CircuitCellState {
 			});
 	}
 	
-	protected virtual GameObject BuildDeleteButton(GameObject container){
+	protected GameObject BuildDeleteButton(GameObject container){
 		return new PButton("DeleteButton")
 			.Text("Delete Port")
 			.Margin(10)
@@ -52,7 +52,7 @@ public abstract class PortCellState(PortInfo info) : CircuitCellState {
 			.AddTo(container);
 	}
 
-	protected virtual void Delete(){
+	protected void Delete(){
 		EmptyCellState state = new();
 		Owner.TransitionTo(state);
 	}

@@ -1,11 +1,9 @@
-using UnityEngine;
-
 namespace CircuitNotIncluded.Structs;
 
-public class CircuitEventHandler(Circuit parent, InputPort inputPort)
+public class CircuitInput(Circuit parent, InputPort inputPort)
 	: CircuitPort(parent, inputPort), ILogicEventReceiver
 {
-	private InputPort inputPort => (InputPort)port;
+	public InputPort inputPort => (InputPort)port;
 	
 	public void OnLogicNetworkConnectionChanged(bool connected){ }
 	

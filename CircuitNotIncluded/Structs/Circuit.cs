@@ -12,8 +12,8 @@ public class Circuit : KMonoBehaviour {
 
 	private bool connected = false;
 	
-	private List<CircuitEventHandler> handlers = [];
-	private Dictionary<HashedString, CircuitEventSender> senders = new();
+	private List<CircuitInput> inputs = [];
+	private Dictionary<HashedString, CircuitOutput> outputs = new();
 	
 	
 	public List<InputPort> InputPorts { get; private set; } = null!;
@@ -43,17 +43,17 @@ public class Circuit : KMonoBehaviour {
 		
 		Disconnect();
 		
-		handlers.Clear();
-		senders.Clear();
+		inputs.Clear();
+		outputs.Clear();
 
 		foreach(InputPort inputPort in inputPorts){
-			CircuitEventHandler handler = new(this, inputPort);
-			handlers.Add(handler);
+			CircuitInput input = new(this, inputPort);
+			inputs.Add(input);
 		}
 
 		foreach(OutputPort outputPort in outputPorts){
-			CircuitEventSender sender = new(this, outputPort);
-			senders.Add(outputPort.HashedId, sender);
+			CircuitOutput output = new(this, outputPort);
+			outputs.Add(outputPort.HashedId, output);
 		}
 		
 		Connect();
@@ -77,7 +77,7 @@ public class Circuit : KMonoBehaviour {
 		var dependents = dependencyTable.GetOutputDependents(inputId);
 		foreach(var senderId in dependents) {
 			
-			if (senders.TryGetValue(senderId, out var sender)) {
+			if (outputs.TryGetValue(senderId, out var sender)) {
 				sender.Refresh(symbolTable);
 			}
 		}
@@ -86,10 +86,10 @@ public class Circuit : KMonoBehaviour {
 	private void Connect(){
 		if(connected) return;
 		
-		foreach(CircuitEventHandler handler in handlers)
+		foreach(CircuitInput handler in inputs)
 			handler.Connect();
 		
-		foreach(CircuitEventSender handler in senders.Values)
+		foreach(CircuitOutput handler in outputs.Values)
 			handler.Connect();
 
 		connected = true;
@@ -98,10 +98,10 @@ public class Circuit : KMonoBehaviour {
 	private void Disconnect(){
 		if(!connected) return;
 		
-		foreach(CircuitEventHandler handler in handlers)
+		foreach(CircuitInput handler in inputs)
 			handler.Disconnect();
 		
-		foreach(CircuitEventSender handler in senders.Values)
+		foreach(CircuitOutput handler in outputs.Values)
 			handler.Disconnect();
 		
 		connected = false;

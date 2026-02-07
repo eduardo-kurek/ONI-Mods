@@ -172,18 +172,20 @@ public partial class CircuitScreenManager {
 	
 	private void BuildInputPorts(GameObject container){
 		Circuit c = circuit;
-		foreach(InputPort input in c.InputPorts){
-			var cellType = InputCellState.Create(input);
-			int index = circuit.ToGridIndex(input.Offset);
+		foreach(CircuitInput input in c.Inputs){
+			InputPort port = input.inputPort;
+			var cellType = InputCellState.Create(port);
+			int index = circuit.ToGridIndex(port.Offset);
 			ChangeCellType(index, cellType);
 		}
 	}
 
 	private void BuildOutputPorts(GameObject container){
 		Circuit c = circuit;
-		foreach(OutputPort output in c.OutputPorts){
-			var cellType = OutputCellState.Create(output);
-			int index = circuit.ToGridIndex(output.Offset);
+		foreach(CircuitOutput output in c.Outputs){
+			OutputPort port = output.outputPort;
+			var cellType = OutputCellState.Create(port);
+			int index = circuit.ToGridIndex(port.Offset);
 			ChangeCellType(index, cellType);
 		}
 	}

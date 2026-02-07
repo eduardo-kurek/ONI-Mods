@@ -12,11 +12,8 @@ public class Circuit : KMonoBehaviour {
 
 	private bool connected = false;
 	
-	private List<CircuitInput> inputs = [];
-	private List<CircuitOutput> outputs = new();
-	
-	public List<InputPort> InputPorts { get; private set; } = null!;
-	public List<OutputPort> OutputPorts { get; private set; } = null!;
+	public List<CircuitInput> Inputs { get; } = [];
+	public List<CircuitOutput> Outputs { get; } = [];
 	
 	public string CNIName { get; set; } = "Circuit Name";
 	public int Width => def.WidthInCells;
@@ -32,34 +29,28 @@ public class Circuit : KMonoBehaviour {
 	}
 
 	public void SetPorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
-		InternalSetPorts(inputPorts, outputPorts);
-	}
-	
-	private void InternalSetPorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
-		InputPorts = inputPorts;
-		OutputPorts = outputPorts;
 		symbolTable.Clear();
 		
 		Disconnect();
 		
-		inputs.Clear();
-		outputs.Clear();
+		Inputs.Clear();
+		Outputs.Clear();
 
 		foreach(InputPort inputPort in inputPorts){
 			CircuitInput input = new(this, inputPort);
-			inputs.Add(input);
+			Inputs.Add(input);
 		}
 
 		foreach(OutputPort outputPort in outputPorts){
 			CircuitOutput output = new(this, outputPort);
-			outputs.Add(output);
+			Outputs.Add(output);
 		}
 		
 		Connect();
 
 		dependencyTable.Clear();
 		
-		foreach (CircuitOutput output in outputs) {
+		foreach (CircuitOutput output in Outputs) {
 			var usedInputIds = Compiler.ExtractIds(output.outputPort.Tree);
 
 			foreach(string inputId in usedInputIds){
@@ -70,7 +61,6 @@ public class Circuit : KMonoBehaviour {
 
 	public void OnInputPortChanged(string inputId, int newValue){
 		if (symbolTable.GetValue(inputId) == newValue) return;
-		
 		symbolTable.SetValue(inputId, newValue);
 		
 		var dependents = dependencyTable.GetOutputDependents(inputId);
@@ -81,26 +71,24 @@ public class Circuit : KMonoBehaviour {
 
 	private void Connect(){
 		if(connected) return;
-		
-		foreach(CircuitInput handler in inputs)
-			handler.Connect();
-		
-		foreach(CircuitOutput handler in outputs)
-			handler.Connect();
-
+		InternalConnect(Inputs.Concat<CircuitPort>(Outputs));
 		connected = true;
+	}
+
+	private static void InternalConnect(IEnumerable<CircuitPort> ports){
+		foreach(CircuitPort port in ports) 
+			port.Connect();
 	}
 
 	private void Disconnect(){
 		if(!connected) return;
-		
-		foreach(CircuitInput handler in inputs)
-			handler.Disconnect();
-		
-		foreach(CircuitOutput handler in outputs)
-			handler.Disconnect();
-		
+		InternalDisconnect(Inputs.Concat<CircuitPort>(Outputs));
 		connected = false;
+	}
+	
+	private static void InternalDisconnect(IEnumerable<CircuitPort> ports){
+		foreach(CircuitPort port in ports)
+			port.Disconnect();
 	}
 
 	public int GetActualCell(CellOffset offset){

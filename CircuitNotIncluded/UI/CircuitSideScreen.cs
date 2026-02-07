@@ -38,7 +38,6 @@ public class CircuitSideScreen : SideScreenContent {
 		layout.padding = new RectOffset(10, 10, 10, 10);
 		layout.childAlignment = TextAnchor.MiddleCenter;
 		
-		// Margin of 10 px each side
 		var rt = ContentContainer.GetComponent<RectTransform>();
 		rt.offsetMax = new Vector2(10, 10);
 		rt.offsetMin = new Vector2(10, 10);
@@ -108,8 +107,9 @@ public class CircuitSideScreen : SideScreenContent {
 
 	private void CreateOutputs(){
 		var layout = outputsPanel.GetComponent<VerticalLayoutGroup>();
-		foreach(var output in circuit!.OutputPorts){
-			var originalText = $"{output.OriginalId} = {output.Expression}";
+		foreach(CircuitOutput output in circuit!.Outputs){
+			OutputPort port = output.outputPort;
+			var originalText = $"{port.OriginalId} = {port.Expression}";
 			var colorizedText = ColorizeSpecialChars(originalText);
 			var go = Utils.UI.DarkText(colorizedText, layout.transform);
 			var text = go.GetComponent<TextMeshProUGUI>();

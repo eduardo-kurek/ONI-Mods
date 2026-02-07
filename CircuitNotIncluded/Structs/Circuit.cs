@@ -58,7 +58,7 @@ public class Circuit : KMonoBehaviour {
 		}
 
 		foreach(OutputPort outputPort in outputPorts){
-			CircuitOutput output = new(this, outputPort);
+			CircuitOutput output = new(this, outputPort, symbolTable);
 			Outputs.Add(output);
 		}
 
@@ -87,7 +87,7 @@ public class Circuit : KMonoBehaviour {
 		
 		var dependents = dependencyTable.GetOutputDependents(inputId);
 		foreach(CircuitOutput output in dependents)
-			output.Refresh(symbolTable);
+			output.Refresh();
 	}
 
 	public int GetActualCell(CellOffset offset){

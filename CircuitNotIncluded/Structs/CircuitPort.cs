@@ -3,8 +3,8 @@ using UnityEngine;
 namespace CircuitNotIncluded.Structs;
 
 public abstract class CircuitPort(Circuit parent, CNIPort port) : ILogicUIElement {
-	protected Circuit parent = parent;
-	protected CNIPort port = port;
+	protected readonly Circuit parent = parent;
+	protected readonly CNIPort port = port;
 	protected readonly int cell = parent.GetActualCell(port.Offset);
 
 	public void Connect(){

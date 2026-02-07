@@ -1,28 +1,40 @@
 using CircuitNotIncluded.Grammar;
 using UnityEngine;
+using static EventSystem;
 
 namespace CircuitNotIncluded.Structs;
 
 public class Circuit : KMonoBehaviour {
 	private const int SPRITE_TILE_SIZE = 100;
 	
+	
 	private BuildingDef def = null!;
-	private readonly DependencyTable dependencyTable = new();
-	private readonly SymbolTable symbolTable = new();
-
-	private bool connected = false;
+	public string CNIName { get; set; } = "Circuit Name";
+	public int Width => def.WidthInCells;
+	public int Height => def.HeightInCells;
 	
 	public List<CircuitInput> Inputs { get; } = [];
 	public List<CircuitOutput> Outputs { get; } = [];
 	private IEnumerable<CircuitPort> allPorts => Inputs.Concat<CircuitPort>(Outputs);
 	
-	public string CNIName { get; set; } = "Circuit Name";
-	public int Width => def.WidthInCells;
-	public int Height => def.HeightInCells;
+	private readonly DependencyTable dependencyTable = new();
+	private readonly SymbolTable symbolTable = new();
+	
+	private static readonly IntraObjectHandler<Circuit> OnBuildingBrokenDelegate = new (delegate(Circuit component, object data){
+		component.Connect();
+	});
+	
+	private static readonly IntraObjectHandler<Circuit> OnBuildingFullyRepairedDelegate = new (delegate(Circuit component, object data){
+		component.Disconnect();
+	});
+
+	private bool connected;
+	private bool cleaningUp;
 
 	protected override void OnSpawn(){
 		InitMembers();
 		SetPorts([], []);
+		SetUpEvents();
 	}
 
 	private void InitMembers(){
@@ -49,7 +61,6 @@ public class Circuit : KMonoBehaviour {
 			port.Disconnect();
 		connected = false;
 	}
-	
 
 	private void CreatePorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
 		foreach(InputPort inputPort in inputPorts){
@@ -61,8 +72,10 @@ public class Circuit : KMonoBehaviour {
 			CircuitOutput output = new(this, outputPort, symbolTable);
 			Outputs.Add(output);
 		}
-
-		Connect();
+		
+		BuildingHP component = GetComponent<BuildingHP>();
+		if (component == null || !component.IsBroken)
+			Connect();
 	}
 	
 	private void Connect(){
@@ -71,7 +84,7 @@ public class Circuit : KMonoBehaviour {
 			port.Connect();
 		connected = true;
 	}
-
+	
 	private void RebuildDependencyGraph(){
 		foreach (CircuitOutput output in Outputs) {
 			var usedInputIds = Compiler.ExtractIds(output.outputPort.Tree);
@@ -81,7 +94,24 @@ public class Circuit : KMonoBehaviour {
 		}
 	}
 
+	private void SetUpEvents(){
+		Subscribe((int)GameHashes.BuildingBroken, OnBuildingBrokenDelegate);
+		Subscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
+	}
+	
+	protected override void OnCleanUp(){
+		cleaningUp = true;
+		Disconnect();
+		CleanUpEvents();
+	}
+
+	private void CleanUpEvents(){
+		Unsubscribe((int)GameHashes.BuildingBroken, OnBuildingBrokenDelegate);
+		Unsubscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
+	}
+
 	public void OnInputPortChanged(string inputId, int newValue){
+		if(cleaningUp) return;
 		if (symbolTable.GetValue(inputId) == newValue) return;
 		symbolTable.SetValue(inputId, newValue);
 		

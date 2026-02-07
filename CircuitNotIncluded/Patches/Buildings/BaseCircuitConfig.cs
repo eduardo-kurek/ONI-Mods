@@ -42,16 +42,6 @@ public abstract class BaseCircuitConfig : IBuildingConfig {
 		BuildingConfigManager.Instance.IgnoreDefaultKComponent(typeof(RequiresFoundation), prefabTag);
 	}
 
-	public override void DoPostConfigurePreview(BuildingDef def, GameObject go){
-		base.DoPostConfigurePreview(def, go);
-		// TODO: is it necessary to configurate gate visualizers?
-	}
-
-	public override void DoPostConfigureUnderConstruction(GameObject go){
-		base.DoPostConfigureUnderConstruction(go);
-		// TODO: is it necessary to configurate gate visualizers?
-	}
-
 	public override void DoPostConfigureComplete(GameObject go){
 		go.AddComponent<Circuit>();
 		go.GetComponent<KPrefabID>().AddTag(GameTags.OverlayBehindConduits);

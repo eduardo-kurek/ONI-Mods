@@ -7,13 +7,14 @@ public class Circuit : KMonoBehaviour {
 	private const int SPRITE_TILE_SIZE = 100;
 	
 	private BuildingDef def = null!;
-	private DependencyTable dependencyTable = new();
+	private readonly DependencyTable dependencyTable = new();
 	private readonly SymbolTable symbolTable = new();
 
 	private bool connected = false;
 	
 	public List<CircuitInput> Inputs { get; } = [];
 	public List<CircuitOutput> Outputs { get; } = [];
+	private IEnumerable<CircuitPort> allPorts => Inputs.Concat<CircuitPort>(Outputs);
 	
 	public string CNIName { get; set; } = "Circuit Name";
 	public int Width => def.WidthInCells;
@@ -29,13 +30,28 @@ public class Circuit : KMonoBehaviour {
 	}
 
 	public void SetPorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
+		ResetCircuit();
+		CreatePorts(inputPorts, outputPorts);
+		RebuildDependencyGraph();
+	}
+
+	private void ResetCircuit(){
 		symbolTable.Clear();
-		
+		dependencyTable.Clear();
 		Disconnect();
-		
 		Inputs.Clear();
 		Outputs.Clear();
+	}
+	
+	private void Disconnect(){
+		if(!connected) return;
+		foreach(CircuitPort port in allPorts) 
+			port.Disconnect();
+		connected = false;
+	}
+	
 
+	private void CreatePorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
 		foreach(InputPort inputPort in inputPorts){
 			CircuitInput input = new(this, inputPort);
 			Inputs.Add(input);
@@ -45,17 +61,23 @@ public class Circuit : KMonoBehaviour {
 			CircuitOutput output = new(this, outputPort);
 			Outputs.Add(output);
 		}
-		
-		Connect();
 
-		dependencyTable.Clear();
-		
+		Connect();
+	}
+	
+	private void Connect(){
+		if(connected) return;
+		foreach(CircuitPort port in allPorts) 
+			port.Connect();
+		connected = true;
+	}
+
+	private void RebuildDependencyGraph(){
 		foreach (CircuitOutput output in Outputs) {
 			var usedInputIds = Compiler.ExtractIds(output.outputPort.Tree);
 
-			foreach(string inputId in usedInputIds){
+			foreach(string inputId in usedInputIds)
 				dependencyTable.RegisterDependency(inputId, output);
-			}
 		}
 	}
 
@@ -64,31 +86,8 @@ public class Circuit : KMonoBehaviour {
 		symbolTable.SetValue(inputId, newValue);
 		
 		var dependents = dependencyTable.GetOutputDependents(inputId);
-		foreach(CircuitOutput output in dependents) {
+		foreach(CircuitOutput output in dependents)
 			output.Refresh(symbolTable);
-		}
-	}
-
-	private void Connect(){
-		if(connected) return;
-		InternalConnect(Inputs.Concat<CircuitPort>(Outputs));
-		connected = true;
-	}
-
-	private static void InternalConnect(IEnumerable<CircuitPort> ports){
-		foreach(CircuitPort port in ports) 
-			port.Connect();
-	}
-
-	private void Disconnect(){
-		if(!connected) return;
-		InternalDisconnect(Inputs.Concat<CircuitPort>(Outputs));
-		connected = false;
-	}
-	
-	private static void InternalDisconnect(IEnumerable<CircuitPort> ports){
-		foreach(CircuitPort port in ports)
-			port.Disconnect();
 	}
 
 	public int GetActualCell(CellOffset offset){

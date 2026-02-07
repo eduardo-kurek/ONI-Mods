@@ -13,8 +13,7 @@ public class Circuit : KMonoBehaviour {
 	private bool connected = false;
 	
 	private List<CircuitInput> inputs = [];
-	private Dictionary<HashedString, CircuitOutput> outputs = new();
-	
+	private List<CircuitOutput> outputs = new();
 	
 	public List<InputPort> InputPorts { get; private set; } = null!;
 	public List<OutputPort> OutputPorts { get; private set; } = null!;
@@ -53,18 +52,18 @@ public class Circuit : KMonoBehaviour {
 
 		foreach(OutputPort outputPort in outputPorts){
 			CircuitOutput output = new(this, outputPort);
-			outputs.Add(outputPort.HashedId, output);
+			outputs.Add(output);
 		}
 		
 		Connect();
 
 		dependencyTable.Clear();
 		
-		foreach (var outputPort in outputPorts) {
-			var usedInputIds = Compiler.ExtractIds(outputPort.Tree);
+		foreach (CircuitOutput output in outputs) {
+			var usedInputIds = Compiler.ExtractIds(output.outputPort.Tree);
 
-			foreach (string inputId in usedInputIds) {
-				dependencyTable.RegisterDependency(inputId, outputPort.HashedId);
+			foreach(string inputId in usedInputIds){
+				dependencyTable.RegisterDependency(inputId, output);
 			}
 		}
 	}
@@ -75,11 +74,8 @@ public class Circuit : KMonoBehaviour {
 		symbolTable.SetValue(inputId, newValue);
 		
 		var dependents = dependencyTable.GetOutputDependents(inputId);
-		foreach(var senderId in dependents) {
-			
-			if (outputs.TryGetValue(senderId, out var sender)) {
-				sender.Refresh(symbolTable);
-			}
+		foreach(CircuitOutput output in dependents) {
+			output.Refresh(symbolTable);
 		}
 	}
 
@@ -89,7 +85,7 @@ public class Circuit : KMonoBehaviour {
 		foreach(CircuitInput handler in inputs)
 			handler.Connect();
 		
-		foreach(CircuitOutput handler in outputs.Values)
+		foreach(CircuitOutput handler in outputs)
 			handler.Connect();
 
 		connected = true;
@@ -101,7 +97,7 @@ public class Circuit : KMonoBehaviour {
 		foreach(CircuitInput handler in inputs)
 			handler.Disconnect();
 		
-		foreach(CircuitOutput handler in outputs.Values)
+		foreach(CircuitOutput handler in outputs)
 			handler.Disconnect();
 		
 		connected = false;

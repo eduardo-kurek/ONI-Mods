@@ -308,6 +308,10 @@ public partial class CircuitScreenManager {
 			Orientation.R270 => Quaternion.Euler(0f, 0f, 90f),
 			_ => go.transform.rotation
 		};
+		
+		foreach(Transform child in go.transform){
+			child.rotation = Quaternion.identity;
+			child.localScale = Vector3.one;
+		}
 	}
-	
 }

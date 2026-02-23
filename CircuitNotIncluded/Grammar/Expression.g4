@@ -8,6 +8,8 @@ NOT: '!';
 ID: [_a-zA-Z]+[_a-zA-Z0-9]*;
 LPAREN: '(';
 RPAREN: ')';
+WS: [ \t]+ -> skip;
+ERROR : . ;
 
 // Parser rules
 program: expression EOF;
@@ -24,5 +26,3 @@ factor
     : LPAREN expression RPAREN      #parFactor
     | ID                            #idFactor
     ;
-
-WS: [ \t]+ -> skip;

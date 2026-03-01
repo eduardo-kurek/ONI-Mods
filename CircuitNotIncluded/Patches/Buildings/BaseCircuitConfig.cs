@@ -10,11 +10,11 @@ namespace CircuitNotIncluded.Patches.Buildings;
 public abstract class BaseCircuitConfig : IBuildingConfig {
 	protected abstract int Width { get; }
 	protected abstract int Height { get; }
-	protected virtual string Name => $"Circuit {Width}x{Height}";
+	protected virtual string Id => $"Circuit_{Width}x{Height}";
 	protected virtual string Anim => $"logic_circuit_{Width}x{Height}_kanim";
 	
 	public override BuildingDef CreateBuildingDef(){
-		var def = BuildingTemplates.CreateBuildingDef(Name, Width, Height, Anim, 10,
+		var def = BuildingTemplates.CreateBuildingDef(Id, Width, Height, Anim, 10,
 			3f, BUILDINGS.CONSTRUCTION_MASS_KG.TIER0, MATERIALS.REFINED_METALS, 
 			1600f, BuildLocationRule.Anywhere, BUILDINGS.DECOR.PENALTY.TIER0, NOISE_POLLUTION.NONE,
 			0.2f);
@@ -33,7 +33,7 @@ public abstract class BaseCircuitConfig : IBuildingConfig {
 		def.DragBuild = true;
 		
 		def.AddSearchTerms(SEARCH_TERMS.AUTOMATION);
-		GeneratedBuildings.RegisterWithOverlay(OverlayModes.Logic.HighlightItemIDs, Name);
+		GeneratedBuildings.RegisterWithOverlay(OverlayModes.Logic.HighlightItemIDs, Id);
 		return def;
 	}
 
@@ -45,8 +45,7 @@ public abstract class BaseCircuitConfig : IBuildingConfig {
 	public override void DoPostConfigureComplete(GameObject go){
 		go.AddComponent<Circuit>();
 		go.GetComponent<KPrefabID>().AddTag(GameTags.OverlayBehindConduits);
-		CNIUtil.AddBuildingStrings(Name, Name, "Description", "Effect");
-		ModUtil.AddBuildingToPlanScreen("Automation", Name, "wires", "LogicWire");
-		CNIUtil.Log("Circuit registered successfully: " + Name);
+		ModUtil.AddBuildingToPlanScreen("Automation", Id, "wires", "LogicWire");
+		CNIUtil.Log("Circuit registered successfully: " + Id);
 	}
 }

@@ -71,7 +71,6 @@ public abstract class PortHandler(PortHandler? next) {
 	}
 
 	public static ValidationContext Validate(List<InputCellState> inputs, List<OutputCellState> outputs){
-		Debug.Log("Validating ports...");
 		PortHandler validator = CreateChain();
 		var context = new ValidationContext(inputs, outputs);
 
@@ -82,11 +81,6 @@ public abstract class PortHandler(PortHandler? next) {
 			validator.Handle(o, context);
 		
 		var errors = context.GetErrors();
-		Debug.Log("Erros found: " + errors.Count);
-
-		foreach(string err in errors){
-			Debug.Log("\t " + err);
-		}
 		
 		if(errors.Count > 0)
 			throw new Exception(string.Join("\n", errors));

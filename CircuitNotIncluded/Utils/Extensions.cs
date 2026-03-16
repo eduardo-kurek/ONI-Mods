@@ -175,6 +175,11 @@ public static class Extensions
 		return panel;
 	}
 	
+	public static PPanel Margin(this PPanel panel, int top, int right, int bottom, int left){
+		panel.Margin = new RectOffset(left, right, top, bottom);
+		return panel;
+	}
+	
 	public static PPanel Alignment(this PPanel panel, TextAnchor alignment){
 		panel.Alignment = alignment;
 		return panel;

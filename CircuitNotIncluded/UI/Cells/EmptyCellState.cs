@@ -8,8 +8,8 @@ namespace CircuitNotIncluded.UI.Cells;
 public class EmptyCellState : CircuitCellState {
 	protected override string CellTitle => "Empty Cell";
 
-	public override void UpdateImage(Image img){
-		img.color = Color.grey;
+	public override void UpdateCellImage(Image img){
+		img.color = new Color(42/255f, 81/255f, 125/255f);
 	}
 
 	protected override GameObject BuildContainer(){

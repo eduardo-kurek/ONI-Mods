@@ -9,8 +9,9 @@ using UnityEngine.UI;
 namespace CircuitNotIncluded.UI;
 
 public partial class CircuitScreenManager {
-	private const int PORT_SIZE = 40;
-	private const int PORT_SPACING = 8;
+	private const int PORT_SIZE = 60;
+	private const int PORT_SPACING = 25;
+	
 	private static float CircuitDisplaySize(int qtCells){
 		return qtCells * PORT_SIZE + PORT_SPACING * (qtCells + 1);
 	}
@@ -255,14 +256,29 @@ public partial class CircuitScreenManager {
 	}
 
 	private GameObject BuildInfoPanel(GameObject container){
-		return new PPanel("EditorInfo")
+		PLabel infoText = new PLabel("InfoText")
+			.Text("Supported operations (by precedence):\n\n" +
+			      "! = NOT\n" +
+			      "* = AND\n" +
+			      "# = XOR\n" +
+			      "+ = OR\n\n" +
+			      "Identifiers must start with a letter\n" +
+			      "or underscore and may contain numbers;\n" +
+			      "Case-sensitive;\n" +
+			      "Use parentheses to override precedence;\n\n" +
+			      "Example: !(a + b) * c # d;");
+		
+		GameObject editorInfo = new PPanel("EditorInfo")
 			.SetKleiPinkColor()
 			.AddTo(container)
 			.AddOutline()
 			.LayoutElement()
 			.FlexibleWidth(1)
-			.PreferredHeight(200)
+			.PreferredHeight(250)
 			.gameObject;
+
+		infoText.AddTo(editorInfo);
+		return editorInfo;
 	}
 	
 	private void BuildFooter(GameObject container){

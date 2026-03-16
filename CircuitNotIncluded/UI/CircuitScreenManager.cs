@@ -17,7 +17,7 @@ public partial class CircuitScreenManager {
 	
 	public GameObject Build(Circuit circuit){
 		this.circuit = circuit;
-		this.circuitNameBuffer = circuit.CNIName;
+		circuitNameBuffer = circuit.CNIName;
 		GameObject go = new GameObject("CircuitScreen")
 			.RectTransform()
 			.AnchorMin(0, 0)
@@ -37,6 +37,7 @@ public partial class CircuitScreenManager {
 		var inputsResult = ctx.ResultInput();
 		var outputsResult = ctx.ResultOutput();
 		circuit.SetPorts(inputsResult, outputsResult);
+		circuit.CNIName = circuitNameBuffer;
 	}
 	
 	public void OnOutputCellCreated(OutputCellState data) => screen.AddOutputCell(data);

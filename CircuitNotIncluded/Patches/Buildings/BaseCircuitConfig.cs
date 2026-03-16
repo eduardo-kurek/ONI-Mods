@@ -14,8 +14,12 @@ public abstract class BaseCircuitConfig : IBuildingConfig {
 	protected virtual string Anim => $"logic_circuit_{Width}x{Height}_kanim";
 	
 	public override BuildingDef CreateBuildingDef(){
+		var buildingCost = new float[] {
+			Width * Height * 15
+		};
+		
 		var def = BuildingTemplates.CreateBuildingDef(Id, Width, Height, Anim, 10,
-			3f, BUILDINGS.CONSTRUCTION_MASS_KG.TIER0, MATERIALS.REFINED_METALS, 
+			3f, buildingCost, MATERIALS.REFINED_METALS, 
 			1600f, BuildLocationRule.Anywhere, BUILDINGS.DECOR.PENALTY.TIER0, NOISE_POLLUTION.NONE,
 			0.2f);
 		

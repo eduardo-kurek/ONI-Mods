@@ -8,6 +8,10 @@ namespace CircuitNotIncluded.UI.Cells;
 public class InvalidCellState : CircuitCellState {
 	protected override string CellTitle => "Invalid Cell";
 	
+	public override void UpdateCellImage(Image img){
+		img.color = new Color(145/255f, 41/255f, 41/255f);
+	}
+	
 	public override GameObject BuildEditorContent(){
 		GameObject mainContainer = BuildContainer();
 		GameObject textContainer = BuildTextContainer(mainContainer);
@@ -28,9 +32,5 @@ public class InvalidCellState : CircuitCellState {
 			.Text("There is an obstacle in this cell.\nIt cannot be used for ports.")
 			.Style(CircuitCell.LabelStyle)
 			.AddTo(container);
-	}
-	
-	public override void UpdateImage(Image img){
-		img.color = Color.magenta;
 	}
 }

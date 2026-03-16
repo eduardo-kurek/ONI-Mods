@@ -29,15 +29,14 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	
 	private void Start(){
 		outline = gameObject.AddComponent<Outline>();
-		outline.effectColor = Color.blue;
-		outline.effectDistance = new Vector2(2, 2);
+		outline.effectColor = PUITuning.Colors.ButtonPinkStyle.activeColor;
+		outline.effectDistance = new Vector2(3, 3);
 		outline.enabled = false;
 	}
 
 	public void OnPointerClick(PointerEventData eventData){
 		Selected?.Deselect();
 		Select();
-		// Build sideScreen that references the cell pressed
 		CircuitScreenManager.Instance.BuildSideScreen(currentState!);
 	}
 
@@ -60,7 +59,7 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 		newState.OnEnter(this);
 		if (image == null) image = gameObject.AddOrGet<Image>();
 		ResetCellImage(image);
-		newState.UpdateImage(image);
+		newState.UpdateCellImage(image);
 
 		if(Selected != null){
 			CircuitScreenManager.Instance.BuildSideScreen(newState);

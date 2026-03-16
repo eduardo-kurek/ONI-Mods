@@ -11,7 +11,7 @@ public abstract class PortCellState(PortInfo info) : CircuitCellState {
 	
 	protected abstract Sprite PortSprite { get; }
 
-	public override void UpdateImage(Image img){
+	public override void UpdateCellImage(Image img){
 		img.color = Color.white;
 		img.sprite = PortSprite;
 	}
@@ -45,11 +45,17 @@ public abstract class PortCellState(PortInfo info) : CircuitCellState {
 	}
 	
 	protected GameObject BuildDeleteButton(GameObject container){
+		GameObject deletePanel = new PPanel("DeletePanel")
+			.Direction(PanelDirection.Horizontal)
+			.Alignment(TextAnchor.MiddleCenter)
+			.Margin(20, 0, 0, 0)
+			.AddTo(container);
+		
 		return new PButton("DeleteButton")
 			.Text("Delete Port")
 			.Margin(10)
 			.SetOnClick((go) => { Delete(); })
-			.AddTo(container);
+			.AddTo(deletePanel);
 	}
 
 	protected void Delete(){

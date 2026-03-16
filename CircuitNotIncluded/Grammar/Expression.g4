@@ -1,10 +1,10 @@
 grammar Expression;
 
 // Lexer rules
-OR: '|'; 
-XOR: '+';
-AND: '&';
 NOT: '!';
+AND: '*';
+XOR: '#';
+OR: '+';
 ID: [_a-zA-Z]+[_a-zA-Z0-9]*;
 LPAREN: '(';
 RPAREN: ')';

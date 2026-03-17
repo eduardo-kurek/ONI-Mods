@@ -1,22 +1,23 @@
 using CircuitNotIncluded.Grammar;
+using KSerialization;
 using UnityEngine;
 using static EventSystem;
 
 namespace CircuitNotIncluded.Structs;
 
+[SerializationConfig(MemberSerialization.OptIn)]
 public class Circuit : KMonoBehaviour {
 	private const int SPRITE_TILE_SIZE = 100;
 	
-	
 	private BuildingDef def = null!;
-	public string CNIName { get; set; } = "Circuit Name";
 	public int Width => def.WidthInCells;
 	public int Height => def.HeightInCells;
 	
-	public List<CircuitInput> Inputs { get; } = [];
-	public List<CircuitOutput> Outputs { get; } = [];
-	private IEnumerable<CircuitPort> allPorts => Inputs.Concat<CircuitPort>(Outputs);
+	[Serialize] public string CNIName { get; set; } = "Circuit Name";
+	[Serialize] public List<CircuitInput> Inputs = [];
+	[Serialize] public List<CircuitOutput> Outputs = [];
 	
+	private IEnumerable<CircuitPort> allPorts => Inputs.Concat<CircuitPort>(Outputs);
 	private readonly DependencyTable dependencyTable = new();
 	private readonly SymbolTable symbolTable = new();
 	
@@ -33,20 +34,66 @@ public class Circuit : KMonoBehaviour {
 
 	protected override void OnSpawn(){
 		InitMembers();
-		SetPorts([], []);
+		HydratePorts();
+		CreatePhysicalPorts();
 		SetUpEvents();
+	}
+	
+	private void SetUpEvents(){
+		Subscribe((int)GameHashes.BuildingBroken, OnBuildingBrokenDelegate);
+		Subscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
 	}
 
 	private void InitMembers(){
 		def = GetComponent<Building>().Def;
 	}
+	
+	private void HydratePorts() {
+		if (Inputs.Count == 0 && Outputs.Count == 0) return;
+
+		foreach (var input in Inputs) {
+			input.parent = this;
+		}
+
+		foreach (var output in Outputs) {
+			output.parent = this;
+			output.symbolTable = symbolTable;
+		}
+	}
+	
+	public void CreatePhysicalPorts(){
+		RebuildDependencyGraph();
+		ConnectIfNotBroken();
+	}
+	
+	private void RebuildDependencyGraph(){
+		foreach (CircuitOutput output in Outputs) {
+			var usedInputIds = Compiler.ExtractIds(output.port.Tree);
+
+			foreach(string inputId in usedInputIds)
+				dependencyTable.RegisterDependency(inputId, output);
+		}
+	}
+	
+	private void ConnectIfNotBroken(){
+		BuildingHP component = GetComponent<BuildingHP>();
+		if (component == null || !component.IsBroken)
+			Connect();
+	}
+	
+	private void Connect(){
+		if(connected) return;
+		foreach(CircuitPort port in allPorts) 
+			port.Connect();
+		connected = true;
+	}
 
 	public void SetPorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
 		ResetCircuit();
-		CreatePorts(inputPorts, outputPorts);
-		RebuildDependencyGraph();
+		PreparePorts(inputPorts, outputPorts);
+		CreatePhysicalPorts();
 	}
-
+	
 	private void ResetCircuit(){
 		symbolTable.Clear();
 		dependencyTable.Clear();
@@ -62,7 +109,7 @@ public class Circuit : KMonoBehaviour {
 		connected = false;
 	}
 
-	private void CreatePorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
+	private void PreparePorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
 		foreach(InputPort inputPort in inputPorts){
 			CircuitInput input = new(this, inputPort);
 			Inputs.Add(input);
@@ -72,31 +119,6 @@ public class Circuit : KMonoBehaviour {
 			CircuitOutput output = new(this, outputPort, symbolTable);
 			Outputs.Add(output);
 		}
-		
-		BuildingHP component = GetComponent<BuildingHP>();
-		if (component == null || !component.IsBroken)
-			Connect();
-	}
-	
-	private void Connect(){
-		if(connected) return;
-		foreach(CircuitPort port in allPorts) 
-			port.Connect();
-		connected = true;
-	}
-	
-	private void RebuildDependencyGraph(){
-		foreach (CircuitOutput output in Outputs) {
-			var usedInputIds = Compiler.ExtractIds(output.outputPort.Tree);
-
-			foreach(string inputId in usedInputIds)
-				dependencyTable.RegisterDependency(inputId, output);
-		}
-	}
-
-	private void SetUpEvents(){
-		Subscribe((int)GameHashes.BuildingBroken, OnBuildingBrokenDelegate);
-		Subscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
 	}
 	
 	protected override void OnCleanUp(){

@@ -1,15 +1,26 @@
+using KSerialization;
+
 namespace CircuitNotIncluded.Structs;
 
-public class CircuitOutput(Circuit circuit, OutputPort outputPort, SymbolTable symbolTable)
-	: CircuitPort(circuit, outputPort), ILogicEventSender
-{
-	public OutputPort outputPort => (OutputPort)port;
-	private int logicValue;
-	private bool dirty;
+[SerializationConfig(MemberSerialization.OptIn)]
+public class CircuitOutput : CircuitPort, ILogicEventSender {
+	[Serialize] public OutputPort port;
+	[Serialize] private int logicValue;
+	[Serialize] private bool dirty = true;
+	public SymbolTable symbolTable;
+	
+	private CircuitOutput(){ }
+
+	public CircuitOutput(Circuit parent, OutputPort port, SymbolTable symbolTable)
+		: base(parent, parent.GetActualCell(port.Offset))
+	{
+		this.port = port;
+		this.symbolTable = symbolTable;
+	}
 	
 	public void LogicTick(){
 		if(!dirty) return;
-		logicValue = outputPort.Evaluate(symbolTable);
+		logicValue = port.Evaluate(symbolTable);
 		dirty = false;
 	}
 

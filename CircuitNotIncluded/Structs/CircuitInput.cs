@@ -1,14 +1,22 @@
+using KSerialization;
 namespace CircuitNotIncluded.Structs;
 
-public class CircuitInput(Circuit parent, InputPort inputPort)
-	: CircuitPort(parent, inputPort), ILogicEventReceiver
-{
-	public InputPort inputPort => (InputPort)port;
+[SerializationConfig(MemberSerialization.OptIn)]
+public class CircuitInput : CircuitPort, ILogicEventReceiver {
+	[Serialize] public InputPort port;
+	
+	private CircuitInput(){ }
+
+	public CircuitInput(Circuit parent, InputPort port) 
+		: base(parent, parent.GetActualCell(port.Offset))
+	{
+		this.port = port;
+	}
 	
 	public void OnLogicNetworkConnectionChanged(bool connected){ }
 	
 	public void ReceiveLogicEvent(int value){
-		parent.OnInputPortChanged(inputPort.OriginalId, value);
+		parent.OnInputPortChanged(port.OriginalId, value);
 	}
 	
 	public int GetLogicCell(){

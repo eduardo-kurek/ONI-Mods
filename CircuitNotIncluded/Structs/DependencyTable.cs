@@ -1,3 +1,5 @@
+using KSerialization;
+
 namespace CircuitNotIncluded.Structs;
 
 // Stores the dependencies between input ports and output ports

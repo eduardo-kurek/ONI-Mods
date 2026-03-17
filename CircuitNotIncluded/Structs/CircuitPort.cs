@@ -1,11 +1,19 @@
+using KSerialization;
 using UnityEngine;
 
 namespace CircuitNotIncluded.Structs;
 
-public abstract class CircuitPort(Circuit parent, CNIPort port) : ILogicUIElement {
-	protected readonly Circuit parent = parent;
-	protected readonly CNIPort port = port;
-	protected readonly int cell = parent.GetActualCell(port.Offset);
+[SerializationConfig(MemberSerialization.OptIn)]
+public abstract class CircuitPort : ILogicUIElement {
+	public Circuit parent;
+	[Serialize] protected int cell;
+	
+	protected CircuitPort(){ }
+	
+	protected CircuitPort(Circuit parent, int cell){
+		this.parent = parent;
+		this.cell = cell;
+	}
 
 	public void Connect(){
 		Game.Instance.logicCircuitSystem.AddToNetworks(cell, this, true);

@@ -58,7 +58,7 @@ public class ValidationContext {
 
 	public List<OutputPort> ResultOutput(){
 		List<OutputPort> result = [];
-		result.AddRange(Outputs.Select(i => i.ToPort(ParsedOutputs[i])));
+		result.AddRange(Outputs.Select(i => i.ToPort()));
 		return result;
 	}
 }

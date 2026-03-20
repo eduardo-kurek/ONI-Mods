@@ -5,20 +5,15 @@ namespace CircuitNotIncluded.UI.Validators;
 public class IdNotDuplicated(PortHandler? next = null) : PortHandler(next) {
 	protected override bool ErrorOccurred(PortCellState cell, ValidationContext ctx) 
 		=> IsDuplicated(cell, ctx);
-	
-	private static bool IsDuplicated(PortCellState cell, ValidationContext ctx) 
-		=> ctx.DeclaredIds.ContainsKey(cell.Id);
-	
-	protected override void OnSuccess(PortCellState cell, ValidationContext ctx) 
-		=> Register(cell, ctx);
-	
-	private static void Register(PortCellState cell, ValidationContext ctx){
-		ctx.DeclaredIds[cell.Id] = cell.GetOffset();
-	}
+
+	private static bool IsDuplicated(PortCellState cell, ValidationContext ctx)
+		=> ctx.IsPortDeclared(cell);
+
+	protected override void OnSuccess(PortCellState cell, ValidationContext ctx)
+		=> ctx.DeclarePort(cell);
 	
 	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){
-		string id = cell.Id;
-		CellOffset offset = ctx.DeclaredIds[id];
-		return $"Duplicated port id: {id}. Already declared in ({offset.x}, {offset.y}).";
+		var declaredPort = ctx.GetDeclaredPort(cell.Id);
+		return $"Duplicated port id: {cell.Id}. Already declared in ({declaredPort.Owner.DisplayIndex}).";
 	}
 }

@@ -14,7 +14,7 @@ public class ValidationContext {
 	private readonly List<OutputCellState> Outputs;
 	private readonly List<InputCellState> Inputs;
 	
-	public readonly Dictionary<string, CellOffset> DeclaredIds = [];
+	private readonly Dictionary<string, PortCellState> DeclaredIds = [];
 	private readonly Dictionary<OutputCellState, ProgramContext> ParsedOutputs = [];
 
 	public ValidationContext(List<InputCellState> inputs, List<OutputCellState> outputs){
@@ -29,6 +29,10 @@ public class ValidationContext {
 	public bool HasOutputId(string id) {
 		return OutputIds.Contains(id);
 	}
+
+	public bool IsPortDeclared(PortCellState port) => DeclaredIds.ContainsKey(port.Id);
+	public void DeclarePort(PortCellState port) => DeclaredIds[port.Id] = port;
+	public PortCellState GetDeclaredPort(string id) => DeclaredIds[id];
 
 	public HashSet<string> GetInputIds(){
 		return InputIds;

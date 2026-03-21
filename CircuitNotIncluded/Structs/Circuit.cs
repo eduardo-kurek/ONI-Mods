@@ -17,16 +17,15 @@ public class Circuit : KMonoBehaviour {
 	[Serialize] public List<CircuitInput> Inputs = [];
 	[Serialize] public List<CircuitOutput> Outputs = [];
 	
-	private IEnumerable<CircuitPort> allPorts => Inputs.Concat<CircuitPort>(Outputs);
 	private readonly DependencyTable dependencyTable = new();
 	private readonly SymbolTable symbolTable = new();
 	
 	private static readonly IntraObjectHandler<Circuit> OnBuildingBrokenDelegate = new (delegate(Circuit component, object data){
-		component.Connect();
+		component.Disconnect();
 	});
 	
 	private static readonly IntraObjectHandler<Circuit> OnBuildingFullyRepairedDelegate = new (delegate(Circuit component, object data){
-		component.Disconnect();
+		component.Connect();
 	});
 
 	private bool connected;
@@ -83,7 +82,9 @@ public class Circuit : KMonoBehaviour {
 	
 	private void Connect(){
 		if(connected) return;
-		foreach(CircuitPort port in allPorts) 
+		foreach(CircuitPort port in Inputs) 
+			port.Connect();
+		foreach(CircuitPort port in Outputs) 
 			port.Connect();
 		connected = true;
 	}
@@ -104,7 +105,9 @@ public class Circuit : KMonoBehaviour {
 	
 	private void Disconnect(){
 		if(!connected) return;
-		foreach(CircuitPort port in allPorts) 
+		foreach(CircuitPort port in Inputs) 
+			port.Disconnect();
+		foreach(CircuitPort port in Outputs) 
 			port.Disconnect();
 		connected = false;
 	}
@@ -122,6 +125,7 @@ public class Circuit : KMonoBehaviour {
 	}
 	
 	protected override void OnCleanUp(){
+		UnityEngine.Debug.Log("Cleaning up circuit");
 		cleaningUp = true;
 		Disconnect();
 		CleanUpEvents();

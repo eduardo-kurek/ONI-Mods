@@ -118,7 +118,7 @@ public class CircuitSideScreen : SideScreenContent {
 	}
 
 	private string ColorizeSpecialChars(string input){
-		const string pattern = @"([\(\)&\|\+\!])";
+		const string pattern = @"([\(\)\*\+\#\!])";
 		var result = Regex.Replace(input, pattern, 
 			match => "<color=#" + ColorUtility.ToHtmlStringRGBA(specialCharsColor) + ">" + 
 			         match.Value + "</color>");

@@ -27,6 +27,10 @@ public class Circuit : KMonoBehaviour {
 	private static readonly IntraObjectHandler<Circuit> OnBuildingFullyRepairedDelegate = new (delegate(Circuit component, object data){
 		component.Connect();
 	});
+	
+	private static readonly IntraObjectHandler<Circuit> OnCopySettingsDelegate = new (delegate(Circuit component, object data){
+		component.OnCopySettings(data);
+	});
 
 	private bool connected;
 	private bool cleaningUp;
@@ -36,11 +40,6 @@ public class Circuit : KMonoBehaviour {
 		HydratePorts();
 		CreatePhysicalPorts();
 		SetUpEvents();
-	}
-	
-	private void SetUpEvents(){
-		Subscribe((int)GameHashes.BuildingBroken, OnBuildingBrokenDelegate);
-		Subscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
 	}
 
 	private void InitMembers(){
@@ -82,58 +81,77 @@ public class Circuit : KMonoBehaviour {
 	
 	private void Connect(){
 		if(connected) return;
-		foreach(CircuitPort port in Inputs) 
+		foreach(CircuitInput port in Inputs) 
 			port.Connect();
-		foreach(CircuitPort port in Outputs) 
+		foreach(CircuitOutput port in Outputs) 
 			port.Connect();
 		connected = true;
-	}
-
-	public void SetPorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
-		ResetCircuit();
-		PreparePorts(inputPorts, outputPorts);
-		CreatePhysicalPorts();
-	}
-	
-	private void ResetCircuit(){
-		symbolTable.Clear();
-		dependencyTable.Clear();
-		Disconnect();
-		Inputs.Clear();
-		Outputs.Clear();
 	}
 	
 	private void Disconnect(){
 		if(!connected) return;
-		foreach(CircuitPort port in Inputs) 
+		foreach(CircuitInput port in Inputs) 
 			port.Disconnect();
-		foreach(CircuitPort port in Outputs) 
+		foreach(CircuitOutput port in Outputs) 
 			port.Disconnect();
 		connected = false;
 	}
+	
+	private void SetUpEvents(){
+		Subscribe((int)GameHashes.CopySettings, OnCopySettingsDelegate);
+		Subscribe((int)GameHashes.BuildingBroken, OnBuildingBrokenDelegate);
+		Subscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
+	}
+	
+	private void CleanUpEvents(){
+		Unsubscribe((int)GameHashes.CopySettings, OnCopySettingsDelegate);
+		Unsubscribe((int)GameHashes.BuildingBroken, OnBuildingBrokenDelegate);
+		Unsubscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
+	}
 
-	private void PreparePorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
-		foreach(InputPort inputPort in inputPorts){
-			CircuitInput input = new(this, inputPort);
-			Inputs.Add(input);
-		}
+	public void SetPorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
+		var circuitInputs = inputPorts.Select(CreateInput).ToList();
+		var circuitOutputs = outputPorts.Select(CreateOutput).ToList();
+		
+		SetPorts(circuitInputs, circuitOutputs);
+	}
+	
+	private CircuitInput CreateInput(InputPort port) => new (this, port);
+	private CircuitOutput CreateOutput(OutputPort port) => new (this, port, symbolTable);
 
-		foreach(OutputPort outputPort in outputPorts){
-			CircuitOutput output = new(this, outputPort, symbolTable);
-			Outputs.Add(output);
-		}
+	private void SetPorts(List<CircuitInput> circuitInputs, List<CircuitOutput> circuitOutputs){
+		ResetCircuit();
+		InternalSetPorts(circuitInputs, circuitOutputs);
+		CreatePhysicalPorts();
+	}
+
+	private void InternalSetPorts(List<CircuitInput> circuitInputs, List<CircuitOutput> circuitOutputs){
+		Inputs = circuitInputs;
+		Outputs = circuitOutputs;
+	}
+	
+	private void ResetCircuit(){
+		Disconnect();
+		symbolTable.Clear();
+		dependencyTable.Clear();
+		Inputs.Clear();
+		Outputs.Clear();
+	}
+	
+	private void OnCopySettings(object data){
+		Circuit source = ((GameObject)data).GetComponent<Circuit>();
+		if(source == null) return;
+		
+		CNIName = source.CNIName;
+		var inputPorts = source.Inputs.Select(i => new InputPort(i.port)).ToList();
+		var outputPorts = source.Outputs.Select(o => new OutputPort(o.port)).ToList();
+		SetPorts(inputPorts, outputPorts);
 	}
 	
 	protected override void OnCleanUp(){
-		UnityEngine.Debug.Log("Cleaning up circuit");
 		cleaningUp = true;
 		Disconnect();
 		CleanUpEvents();
-	}
-
-	private void CleanUpEvents(){
-		Unsubscribe((int)GameHashes.BuildingBroken, OnBuildingBrokenDelegate);
-		Unsubscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
 	}
 
 	public void OnInputPortChanged(string inputId, int newValue){

@@ -48,6 +48,7 @@ public abstract class BaseCircuitConfig : IBuildingConfig {
 
 	public override void DoPostConfigureComplete(GameObject go){
 		go.AddComponent<Circuit>();
+		go.AddOrGet<CopyBuildingSettings>();
 		go.GetComponent<KPrefabID>().AddTag(GameTags.OverlayBehindConduits);
 		ModUtil.AddBuildingToPlanScreen("Automation", Id, "logicgates", "LogicGateXOR");
 	}

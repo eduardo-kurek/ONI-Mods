@@ -8,6 +8,8 @@ public class InputPort : CNIPort {
 	private InputPort() { }
 	
 	private InputPort(string id, Port wrappedPort) : base(id, wrappedPort) {}
+
+	public InputPort(InputPort other) : base(other) {}
 	
 	public static InputPort Create(CellOffset offset, PortInfo info){
 		var port = Port.InputPort(

@@ -25,6 +25,11 @@ public class CNIPort {
 		WrappedPort = wrappedPort;
 	}
 
+	protected CNIPort(CNIPort other){
+		OriginalId = other.OriginalId;
+		WrappedPort = other.WrappedPort;
+	}
+
 	public PortInfo GetInfo(){
 		return new PortInfo(
 			OriginalId,

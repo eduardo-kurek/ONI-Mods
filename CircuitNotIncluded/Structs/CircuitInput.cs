@@ -7,9 +7,7 @@ public class CircuitInput : CircuitPort, ILogicEventReceiver {
 	
 	private CircuitInput(){ }
 
-	public CircuitInput(Circuit parent, InputPort port) 
-		: base(parent, parent.GetActualCell(port.Offset))
-	{
+	public CircuitInput(Circuit parent, InputPort port) : base(parent, parent.GetActualCell(port.Offset)){
 		this.port = port;
 	}
 	

@@ -44,10 +44,14 @@ public class OutputPort : CNIPort {
 	
 	private OutputPort(){ }
 
-	private OutputPort(string expression, string id, Port wrappedPort)
-		: base(id, wrappedPort)
-	{
+	private OutputPort(string expression, string id, Port wrappedPort) : base(id, wrappedPort){
 		Expression = expression;
+		tree = Compiler.Parse(Expression);
+		evaluateFunc = Compiler.Compile(tree);
+	}
+
+	public OutputPort(OutputPort other) : base(other){
+		Expression = other.expression;
 		tree = Compiler.Parse(Expression);
 		evaluateFunc = Compiler.Compile(tree);
 	}

@@ -1,6 +1,6 @@
 # Circuit Not Included
 
-![Preview](preview.jpg)
+![Preview](resources/preview.png)
 
 Circuit Not Included replaces the complexity of vanilla logic gates 
 with programmable circuit.

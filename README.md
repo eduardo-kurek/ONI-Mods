@@ -3,7 +3,7 @@ My mods for ONI.
 
 # Mod List
 
-- **Circuit Not Included**: A mod to create custom circuits and provides the capability to customize logic ports.
+- **Circuit Not Included**: A mod to create custom circuits and provides the capability to customize logic ports. https://steamcommunity.com/sharedfiles/filedetails/?id=3689351875.
 
 # Report a bug
 If you find a bug in a mod, please feel free to open an issue specifying the bug; also, inform the logs provided by the game if it was a crash.

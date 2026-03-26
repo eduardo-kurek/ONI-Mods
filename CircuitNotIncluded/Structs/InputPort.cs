@@ -1,4 +1,5 @@
 using KSerialization;
+using Newtonsoft.Json.Linq;
 
 namespace CircuitNotIncluded.Structs;
 using static LogicPorts;
@@ -16,5 +17,11 @@ public class InputPort : CNIPort {
 			info.Id, offset, info.Description, info.ActiveDescription, info.InactiveDescription
 		);
 		return new InputPort(info.Id, port);
+	}
+
+	public static InputPort CreateFromJson(JObject json){
+		PortInfo info = ExtractPortInfo(json);
+		CellOffset offset = ExtractOffset(json);
+		return Create(offset, info);
 	}
 }

@@ -6,7 +6,7 @@ using static EventSystem;
 namespace CircuitNotIncluded.Structs;
 
 [SerializationConfig(MemberSerialization.OptIn)]
-public class Circuit : KMonoBehaviour {
+public sealed partial class Circuit : KMonoBehaviour {
 	private const int SPRITE_TILE_SIZE = 100;
 	
 	private BuildingDef def = null!;
@@ -109,7 +109,8 @@ public class Circuit : KMonoBehaviour {
 		Unsubscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
 	}
 
-	public void SetPorts(List<InputPort> inputPorts, List<OutputPort> outputPorts){
+	public void SetData(String cniName, List<InputPort> inputPorts, List<OutputPort> outputPorts){
+		CNIName = cniName;
 		var circuitInputs = inputPorts.Select(CreateInput).ToList();
 		var circuitOutputs = outputPorts.Select(CreateOutput).ToList();
 		
@@ -142,10 +143,9 @@ public class Circuit : KMonoBehaviour {
 		Circuit source = ((GameObject)data).GetComponent<Circuit>();
 		if(source == null) return;
 		
-		CNIName = source.CNIName;
 		var inputPorts = source.Inputs.Select(i => new InputPort(i.port)).ToList();
 		var outputPorts = source.Outputs.Select(o => new OutputPort(o.port)).ToList();
-		SetPorts(inputPorts, outputPorts);
+		SetData(source.CNIName, inputPorts, outputPorts);
 	}
 	
 	protected override void OnCleanUp(){
@@ -196,7 +196,7 @@ public class Circuit : KMonoBehaviour {
 	public int ToGridIndex(CellOffset offset) => Width * offset.y + offset.x + OriginOffset;
 
 	// Converts a 2D CellOffset to a display index (Top-Left).
-	public int ToDisplayIndex(CellOffset offset) {
+	public int ToDisplayIndex(CellOffset offset){
 		CellOffset mirrored = offset;
 		mirrored.y = (Height - 1) - offset.y;
 		return ToGridIndex(mirrored);

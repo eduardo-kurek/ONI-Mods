@@ -36,8 +36,7 @@ public partial class CircuitScreenManager {
 		ValidationContext ctx = PortHandler.Validate(inputs, outputs);
 		var inputsResult = ctx.ResultInput();
 		var outputsResult = ctx.ResultOutput();
-		circuit.SetPorts(inputsResult, outputsResult);
-		circuit.CNIName = circuitNameBuffer;
+		circuit.SetData(circuitNameBuffer, inputsResult, outputsResult);
 	}
 	
 	public void OnOutputCellCreated(OutputCellState data) => screen.AddOutputCell(data);

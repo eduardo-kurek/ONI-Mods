@@ -3,7 +3,7 @@
     <PropertyGroup>
         <ModTitle>Circuit Not Included</ModTitle>
         <ModDescription>A mod for creating custom circuits</ModDescription>
-        <ModVersion>1.0.0</ModVersion>
+        <ModVersion>1.1.0</ModVersion>
         <SupportedContent>ALL</SupportedContent>
         <LastWorkingBuild>652372</LastWorkingBuild>
         <RootNamespace>CircuitNotIncluded</RootNamespace>

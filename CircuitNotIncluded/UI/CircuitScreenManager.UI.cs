@@ -292,8 +292,8 @@ public partial class CircuitScreenManager {
 			.FlexibleWidth(1)
 			.gameObject;
 
-		BuildCancelButton(footer);
 		BuildSaveButton(footer);
+		BuildCancelButton(footer);
 	}
 
 	private GameObject BuildSaveButton(GameObject container){

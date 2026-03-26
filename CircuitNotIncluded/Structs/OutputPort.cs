@@ -1,5 +1,6 @@
 using CircuitNotIncluded.Grammar;
 using KSerialization;
+using Newtonsoft.Json.Linq;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 using static LogicPorts;
 
@@ -57,11 +58,24 @@ public class OutputPort : CNIPort {
 	}
 
 	public int Evaluate(SymbolTable table) => EvaluateFunc(table);
-	
+
+	public override JObject ToJson(){
+		var json = base.ToJson();
+		json["Expression"] = Expression;
+		return json;
+	}
+
 	public static OutputPort Create(string expression, CellOffset offset, PortInfo info){
 		var port = Port.OutputPort(
 			info.Id, offset, info.Description, info.ActiveDescription, info.InactiveDescription
 		);
 		return new OutputPort(expression, info.Id, port);
+	}
+
+	public static OutputPort CreateFromJson(JObject json){
+		PortInfo info = ExtractPortInfo(json);
+		CellOffset offset = ExtractOffset(json);
+		string expression = json["Expression"]?.Value<string>() ?? "";
+		return Create(expression, offset, info);
 	}
 }

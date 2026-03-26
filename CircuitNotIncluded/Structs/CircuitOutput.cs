@@ -1,4 +1,5 @@
 using KSerialization;
+using Newtonsoft.Json.Linq;
 
 namespace CircuitNotIncluded.Structs;
 
@@ -34,4 +35,8 @@ public class CircuitOutput : CircuitPort, ILogicEventSender {
 	
 	public override LogicPortSpriteType GetLogicPortSpriteType() 
 		=> LogicPortSpriteType.Output;
+
+	public override JObject ToJson(){
+		return port.ToJson();
+	}
 }

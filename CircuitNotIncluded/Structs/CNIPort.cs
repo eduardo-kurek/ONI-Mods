@@ -1,4 +1,6 @@
+using CircuitNotIncluded.Interfaces;
 using KSerialization;
+using Newtonsoft.Json.Linq;
 using static LogicPorts;
 
 namespace CircuitNotIncluded.Structs;
@@ -8,7 +10,7 @@ namespace CircuitNotIncluded.Structs;
  * Contains the original id (not hashed) of the port and the Port object itself.
  */
 [SerializationConfig(MemberSerialization.OptIn)]
-public class CNIPort {
+public class CNIPort : IBlueprintSerializable {
 	[Serialize] public Port WrappedPort;
 	[Serialize] public string OriginalId;
 	
@@ -37,5 +39,29 @@ public class CNIPort {
 			WrappedPort.activeDescription,
 			WrappedPort.inactiveDescription
 		);
+	}
+
+	public virtual JObject ToJson() {
+		var info = GetInfo();
+		return new JObject {
+			{ "Id", info.Id },
+			{ "Description", info.Description },
+			{ "ActiveDescription", info.ActiveDescription },
+			{ "InactiveDescription", info.InactiveDescription },
+			{ "Offset", JObject.FromObject(Offset) }
+		};
+	}
+	
+	protected static PortInfo ExtractPortInfo(JObject json) {
+		return new PortInfo(
+			json["Id"].Value<string>()!,
+			json["Description"]?.Value<string>() ?? "",
+			json["ActiveDescription"]?.Value<string>() ?? "",
+			json["InactiveDescription"]?.Value<string>() ?? ""
+		);
+	}
+
+	protected static CellOffset ExtractOffset(JObject json) {
+		return (CellOffset) json["Offset"]?.ToObject<CellOffset>()!;
 	}
 }

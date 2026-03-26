@@ -1,4 +1,6 @@
 using KSerialization;
+using Newtonsoft.Json.Linq;
+
 namespace CircuitNotIncluded.Structs;
 
 [SerializationConfig(MemberSerialization.OptIn)]
@@ -22,4 +24,7 @@ public class CircuitInput : CircuitPort, ILogicEventReceiver {
 	}
 	
 	public override LogicPortSpriteType GetLogicPortSpriteType() => LogicPortSpriteType.Input;
+	public override JObject ToJson(){
+		return port.ToJson();
+	}
 }

@@ -1,10 +1,14 @@
+using CircuitNotIncluded.Interfaces;
 using KSerialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
+using MemberSerialization = KSerialization.MemberSerialization;
 
 namespace CircuitNotIncluded.Structs;
 
 [SerializationConfig(MemberSerialization.OptIn)]
-public abstract class CircuitPort : ILogicUIElement {
+public abstract class CircuitPort : ILogicUIElement, IBlueprintSerializable {
 	public Circuit parent;
 	[Serialize] protected int cell;
 	
@@ -29,4 +33,5 @@ public abstract class CircuitPort : ILogicUIElement {
 	public Vector2 PosMax() => Grid.CellToPos2D(cell);
 	public int GetLogicUICell() => cell;
 	public abstract LogicPortSpriteType GetLogicPortSpriteType();
+	public abstract JObject ToJson();
 }

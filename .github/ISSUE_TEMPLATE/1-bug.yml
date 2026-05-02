@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a bug to help us improve
+title: "[CNI] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: describe-bug
+    attributes:
+      label: Describe the bug
+      description: A brief description of what the bug consists of.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: To Reproduce
+      description: Steps to reproduce the bug. How it happens and how can i reproduce to see the undefined behaviour?
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots or videos to help understand the problem.
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: What is the correct behaviour?
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Some additional information that might be useful for solving the bug.

@@ -1,21 +1,20 @@
 using CircuitNotIncluded.Structs;
-using CircuitNotIncluded.Utils;
-using PeterHan.PLib.UI;
 using UnityEngine;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class InputCellState(PortInfo info) : PortCellState(info) {
+public class InputCellState(PortInfo info) : PortCellState {
 	private readonly PortInfo Info = info;
 	protected override string CellTitle => "Input Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.inputSprite;
-	
+	public override string Id { get; } = info.Id.Trim();
+
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();
-		BuildIdField(panel);
-		BuildDescriptionField(panel);
-		BuildActiveDescriptionField(panel);
-		BuildInactiveDescription(panel);
+		BuildIdField(panel, "Id :", info);
+		BuildDescriptionField(panel,"Description :", info);
+		BuildActiveDescriptionField(panel, info);
+		BuildInactiveDescription(panel, info);
 		BuildDeleteButton(panel);
 		return panel;
 	}

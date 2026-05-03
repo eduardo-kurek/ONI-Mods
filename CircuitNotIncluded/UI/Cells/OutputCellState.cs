@@ -1,24 +1,22 @@
 using CircuitNotIncluded.Structs;
-using CircuitNotIncluded.Utils;
-using PeterHan.PLib.UI;
 using UnityEngine;
-using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.UI.Cells;
 
 
-public class OutputCellState(string expression, PortInfo info) : PortCellState(info) {
+public class OutputCellState(string expression, PortInfo info) : PortCellState {
 	private string Expression = expression;
 	private readonly PortInfo Info = info;
 	protected override string CellTitle => "Output Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.outputSprite;
-	
+	public override string Id { get; } = info.Id.Trim();
+
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();
-		BuildIdField(panel);
-		BuildDescriptionField(panel);
-		BuildActiveDescriptionField(panel);
-		BuildInactiveDescription(panel);
+		BuildIdField(panel, "Id :", info);
+		BuildDescriptionField(panel,"Description :", info);
+		BuildActiveDescriptionField(panel, info);
+		BuildInactiveDescription(panel, info);
 		BuildExpressionField(panel);
 		BuildDeleteButton(panel);
 		return panel;

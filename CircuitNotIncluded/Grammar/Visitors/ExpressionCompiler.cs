@@ -49,7 +49,8 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 
 	public override object? VisitNotExpresssion(NotExpresssionContext context){
 		Visit(context.factor());
-		il.Emit(OpCodes.Not);
+		il.Emit(OpCodes.Ldc_I4_0);
+		il.Emit(OpCodes.Ceq);
 		return null;
 	}
 

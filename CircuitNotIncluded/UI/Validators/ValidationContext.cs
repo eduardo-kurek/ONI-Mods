@@ -11,15 +11,10 @@ public class ValidationContext {
 	private readonly HashSet<string> InputIds = [];
 	private readonly HashSet<string> OutputIds = [];
 	
-	private readonly List<OutputCellState> Outputs;
-	private readonly List<InputCellState> Inputs;
-	
 	private readonly Dictionary<string, PortCellState> DeclaredIds = [];
 	private readonly Dictionary<OutputCellState, ProgramContext> ParsedOutputs = [];
 
 	public ValidationContext(List<InputCellState> inputs, List<OutputCellState> outputs){
-		Inputs = inputs;
-		Outputs = outputs;
 		foreach(InputCellState i in inputs)
 			InputIds.Add(i.Id);
 		foreach(OutputCellState o in outputs)
@@ -52,17 +47,5 @@ public class ValidationContext {
 
 	public List<string> GetErrors(){
 		return Errors;
-	}
-
-	public List<InputPort> ResultInput(){
-		List<InputPort> result = [];
-		result.AddRange(Inputs.Select(i => i.ToPort()));
-		return result;
-	}
-
-	public List<OutputPort> ResultOutput(){
-		List<OutputPort> result = [];
-		result.AddRange(Outputs.Select(i => i.ToPort()));
-		return result;
 	}
 }

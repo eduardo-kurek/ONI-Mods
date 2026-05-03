@@ -58,7 +58,7 @@ public abstract class PortCellState(PortInfo info) : CircuitCellState {
 			.AddTo(deletePanel);
 	}
 
-	protected void Delete(){
+	public void Delete(){
 		EmptyCellState state = new();
 		Owner.TransitionTo(state);
 	}

@@ -293,6 +293,7 @@ public partial class CircuitScreenManager {
 			.gameObject;
 
 		BuildSaveButton(footer);
+		BuildClearButton(footer);
 		BuildCancelButton(footer);
 	}
 
@@ -300,6 +301,10 @@ public partial class CircuitScreenManager {
 		return BuildButton(container, "Save", (go) => { screen.SaveButtonClicked(); });
 	}
 
+	private GameObject BuildClearButton(GameObject container){
+		return BuildButton(container, "Clear", (go) => { screen.ClearButtonClicked(); });
+	}
+	
 	private GameObject BuildCancelButton(GameObject container){
 		return BuildButton(container, "Cancel", (go) => { screen.CancelButtonClicked(); });
 	}

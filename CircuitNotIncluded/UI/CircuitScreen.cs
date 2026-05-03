@@ -49,8 +49,13 @@ public class CircuitScreen : KModalScreen {
 	public void CancelButtonClicked(){
 		Deactivate();
 	}
+	
+	public void ClearButtonClicked(){
+		foreach (var cell in InputCellTypes.ToList()) cell.Delete();
+		foreach (var cell in OutputCellTypes.ToList()) cell.Delete();
+	}
 
 	protected override void OnDeactivate(){
 		CircuitCell.Selected = null;
 	}
-}
+} 

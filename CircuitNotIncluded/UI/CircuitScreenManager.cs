@@ -33,7 +33,7 @@ public partial class CircuitScreenManager {
 	}
 	
 	private void SaveCircuit(List<InputCellState> inputs, List<OutputCellState> outputs){
-		ValidationContext ctx = PortHandler.Validate(inputs, outputs);
+		ValidationContext ctx = Validator.Validate(inputs, outputs);
 		
 		List<OutputPort> resultOutput = [];
 		resultOutput.AddRange(outputs.Select(i => i.ToPort()));

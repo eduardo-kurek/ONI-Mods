@@ -2,14 +2,11 @@ using CircuitNotIncluded.UI.Cells;
 
 namespace CircuitNotIncluded.UI.Validators;
 
-public class ExpNotEmpty(PortHandler? next = null) : PortHandler(next) {
-	protected override bool CanHandle(PortCellState cell, ValidationContext ctx){
-		return cell is OutputCellState;
+public class ExpNotEmptyValidator : BasePortValidator<OutputCellState> {
+	protected override bool DispatchErrorWhen(OutputCellState cell, ValidationContext ctx){
+		return cell.GetExpression().IsNullOrWhiteSpace();
 	}
-	protected override bool ErrorOccurred(PortCellState cell, ValidationContext ctx){
-		return ((OutputCellState)cell).GetExpression().IsNullOrWhiteSpace();
-	}
-	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){
+	protected override string GetErrorMessage(OutputCellState cell, ValidationContext ctx){
 		return "Expression cannot be empty.";
 	}
 }

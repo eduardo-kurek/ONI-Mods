@@ -3,10 +3,10 @@ using CircuitNotIncluded.UI.Cells;
 
 namespace CircuitNotIncluded.UI.Validators;
 
-public class IdMatchRegex(PortHandler? next = null) : PortHandler(next) {
+public class IdMatchRegexValidator : BasePortValidator<PortCellState> {
 	private const string RegexPattern = @"^[a-zA-Z_][a-zA-Z0-9_]*$";
 
-	protected override bool ErrorOccurred(PortCellState cell, ValidationContext ctx)
+	protected override bool DispatchErrorWhen(PortCellState cell, ValidationContext ctx)
 		=> DoNotMatch(cell);
 	
 	private static bool DoNotMatch(PortCellState cell){

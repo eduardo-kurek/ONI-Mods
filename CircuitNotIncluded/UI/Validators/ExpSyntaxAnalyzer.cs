@@ -1,15 +1,11 @@
-using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.UI.Cells;
-using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.UI.Validators;
 
-public class ExpSyntaxAnalyzer(PortHandler? next = null) : PortHandler(next) {
+public class ExpSyntaxValidator : BasePortValidator<PortCellState> {
 	private string error = "";
-	protected override bool CanHandle(PortCellState cell, ValidationContext ctx){
-		return cell is OutputCellState;
-	}
-	protected override bool ErrorOccurred(PortCellState cell, ValidationContext ctx){
+
+	protected override bool DispatchErrorWhen(PortCellState cell, ValidationContext ctx){
 		var outputCell = (OutputCellState)cell;
 		try{
 			ctx.Parse(outputCell);
@@ -20,6 +16,7 @@ public class ExpSyntaxAnalyzer(PortHandler? next = null) : PortHandler(next) {
 			return true;
 		}
 	}
+	
 	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){
 		return error;
 	}

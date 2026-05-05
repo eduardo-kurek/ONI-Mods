@@ -10,7 +10,7 @@ public class IdMatchRegex(PortHandler? next = null) : PortHandler(next) {
 		=> DoNotMatch(cell);
 	
 	private static bool DoNotMatch(PortCellState cell){
-		return !Regex.IsMatch(cell.Id, RegexPattern);
+		return !Regex.IsMatch(cell.GetId(), RegexPattern);
 	}
 	
 	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){

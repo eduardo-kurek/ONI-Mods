@@ -7,7 +7,7 @@ public class InputCellState(PortInfo info) : PortCellState {
 	private readonly PortInfo Info = info;
 	protected override string CellTitle => "Input Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.inputSprite;
-	public override string Id { get; } = info.Id.Trim();
+	public override string GetId() => Info.Id.Trim();
 
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();

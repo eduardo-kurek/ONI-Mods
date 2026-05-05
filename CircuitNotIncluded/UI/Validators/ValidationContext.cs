@@ -16,17 +16,17 @@ public class ValidationContext {
 
 	public ValidationContext(List<InputCellState> inputs, List<OutputCellState> outputs){
 		foreach(InputCellState i in inputs)
-			InputIds.Add(i.Id);
+			InputIds.Add(i.GetId());
 		foreach(OutputCellState o in outputs)
-			OutputIds.Add(o.Id);
+			OutputIds.Add(o.GetId());
 	}
 
 	public bool HasOutputId(string id) {
 		return OutputIds.Contains(id);
 	}
 
-	public bool IsPortDeclared(PortCellState port) => DeclaredIds.ContainsKey(port.Id);
-	public void DeclarePort(PortCellState port) => DeclaredIds[port.Id] = port;
+	public bool IsPortDeclared(PortCellState port) => DeclaredIds.ContainsKey(port.GetId());
+	public void DeclarePort(PortCellState port) => DeclaredIds[port.GetId()] = port;
 	public PortCellState GetDeclaredPort(string id) => DeclaredIds[id];
 
 	public HashSet<string> GetInputIds(){

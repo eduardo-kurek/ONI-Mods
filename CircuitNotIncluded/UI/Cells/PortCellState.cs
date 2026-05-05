@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace CircuitNotIncluded.UI.Cells;
 
 public interface IHasId {
-	public string Id { get; }
+	string GetId();
 }
 
 public abstract class PortCellState : CircuitCellState, IHasId {
@@ -65,5 +65,5 @@ public abstract class PortCellState : CircuitCellState, IHasId {
 		Owner.TransitionTo(state);
 	}
 
-	public abstract string Id { get; }
+	public abstract string GetId();
 }

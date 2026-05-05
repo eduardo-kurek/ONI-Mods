@@ -9,7 +9,7 @@ public class OutputCellState(string expression, PortInfo info) : PortCellState {
 	private readonly PortInfo Info = info;
 	protected override string CellTitle => "Output Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.outputSprite;
-	public override string Id { get; } = info.Id.Trim();
+	public override string GetId() => Info.Id.Trim();
 
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();

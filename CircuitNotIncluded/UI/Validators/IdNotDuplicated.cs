@@ -13,7 +13,7 @@ public class IdNotDuplicated(PortHandler? next = null) : PortHandler(next) {
 		=> ctx.DeclarePort(cell);
 	
 	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){
-		var declaredPort = ctx.GetDeclaredPort(cell.Id);
-		return $"Duplicated port id: {cell.Id}. Already declared in ({declaredPort.Owner.DisplayIndex}).";
+		var declaredPort = ctx.GetDeclaredPort(cell.GetId());
+		return $"Duplicated port id: {cell.GetId()}. Already declared in ({declaredPort.Owner.DisplayIndex}).";
 	}
 }

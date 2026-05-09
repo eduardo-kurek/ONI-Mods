@@ -6,9 +6,11 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public abstract class PortCellState(PortInfo info) : CircuitCellState {
-	public string Id => info.Id.Trim();
-	
+public interface IHasId {
+	string GetId();
+}
+
+public abstract class PortCellState : CircuitCellState, IHasId {
 	protected abstract Sprite PortSprite { get; }
 
 	public override void UpdateCellImage(Image img){
@@ -16,28 +18,28 @@ public abstract class PortCellState(PortInfo info) : CircuitCellState {
 		img.sprite = PortSprite;
 	}
 	
-	protected GameObject BuildIdField(GameObject container){
-		return BuildTextField(container, "Id: ", info.Id, 50, 
+	protected GameObject BuildIdField(GameObject container, string label, PortInfo info){
+		return BuildTextField(container, label, info.Id, 50, 
 			(source, text) => {
 				info.Id = text;
 			});
 	}
 
-	protected GameObject BuildDescriptionField(GameObject container){
-		return BuildTextField(container, "Description: ", info.Description, 255,
+	protected GameObject BuildDescriptionField(GameObject container, string label, PortInfo info){
+		return BuildTextField(container, label, info.Description, 255,
 			(source, text) => {
 				info.Description = text;
 			});
 	}
 
-	protected GameObject BuildActiveDescriptionField(GameObject container){
+	protected GameObject BuildActiveDescriptionField(GameObject container, PortInfo info){
 		return BuildTextField(container, "Active Description: ", info.ActiveDescription, 255,
 			(source, text) => {
 				info.ActiveDescription = text;
 			});
 	}
 
-	protected GameObject BuildInactiveDescription(GameObject container){
+	protected GameObject BuildInactiveDescription(GameObject container, PortInfo info){
 		return BuildTextField(container, "Inactive Description: ", info.InactiveDescription, 255, 
 			(source, text) => {
 				info.InactiveDescription = text;
@@ -62,4 +64,6 @@ public abstract class PortCellState(PortInfo info) : CircuitCellState {
 		EmptyCellState state = new();
 		Owner.TransitionTo(state);
 	}
+
+	public abstract string GetId();
 }

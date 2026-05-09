@@ -1,20 +1,18 @@
 using CircuitNotIncluded.Grammar;
-using CircuitNotIncluded.Grammar.Visitors;
 using CircuitNotIncluded.UI.Cells;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.UI.Validators;
 
-public class ExpHasValidIds(PortHandler? next = null) : PortHandler(next) {
+public class ExpHasValidIdsValidator : BasePortValidator<OutputCellState> {
 	private readonly HashSet<string> invalidIds = [];
 
-	protected override void Clear(PortCellState cell, ValidationContext ctx){
+	protected override void BeforeEach(OutputCellState cell, ValidationContext ctx){
 		invalidIds.Clear();
 	}
 
-	protected override bool ErrorOccurred(PortCellState cell, ValidationContext ctx){
-		return cell is OutputCellState output 
-		       && HasInvalidIds(output, ctx);
+	protected override bool DispatchErrorWhen(OutputCellState cell, ValidationContext ctx){
+		return HasInvalidIds(cell, ctx);
 	}
 	
 	private bool HasInvalidIds(OutputCellState output, ValidationContext ctx){
@@ -29,7 +27,7 @@ public class ExpHasValidIds(PortHandler? next = null) : PortHandler(next) {
 		invalidIds.Add(id);
 	}
 
-	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){
+	protected override string GetErrorMessage(OutputCellState cell, ValidationContext ctx){
 		return $"Only input port ids can be used in expressions ({string.Join(", ", invalidIds)}) ";
 	}
 }

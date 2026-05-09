@@ -2,11 +2,12 @@ using CircuitNotIncluded.UI.Cells;
 
 namespace CircuitNotIncluded.UI.Validators;
 
-public class IdNotEmpty(PortHandler? next = null) : PortHandler(next) {
-	protected override bool ErrorOccurred(PortCellState cell, ValidationContext ctx){
-		return cell.Id.IsNullOrWhiteSpace();
+public class IdNotEmptyValidator : BasePortValidator<PortCellState> {
+	protected override bool DispatchErrorWhen(PortCellState port, ValidationContext ctx){
+		return port.GetId().IsNullOrWhiteSpace();
 	}
-	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){
+
+	protected override string GetErrorMessage(PortCellState port, ValidationContext ctx){
 		return "Port id cannot be empty.";
 	}
 }

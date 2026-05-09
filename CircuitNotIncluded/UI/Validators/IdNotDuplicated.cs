@@ -2,18 +2,18 @@ using CircuitNotIncluded.UI.Cells;
 
 namespace CircuitNotIncluded.UI.Validators;
 
-public class IdNotDuplicated(PortHandler? next = null) : PortHandler(next) {
-	protected override bool ErrorOccurred(PortCellState cell, ValidationContext ctx) 
-		=> IsDuplicated(cell, ctx);
-
+public class IdNotDuplicatedValidator : BasePortValidator<PortCellState> {
+	protected override bool DispatchErrorWhen(PortCellState port, ValidationContext ctx)
+		=> IsDuplicated(port, ctx);
+	
 	private static bool IsDuplicated(PortCellState cell, ValidationContext ctx)
 		=> ctx.IsPortDeclared(cell);
-
+	
 	protected override void OnSuccess(PortCellState cell, ValidationContext ctx)
 		=> ctx.DeclarePort(cell);
-	
-	protected override string GetErrorMessage(PortCellState cell, ValidationContext ctx){
-		var declaredPort = ctx.GetDeclaredPort(cell.Id);
-		return $"Duplicated port id: {cell.Id}. Already declared in ({declaredPort.Owner.DisplayIndex}).";
+
+	protected override string GetErrorMessage(PortCellState port, ValidationContext ctx){
+		var declaredPort = ctx.GetDeclaredPort(port.GetId());
+		return $"Duplicated port id: {port.GetId()}. Already declared in ({declaredPort.Owner.DisplayIndex}).";
 	}
 }

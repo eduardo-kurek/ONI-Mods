@@ -1,4 +1,6 @@
+using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.UI.Cells;
+using CircuitNotIncluded.UI.Validators;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
 using UnityEngine;
@@ -16,12 +18,12 @@ public class CircuitScreen : KModalScreen {
 	public LocText title = null!;
 	public GameObject editorContent = null!;
 	public GameObject displayCellGrid = null!;
-	public delegate void OnSave(List<InputCellState> inputs, List<OutputCellState> outputs);
+	public delegate void OnSave(List<InputPort> inputs, List<OutputPort> outputs);
 	public OnSave? onSave;
 
-	public void OnReady() { 
-		InputCellTypesSnapshot = InputCellTypes.ToList();
-		OutputCellTypesSnapshot = OutputCellTypes.ToList();
+	public void OnReady(){
+		InputCellTypesSnapshot = InputCellTypes.Select(i => i.Clone()).ToList();
+		OutputCellTypesSnapshot = OutputCellTypes.Select(o => o.Clone()).ToList();
 	}
 
 	public void RemoveInputCell(InputCellState data) => InputCellTypes.Remove(data);
@@ -36,37 +38,40 @@ public class CircuitScreen : KModalScreen {
 		content.SetParent(editorContent);
 	}
 
+	private bool IsEmpty() => OutputCellTypes.Count == 0 && InputCellTypes.Count == 0;
+	
+	public void SaveButtonClicked(){
+		if(!Changed()){
+			SaveCells();
+			return;
+		}
+		
+		string errMsg = ValidateCells();
+		if(errMsg != string.Empty){
+			ShowMessageDialog(errMsg);
+			return;
+		}
+		
+		PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent,
+									"Are you sure you want to apply all changes?",
+									SaveCells,
+									() => {},
+									"Yes",
+									"No");
+	}
+	
 	private bool Changed() {
 		if (!InputCellTypesSnapshot.SequenceEqual(InputCellTypes)) return true;
 		if (!OutputCellTypesSnapshot.SequenceEqual(OutputCellTypes)) return true;
 		return false;
 	}
-
-	private bool IsEmpty() {
-		if ((OutputCellTypes.Count == 0) && (InputCellTypes.Count == 0))
-			return true;
-		return false;	
-	}
 	
-	public void SaveButtonClicked(){
-		if (Changed()) {
-			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent,
-										"Are you sure you want to apply all changes?",
-										() => SaveCells(),
-										() => {},
-										"Yes",
-										"No");
-		} else {
-			Deactivate();	
-		}
-	}
-	 
-	private void SaveCells() {
-		try{
-			onSave?.Invoke(InputCellTypes, OutputCellTypes);
-			Deactivate();
+	private string ValidateCells() {
+		try {
+			Validator.Validate(InputCellTypes, OutputCellTypes);
+			return string.Empty;
 		} catch (Exception e){
-			ShowMessageDialog(e.Message);
+			return e.Message;
 		}
 	}
 	
@@ -79,27 +84,25 @@ public class CircuitScreen : KModalScreen {
 		Destroy(cancelButton.gameObject);
 	}
 	
-	public void CancelButtonClicked() {
-		if (Changed()) {
-			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent, 
-										"Are you sure you want to leave and discard changes?",
-										() => Deactivate(),
-										()=> {},
-										"Yes",
-										"No");
-		} else {
-			Deactivate();
-		}
+	private void SaveCells() {
+		List<OutputPort> outputs = [];
+		outputs.AddRange(OutputCellTypes.Select(i => i.ToPort()));
+	
+		List<InputPort> inputs = [];
+		inputs.AddRange(InputCellTypes.Select(i => i.ToPort()));
+		
+		onSave?.Invoke(inputs, outputs);
+		Deactivate();
 	}
 	
 	public void ClearButtonClicked() {
 		if(!IsEmpty()){
 			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent,
-										"Are you sure you want to clear all cells?",
-										() => ClearCells(),
-										()=>{},
-										"Yes",
-										"No");	
+				"Are you sure you want to clear all cells?",
+				ClearCells,
+				()=>{},
+				"Yes",
+				"No");	
 		}
 	}
 	
@@ -107,7 +110,20 @@ public class CircuitScreen : KModalScreen {
 		foreach (var cell in InputCellTypes.ToList()) cell.Delete();
 		foreach (var cell in OutputCellTypes.ToList()) cell.Delete();
 	}
-
+	
+	public void CancelButtonClicked() {
+		if (Changed()) {
+			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent, 
+				"Are you sure you want to leave and discard changes?",
+				Deactivate,
+				()=> {},
+				"Yes",
+				"No");
+		} else {
+			Deactivate();
+		}
+	}
+	
 	protected override void OnDeactivate(){
 		CircuitCell.Selected = null;
 	}

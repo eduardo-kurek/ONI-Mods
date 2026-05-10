@@ -12,7 +12,6 @@ public class CircuitSideScreen : SideScreenContent {
 	private Circuit? circuit = null;
 	private TextMeshProUGUI circuitName = null!;
 	private GameObject outputsPanel = null!;
-	private readonly Color specialCharsColor = new Color(0.52f, 0.27f, 0.40f);
 	private bool builded = false;
 	
 	protected override void OnPrefabInit(){
@@ -110,19 +109,11 @@ public class CircuitSideScreen : SideScreenContent {
 		foreach(CircuitOutput output in circuit!.Outputs){
 			OutputPort port = output.port;
 			var originalText = $"{port.OriginalId} = {port.Expression}";
-			var colorizedText = ColorizeSpecialChars(originalText);
+			var colorizedText = Utils.UI.ColorizeExpression(originalText);
 			var go = Utils.UI.DarkText(colorizedText, layout.transform);
 			var text = go.GetComponent<TextMeshProUGUI>();
 			text.color = new Color(0.15f, 0.15f, 0.15f);
 		}
-	}
-
-	private string ColorizeSpecialChars(string input){
-		const string pattern = @"([\(\)\*\+\#\!])";
-		var result = Regex.Replace(input, pattern, 
-			match => "<color=#" + ColorUtility.ToHtmlStringRGBA(specialCharsColor) + ">" + 
-			         match.Value + "</color>");
-		return result;
 	}
 	
 	public override bool IsValidForTarget(GameObject target){

@@ -10,7 +10,7 @@ namespace CircuitNotIncluded.Structs;
  * Contains the original id (not hashed) of the port and the Port object itself.
  */
 [SerializationConfig(MemberSerialization.OptIn)]
-public class CNIPort : IBlueprintSerializable {
+public abstract class CNIPort : IBlueprintSerializable, IHover {
 	[Serialize] public Port WrappedPort;
 	[Serialize] public string OriginalId;
 	
@@ -64,4 +64,6 @@ public class CNIPort : IBlueprintSerializable {
 	protected static CellOffset ExtractOffset(JObject json) {
 		return (CellOffset) json["Offset"]?.ToObject<CellOffset>()!;
 	}
+
+	public abstract void OnHover(string circuitName, HoverTextDrawer drawer, SelectToolHoverTextCard cfg);
 }

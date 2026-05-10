@@ -163,6 +163,23 @@ public sealed partial class Circuit : KMonoBehaviour {
 		foreach(CircuitOutput output in dependents)
 			output.Refresh();
 	}
+	
+	public void OnHover(int cell, HoverTextDrawer drawer, SelectToolHoverTextCard cfg){
+		var portInCell = TryGetPortAtCell(cell);
+		if(portInCell == null) return;
+		
+		drawer.BeginShadowBar();
+		portInCell.OnHover(CNIName, drawer, cfg);
+		drawer.EndShadowBar();
+	}
+	
+	public CNIPort? TryGetPortAtCell(int cell){
+		foreach(CircuitInput? i in Inputs.Where(i => GetActualCell(i.port.Offset) == cell))
+			return i.port;
+		foreach(CircuitOutput? o in Outputs.Where(i => GetActualCell(i.port.Offset) == cell))
+			return o.port;
+		return null;
+	}
 
 	public int GetActualCell(CellOffset offset){
 		var component = GetComponent<Rotatable>();

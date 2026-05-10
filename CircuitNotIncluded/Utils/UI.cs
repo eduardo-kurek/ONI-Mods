@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using PeterHan.PLib.UI;
 using TMPro;
 using UnityEngine;
@@ -5,8 +6,9 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.Utils;
 
-public static class UI
-{
+public static class UI {
+	private static readonly Color specialCharsColor = new(0.52f, 0.27f, 0.40f);
+	
 	public static GameObject LightText(string message, Transform? parent = null){
 		return Text(message, PUITuning.Fonts.UILightStyle, parent);
 	}
@@ -40,5 +42,13 @@ public static class UI
 		if(parent != null)
 			label.transform.SetParent(parent);
 		return label;
+	}
+	
+	public static string ColorizeExpression(string expression){
+		const string pattern = @"([\(\)\*\+\#\!])";
+		var result = Regex.Replace(expression, pattern, 
+			match => "<color=#" + ColorUtility.ToHtmlStringRGBA(specialCharsColor) + ">" + 
+			         match.Value + "</color>");
+		return result;
 	}
 }

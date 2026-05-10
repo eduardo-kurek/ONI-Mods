@@ -1,15 +1,10 @@
 namespace CircuitNotIncluded.Structs;
 
-public class PortInfo(
-	string id,
-	string description,
-	string activeDescription,
-	string inactiveDescription
-){
-	public string Id = id;
-	public string Description = description;
-	public string ActiveDescription = activeDescription;
-	public string InactiveDescription = inactiveDescription;
+public record PortInfo(string Id, string Description, string ActiveDescription, string InactiveDescription) {
+	public string Id = Id;
+	public string Description = Description;
+	public string ActiveDescription = ActiveDescription;
+	public string InactiveDescription = InactiveDescription;
 
 	public static PortInfo Default(){
 		return new PortInfo(

@@ -8,6 +8,17 @@ public class InputCellState(PortInfo info) : PortCellState {
 	protected override string CellTitle => "Input Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.inputSprite;
 	public override string GetId() => Info.Id.Trim();
+	
+	public override bool Equals(object other){
+		if(other is InputCellState o){
+			return Info.Equals(o.Info);
+		}
+		return false;
+	}
+
+	public override int GetHashCode() => Info.GetHashCode();
+
+	public InputCellState Clone() => new(info with {});
 
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();

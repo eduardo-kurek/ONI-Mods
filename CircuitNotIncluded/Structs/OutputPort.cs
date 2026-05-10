@@ -78,4 +78,15 @@ public class OutputPort : CNIPort {
 		string expression = json["Expression"]?.Value<string>() ?? "";
 		return Create(expression, offset, info);
 	}
+	
+	public override void OnHover(string circuitName, HoverTextDrawer drawer, SelectToolHoverTextCard cfg){
+		drawer.DrawText($"OUTPUT  {OriginalId}    <style=\"hovercard_element\">({circuitName.ToUpper()})</style>", cfg.Styles_Title.Standard);
+		drawer.NewLine();
+		drawer.DrawText($"Expression = {Utils.UI.ColorizeExpression(Expression)}", cfg.Styles_LogicActive.Standard);
+		if(!Description.IsNullOrWhiteSpace()){
+			drawer.NewLine();
+			drawer.DrawIcon(cfg.iconDash);
+			drawer.DrawText($"{Description}", cfg.Styles_BodyText.Standard);
+		}
+	}
 }

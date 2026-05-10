@@ -24,4 +24,13 @@ public class InputPort : CNIPort {
 		CellOffset offset = ExtractOffset(json);
 		return Create(offset, info);
 	}
+
+	public override void OnHover(string circuitName, HoverTextDrawer drawer, SelectToolHoverTextCard cfg){
+		drawer.DrawText($"INPUT  {OriginalId}    <style=\"hovercard_element\">({circuitName.ToUpper()})</style>", cfg.Styles_Title.Standard);
+		if(!Description.IsNullOrWhiteSpace()){
+			drawer.NewLine();
+			drawer.DrawIcon(cfg.iconDash);
+			drawer.DrawText($"{Description}", cfg.Styles_BodyText.Standard);	
+		}
+	}
 }

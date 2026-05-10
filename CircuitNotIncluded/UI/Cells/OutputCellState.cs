@@ -10,6 +10,17 @@ public class OutputCellState(string expression, PortInfo info) : PortCellState {
 	protected override string CellTitle => "Output Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.outputSprite;
 	public override string GetId() => Info.Id.Trim();
+	
+	public override bool Equals(object other){
+		if(other is OutputCellState o){
+			return Info.Equals(o.Info);
+		}
+		return false;
+	}
+
+	public override int GetHashCode() => Info.GetHashCode();
+	
+	public OutputCellState Clone() => new(Expression, info with {});
 
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();

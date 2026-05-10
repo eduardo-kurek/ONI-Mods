@@ -10,12 +10,20 @@ public class CircuitScreen : KModalScreen {
 	private readonly List<InputCellState> InputCellTypes = [];
 	private readonly List<OutputCellState> OutputCellTypes = [];
 	
+	private List<InputCellState> InputCellTypesSnapshot = [];
+	private List<OutputCellState> OutputCellTypesSnapshot = [];
+	
 	public LocText title = null!;
 	public GameObject editorContent = null!;
 	public GameObject displayCellGrid = null!;
 	public delegate void OnSave(List<InputCellState> inputs, List<OutputCellState> outputs);
 	public OnSave? onSave;
-	
+
+	public void OnReady() { 
+		InputCellTypesSnapshot = InputCellTypes.ToList();
+		OutputCellTypesSnapshot = OutputCellTypes.ToList();
+	}
+
 	public void RemoveInputCell(InputCellState data) => InputCellTypes.Remove(data);
 	public void AddInputCell(InputCellState data) => InputCellTypes.Add(data);
 	public void RemoveOutputCell(OutputCellState data) => OutputCellTypes.Remove(data);
@@ -28,7 +36,32 @@ public class CircuitScreen : KModalScreen {
 		content.SetParent(editorContent);
 	}
 
+	private bool Changed() {
+		if (!InputCellTypesSnapshot.SequenceEqual(InputCellTypes)) return true;
+		if (!OutputCellTypesSnapshot.SequenceEqual(OutputCellTypes)) return true;
+		return false;
+	}
+
+	private bool IsEmpty() {
+		if ((OutputCellTypes.Count == 0) && (InputCellTypes.Count == 0))
+			return true;
+		return false;	
+	}
+	
 	public void SaveButtonClicked(){
+		if (Changed()) {
+			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent,
+										"Are you sure you want to apply all changes?",
+										() => SaveCells(),
+										() => {},
+										"Yes",
+										"No");
+		} else {
+			Deactivate();	
+		}
+	}
+	 
+	private void SaveCells() {
 		try{
 			onSave?.Invoke(InputCellTypes, OutputCellTypes);
 			Deactivate();
@@ -36,7 +69,7 @@ public class CircuitScreen : KModalScreen {
 			ShowMessageDialog(e.Message);
 		}
 	}
-
+	
 	private static void ShowMessageDialog(string message){
 		var dialog = PUIElements.ShowMessageDialog(CircuitScreenManager.RootParent, message);
 		Transform go = dialog.transform.GetChild(1);
@@ -46,11 +79,31 @@ public class CircuitScreen : KModalScreen {
 		Destroy(cancelButton.gameObject);
 	}
 	
-	public void CancelButtonClicked(){
-		Deactivate();
+	public void CancelButtonClicked() {
+		if (Changed()) {
+			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent, 
+										"Are you sure you want to leave and discard changes?",
+										() => Deactivate(),
+										()=> {},
+										"Yes",
+										"No");
+		} else {
+			Deactivate();
+		}
 	}
 	
-	public void ClearButtonClicked(){
+	public void ClearButtonClicked() {
+		if(!IsEmpty()){
+			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent,
+										"Are you sure you want to clear all cells?",
+										() => ClearCells(),
+										()=>{},
+										"Yes",
+										"No");	
+		}
+	}
+	
+	private void ClearCells() {
 		foreach (var cell in InputCellTypes.ToList()) cell.Delete();
 		foreach (var cell in OutputCellTypes.ToList()) cell.Delete();
 	}

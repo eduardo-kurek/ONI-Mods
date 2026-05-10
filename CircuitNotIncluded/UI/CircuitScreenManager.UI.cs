@@ -153,6 +153,7 @@ public partial class CircuitScreenManager {
 		BuildInputPorts(container);
 		BuildOutputPorts(container);
 		BuildInvalidPorts(container);
+		screen.OnReady();
 	}
 
 	private void BuildEmptyPorts(GameObject container){

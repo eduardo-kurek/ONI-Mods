@@ -263,6 +263,7 @@ public partial class CircuitScreenManager {
 			      "* = AND\n" +
 			      "# = XOR\n" +
 			      "+ = OR\n\n" +
+			      "Expressions supports 'true' or 'false' constants;\n" +
 			      "Identifiers must start with a letter\n" +
 			      "or underscore and may contain numbers;\n" +
 			      "Case-sensitive;\n" +

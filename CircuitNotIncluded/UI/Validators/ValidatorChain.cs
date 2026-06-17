@@ -29,12 +29,15 @@ public static class Validator {
         inputValidators.Add(new IdNotEmptyValidator());
         inputValidators.Add(new IdNotContainSpacesValidator());
         inputValidators.Add(new IdMatchRegexValidator());
+        inputValidators.Add(new IdNotReservedWord());
         inputValidators.Add(new IdNotDuplicatedValidator());
 		
         outputValidators.Add(new IdNotEmptyValidator());
         outputValidators.Add(new IdNotContainSpacesValidator());
         outputValidators.Add(new IdMatchRegexValidator());
+        outputValidators.Add(new IdNotReservedWord());
         outputValidators.Add(new IdNotDuplicatedValidator());
+        
         outputValidators.Add(new ExpNotEmptyValidator());
         outputValidators.Add(new ExpSyntaxValidator());
         outputValidators.Add(new ExpHasValidIdsValidator());

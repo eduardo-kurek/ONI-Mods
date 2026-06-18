@@ -38,7 +38,6 @@ public static class Validator {
         outputValidators.Add(new IdNotReservedWord());
         outputValidators.Add(new IdNotDuplicatedValidator());
         
-        outputValidators.Add(new ExpNotEmptyValidator());
         outputValidators.Add(new ExpSyntaxValidator());
         outputValidators.Add(new ExpHasValidIdsValidator());
         outputValidators.Add(new ExpSemanticValidator());

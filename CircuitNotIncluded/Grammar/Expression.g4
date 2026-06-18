@@ -16,7 +16,7 @@ WS: [ \t]+ -> skip;
 ERROR : . ;
 
 // Parser rules
-program: expression EOF;
+program: expression? EOF;
 
 expression
     : factor                        #factorExpresssion

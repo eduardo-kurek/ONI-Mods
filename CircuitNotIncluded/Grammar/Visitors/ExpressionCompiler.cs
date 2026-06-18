@@ -65,6 +65,12 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 	}
 
 	public override object? VisitProgram(ProgramContext context){
+		if(context.expression() == null){
+			il.Emit(OpCodes.Ldc_I4_0);
+			il.Emit(OpCodes.Ret);
+			return null;
+		}
+		
 		Visit(context.expression());
 		il.Emit(OpCodes.Ret);
 		return null;

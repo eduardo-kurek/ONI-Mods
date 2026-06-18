@@ -1,4 +1,5 @@
 using PeterHan.PLib.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -19,6 +20,9 @@ public class CircuitCell : MonoBehaviour, IPointerClickHandler {
 	private Image image = null!;
 	
 	public static readonly TextStyleSetting LabelStyle = PUITuning.Fonts.TextDarkStyle;
+	public static readonly TextStyleSetting ExpressionStyle = PUITuning.Fonts.TextDarkStyle.DeriveStyle(
+		14, Color.black, FontStyles.Bold
+	);
 	public static readonly TextStyleSetting TitleStyle = PUITuning.Fonts.TextDarkStyle.DeriveStyle(16);
 	
 	public CircuitCell Init(CellOffset offset, int displayIndex){

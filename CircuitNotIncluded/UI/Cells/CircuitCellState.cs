@@ -37,7 +37,7 @@ public abstract class CircuitCellState {
 	}
 	
 	protected GameObject BuildTextField(GameObject parent, string labelText, string defaultValue, 
-		int maxLength, PUIDelegates.OnTextChanged onTextChanged){
+		int maxLength, TextStyleSetting fieldStyle, PUIDelegates.OnTextChanged onTextChanged){
 		
 		GameObject panel = new PPanel()
 			.Direction(PanelDirection.Horizontal)
@@ -52,7 +52,7 @@ public abstract class CircuitCellState {
 
 		new PTextField()
 			.Text(defaultValue)
-			.Style(CircuitCell.LabelStyle)
+			.Style(fieldStyle)
 			.FlexSize(1, 0)
 			.MaxLength(maxLength)
 			.TextAlignment(TextAlignmentOptions.Left)

@@ -34,7 +34,8 @@ public class OutputCellState(string expression, PortInfo info) : PortCellState {
 	}
 
 	private GameObject BuildExpressionField(GameObject container){
-		return BuildTextField(container, "Expression: ", Expression, 255, 
+		return BuildTextField(container, "Expression: ", Expression, 
+			255, CircuitCell.ExpressionStyle,
 			(source, text) => {
 				Expression = text;
 			});

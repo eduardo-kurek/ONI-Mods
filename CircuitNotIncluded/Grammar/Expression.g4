@@ -5,9 +5,13 @@ NOT: '!';
 AND: '*';
 XOR: '#';
 OR: '+';
-ID: [_a-zA-Z]+[_a-zA-Z0-9]*;
 LPAREN: '(';
 RPAREN: ')';
+
+TRUE: 'true';
+FALSE: 'false';
+ID: [_a-zA-Z]+[_a-zA-Z0-9]*;
+
 WS: [ \t]+ -> skip;
 ERROR : . ;
 
@@ -23,6 +27,8 @@ expression
     ;
 
 factor
-    : LPAREN expression RPAREN      #parFactor
-    | ID                            #idFactor
+    : ID                            #idFactor
+    | TRUE                          #trueFactor
+    | FALSE                         #falseFactor
+    | LPAREN expression RPAREN      #parFactor
     ;

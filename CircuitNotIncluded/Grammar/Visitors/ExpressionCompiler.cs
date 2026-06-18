@@ -19,6 +19,16 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 		il = method.GetILGenerator();
 	}
 
+	public override object? VisitTrueFactor(TrueFactorContext context){
+		il.Emit(OpCodes.Ldc_I4_1);
+		return null;
+	}
+	
+	public override object? VisitFalseFactor(FalseFactorContext context){
+		il.Emit(OpCodes.Ldc_I4_0);
+		return null;
+	}
+
 	public override object? VisitIdFactor(IdFactorContext context){
 		il.Emit(OpCodes.Ldarg_0);
 		il.Emit(OpCodes.Ldstr, context.ID().GetText());

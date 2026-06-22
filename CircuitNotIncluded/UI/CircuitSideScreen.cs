@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Structs.Ports;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
 using TMPro;
@@ -88,7 +89,7 @@ public class CircuitSideScreen : SideScreenContent {
 	}
 
 	private void UpdateData(){
-		circuitName.text = circuit!.CNIName;
+		circuitName.text = circuit!.dto.Name;
 		UpdateOutputs();
 	}
 
@@ -106,9 +107,8 @@ public class CircuitSideScreen : SideScreenContent {
 
 	private void CreateOutputs(){
 		var layout = outputsPanel.GetComponent<VerticalLayoutGroup>();
-		foreach(CircuitOutput output in circuit!.Outputs){
-			OutputPort port = output.port;
-			var originalText = $"{port.OriginalId} = {port.Expression}";
+		foreach(OutputPortDef o in circuit!.dto.OutputPorts){
+			var originalText = $"{o.Bit1.Label} = {o.Bit1.Label}";
 			var colorizedText = Utils.UI.ColorizeExpression(originalText);
 			var go = Utils.UI.DarkText(colorizedText, layout.transform);
 			var text = go.GetComponent<TextMeshProUGUI>();

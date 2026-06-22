@@ -52,12 +52,12 @@ public class EmptyCellState : CircuitCellState {
 	}
 	
 	private void PromoteToInput(){
-		var inputType = InputCellState.Create();
+		var inputType = new InputCellState();
 		Owner.TransitionTo(inputType);
 	}
 
 	private void PromoteToOutput(){
-		var outputType = OutputCellState.Create();
+		var outputType = new OutputCellState();
 		Owner.TransitionTo(outputType);
 	}
 }

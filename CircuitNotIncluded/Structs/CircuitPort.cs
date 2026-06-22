@@ -8,14 +8,12 @@ using MemberSerialization = KSerialization.MemberSerialization;
 namespace CircuitNotIncluded.Structs;
 
 [SerializationConfig(MemberSerialization.OptIn)]
-public abstract class CircuitPort : ILogicUIElement, IBlueprintSerializable {
-	public Circuit parent;
-	[Serialize] protected int cell;
+public abstract class CircuitPort : ILogicUIElement {
+	protected int cell;
 	
 	protected CircuitPort(){ }
 	
-	protected CircuitPort(Circuit parent, int cell){
-		this.parent = parent;
+	protected CircuitPort(int cell){
 		this.cell = cell;
 	}
 
@@ -33,5 +31,4 @@ public abstract class CircuitPort : ILogicUIElement, IBlueprintSerializable {
 	public Vector2 PosMax() => Grid.CellToPos2D(cell);
 	public int GetLogicUICell() => cell;
 	public abstract LogicPortSpriteType GetLogicPortSpriteType();
-	public abstract JObject ToJson();
 }

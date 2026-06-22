@@ -1,4 +1,5 @@
 using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Structs.Ports;
 using CircuitNotIncluded.UI.Cells;
 using CircuitNotIncluded.UI.Validators;
 using PeterHan.PLib.Core;
@@ -12,18 +13,14 @@ public class CircuitScreen : KModalScreen {
 	private readonly List<InputCellState> InputCellTypes = [];
 	private readonly List<OutputCellState> OutputCellTypes = [];
 	
-	private List<InputCellState> InputCellTypesSnapshot = [];
-	private List<OutputCellState> OutputCellTypesSnapshot = [];
-	
 	public LocText title = null!;
 	public GameObject editorContent = null!;
 	public GameObject displayCellGrid = null!;
-	public delegate void OnSave(List<InputPort> inputs, List<OutputPort> outputs);
+	public delegate void OnSave(InputPortDef[] inputPorts, OutputPortDef[] outputPorts);
 	public OnSave? onSave;
 
 	public void OnReady(){
-		InputCellTypesSnapshot = InputCellTypes.Select(i => i.Clone()).ToList();
-		OutputCellTypesSnapshot = OutputCellTypes.Select(o => o.Clone()).ToList();
+		// TODO: snapshot validation logic
 	}
 
 	public void RemoveInputCell(InputCellState data) => InputCellTypes.Remove(data);
@@ -61,8 +58,7 @@ public class CircuitScreen : KModalScreen {
 	}
 	
 	private bool Changed() {
-		if (!InputCellTypesSnapshot.SequenceEqual(InputCellTypes)) return true;
-		if (!OutputCellTypesSnapshot.SequenceEqual(OutputCellTypes)) return true;
+		// TODO: changed logic based on snapshot
 		return false;
 	}
 	
@@ -85,13 +81,13 @@ public class CircuitScreen : KModalScreen {
 	}
 	
 	private void SaveCells() {
-		List<OutputPort> outputs = [];
-		outputs.AddRange(OutputCellTypes.Select(i => i.ToPort()));
-	
-		List<InputPort> inputs = [];
+		List<InputPortDef> inputs = [];
 		inputs.AddRange(InputCellTypes.Select(i => i.ToPort()));
 		
-		onSave?.Invoke(inputs, outputs);
+		List<OutputPortDef> outputs = [];
+		outputs.AddRange(OutputCellTypes.Select(i => i.ToPort()));
+		
+		onSave?.Invoke([..inputs], [..outputs]);
 		Deactivate();
 	}
 	

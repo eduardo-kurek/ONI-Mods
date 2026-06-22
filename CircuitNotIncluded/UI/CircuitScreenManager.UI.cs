@@ -1,4 +1,5 @@
 using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Structs.Ports;
 using CircuitNotIncluded.UI.Cells;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.Core;
@@ -174,20 +175,18 @@ public partial class CircuitScreenManager {
 	
 	private void BuildInputPorts(GameObject container){
 		Circuit c = circuit;
-		foreach(CircuitInput input in c.Inputs){
-			InputPort port = input.port;
-			var cellType = InputCellState.Create(port);
-			int index = circuit.ToGridIndex(port.Offset);
+		foreach(InputPortDef i in c.dto.InputPorts){
+			var cellType = new InputCellState(i.Bit1.Id, i.Bit1.Description);
+			int index = circuit.ToGridIndex(i.Offset);
 			ChangeCellType(index, cellType);
 		}
 	}
 
 	private void BuildOutputPorts(GameObject container){
 		Circuit c = circuit;
-		foreach(CircuitOutput output in c.Outputs){
-			OutputPort port = output.port;
-			var cellType = OutputCellState.Create(port);
-			int index = circuit.ToGridIndex(port.Offset);
+		foreach(OutputPortDef o in c.dto.OutputPorts){
+			var cellType = new OutputCellState(o.Bit1.Label, o.Bit1.Description, o.Bit1.Expression);
+			int index = circuit.ToGridIndex(o.Offset);
 			ChangeCellType(index, cellType);
 		}
 	}

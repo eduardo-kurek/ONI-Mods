@@ -1,59 +1,33 @@
 using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Structs.Ports;
+using CircuitNotIncluded.Utils;
 using UnityEngine;
 
 namespace CircuitNotIncluded.UI.Cells;
 
 
-public class OutputCellState(string expression, PortInfo info) : PortCellState {
+public class OutputCellState(string label = "", string description = "", string expression = "") : PortCellState {
+	private string Label = label;
+	private string Description = description;
 	private string Expression = expression;
-	private readonly PortInfo Info = info;
+
 	protected override string CellTitle => "Output Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.outputSprite;
-	public override string GetId() => Info.Id.Trim();
-	
-	public override bool Equals(object other){
-		if(other is OutputCellState o){
-			return Info.Equals(o.Info);
-		}
-		return false;
-	}
-
-	public override int GetHashCode() => Info.GetHashCode();
-	
-	public OutputCellState Clone() => new(Expression, info with {});
+	public override string GetId() => Label.Trim();
 
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();
-		BuildIdField(panel, "Id :", info);
-		BuildDescriptionField(panel,"Description :", info);
-		BuildActiveDescriptionField(panel, info);
-		BuildInactiveDescription(panel, info);
-		BuildExpressionField(panel);
+		FieldBuilder.BuildLabelField(panel, Label, (_, t) => Label = t);
+		FieldBuilder.BuildDescriptionField(panel, Description, (_, t) => Description = t);
+		FieldBuilder.BuildExpressionField(panel, Expression, (_, t) => Expression = t);
 		BuildDeleteButton(panel);
 		return panel;
 	}
 
-	private GameObject BuildExpressionField(GameObject container){
-		return BuildTextField(container, "Expression: ", Expression, 
-			255, CircuitCell.ExpressionStyle,
-			(source, text) => {
-				Expression = text;
-			});
-	}
-	
 	public string GetExpression() => Expression.Trim();
 	
-	public OutputPort ToPort(){
-		return OutputPort.Create(Expression, Owner.Offset, Info);
-	}
-
-	public static OutputCellState Create(OutputPort outputPort){
-		return new OutputCellState(outputPort.Expression, outputPort.GetInfo());
-	}
-	
-	public static OutputCellState Create(){
-		PortInfo info = PortInfo.Default();
-		return new OutputCellState(string.Empty, info);
+	public OutputPortDef ToPort(){
+		return new OutputPortDef(GetOffset(), new OutputBit(Label, Description, Expression));
 	}
 
 	public override void OnEnter(CircuitCell owner){

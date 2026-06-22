@@ -18,38 +18,6 @@ public abstract class PortCellState : CircuitCellState, IHasId {
 		img.sprite = PortSprite;
 	}
 	
-	protected GameObject BuildIdField(GameObject container, string label, PortInfo info){
-		return BuildTextField(container, label, info.Id, 
-			50, CircuitCell.ExpressionStyle,
-			(source, text) => {
-				info.Id = text;
-			});
-	}
-
-	protected GameObject BuildDescriptionField(GameObject container, string label, PortInfo info){
-		return BuildTextField(container, label, info.Description, 
-			255, CircuitCell.LabelStyle,
-			(source, text) => {
-				info.Description = text;
-			});
-	}
-
-	protected GameObject BuildActiveDescriptionField(GameObject container, PortInfo info){
-		return BuildTextField(container, "Active Description: ", info.ActiveDescription, 
-			255, CircuitCell.LabelStyle,
-			(source, text) => {
-				info.ActiveDescription = text;
-			});
-	}
-
-	protected GameObject BuildInactiveDescription(GameObject container, PortInfo info){
-		return BuildTextField(container, "Inactive Description: ", info.InactiveDescription, 
-			255, CircuitCell.LabelStyle,
-			(source, text) => {
-				info.InactiveDescription = text;
-			});
-	}
-	
 	protected GameObject BuildDeleteButton(GameObject container){
 		GameObject deletePanel = new PPanel("DeletePanel")
 			.Direction(PanelDirection.Horizontal)

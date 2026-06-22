@@ -1,46 +1,29 @@
 using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Structs.Ports;
+using CircuitNotIncluded.Utils;
+using PeterHan.PLib.UI;
 using UnityEngine;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class InputCellState(PortInfo info) : PortCellState {
-	private readonly PortInfo Info = info;
+public class InputCellState(string id = "", string description = "") : PortCellState {
+	private string Id = id;
+	private string Description = description;
+	
 	protected override string CellTitle => "Input Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.inputSprite;
-	public override string GetId() => Info.Id.Trim();
-	
-	public override bool Equals(object other){
-		if(other is InputCellState o){
-			return Info.Equals(o.Info);
-		}
-		return false;
-	}
-
-	public override int GetHashCode() => Info.GetHashCode();
-
-	public InputCellState Clone() => new(info with {});
+	public override string GetId() => Id;
 
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();
-		BuildIdField(panel, "Id :", info);
-		BuildDescriptionField(panel,"Description :", info);
-		BuildActiveDescriptionField(panel, info);
-		BuildInactiveDescription(panel, info);
+		FieldBuilder.BuildIdField(panel, Id, (_, text) => { Id = text; });
+		FieldBuilder.BuildDescriptionField(panel, Description, (_, text) => { Description = text; });
 		BuildDeleteButton(panel);
 		return panel;
 	}
 	
-	public InputPort ToPort(){
-		return InputPort.Create(Owner.Offset, Info);
-	}
-
-	public static InputCellState Create(InputPort port){
-		return new InputCellState(port.GetInfo());
-	}
-
-	public static InputCellState Create(){
-		PortInfo info = PortInfo.Default();
-		return new InputCellState(info);
+	public InputPortDef ToPort(){
+		return new InputPortDef(Owner.Offset, new InputBit(Id, Description));
 	}
 
 	public override void OnEnter(CircuitCell owner){

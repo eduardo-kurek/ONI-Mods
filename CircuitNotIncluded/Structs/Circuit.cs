@@ -1,4 +1,6 @@
-using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Core;
+using CircuitNotIncluded.Interfaces;
+using CircuitNotIncluded.Structs.Ports;
 using KSerialization;
 using UnityEngine;
 using static EventSystem;
@@ -12,13 +14,9 @@ public sealed partial class Circuit : KMonoBehaviour {
 	private BuildingDef def = null!;
 	public int Width => def.WidthInCells;
 	public int Height => def.HeightInCells;
-	
-	[Serialize] public string CNIName { get; set; } = "Circuit Name";
-	[Serialize] public List<CircuitInput> Inputs = [];
-	[Serialize] public List<CircuitOutput> Outputs = [];
-	
-	private readonly DependencyTable dependencyTable = new();
-	private readonly SymbolTable symbolTable = new();
+
+	[Serialize] public CircuitDTO dto = CircuitDTO.Empty();
+	private CircuitRuntime runtime = null!;
 	
 	private static readonly IntraObjectHandler<Circuit> OnBuildingBrokenDelegate = new (delegate(Circuit component, object data){
 		component.Disconnect();
@@ -37,40 +35,13 @@ public sealed partial class Circuit : KMonoBehaviour {
 
 	protected override void OnSpawn(){
 		InitMembers();
-		HydratePorts();
-		CreatePhysicalPorts();
+		runtime = new CircuitRuntime(this, dto);
+		ConnectIfNotBroken();
 		SetUpEvents();
 	}
 
 	private void InitMembers(){
 		def = GetComponent<Building>().Def;
-	}
-	
-	private void HydratePorts() {
-		if (Inputs.Count == 0 && Outputs.Count == 0) return;
-
-		foreach (var input in Inputs) {
-			input.parent = this;
-		}
-
-		foreach (var output in Outputs) {
-			output.parent = this;
-			output.symbolTable = symbolTable;
-		}
-	}
-	
-	public void CreatePhysicalPorts(){
-		RebuildDependencyGraph();
-		ConnectIfNotBroken();
-	}
-	
-	private void RebuildDependencyGraph(){
-		foreach (CircuitOutput output in Outputs) {
-			var usedInputIds = Compiler.ExtractIds(output.port.Tree);
-
-			foreach(string inputId in usedInputIds)
-				dependencyTable.RegisterDependency(inputId, output);
-		}
 	}
 	
 	private void ConnectIfNotBroken(){
@@ -81,19 +52,13 @@ public sealed partial class Circuit : KMonoBehaviour {
 	
 	private void Connect(){
 		if(connected) return;
-		foreach(CircuitInput port in Inputs) 
-			port.Connect();
-		foreach(CircuitOutput port in Outputs) 
-			port.Connect();
+		runtime.Connect();
 		connected = true;
 	}
 	
 	private void Disconnect(){
 		if(!connected) return;
-		foreach(CircuitInput port in Inputs) 
-			port.Disconnect();
-		foreach(CircuitOutput port in Outputs) 
-			port.Disconnect();
+		runtime.Disconnect();
 		connected = false;
 	}
 	
@@ -109,43 +74,17 @@ public sealed partial class Circuit : KMonoBehaviour {
 		Unsubscribe((int)GameHashes.BuildingFullyRepaired, OnBuildingFullyRepairedDelegate);
 	}
 
-	public void SetData(String cniName, List<InputPort> inputPorts, List<OutputPort> outputPorts){
-		CNIName = cniName;
-		var circuitInputs = inputPorts.Select(CreateInput).ToList();
-		var circuitOutputs = outputPorts.Select(CreateOutput).ToList();
-		
-		SetPorts(circuitInputs, circuitOutputs);
-	}
-	
-	private CircuitInput CreateInput(InputPort port) => new (this, port);
-	private CircuitOutput CreateOutput(OutputPort port) => new (this, port, symbolTable);
-
-	private void SetPorts(List<CircuitInput> circuitInputs, List<CircuitOutput> circuitOutputs){
-		ResetCircuit();
-		InternalSetPorts(circuitInputs, circuitOutputs);
-		CreatePhysicalPorts();
+	public void SetData(CircuitDTO circuitDto){
+		this.dto = circuitDto;
+		runtime.Disconnect();
+		runtime = new CircuitRuntime(this, circuitDto);
+		ConnectIfNotBroken();
 	}
 
-	private void InternalSetPorts(List<CircuitInput> circuitInputs, List<CircuitOutput> circuitOutputs){
-		Inputs = circuitInputs;
-		Outputs = circuitOutputs;
-	}
-	
-	private void ResetCircuit(){
-		Disconnect();
-		symbolTable.Clear();
-		dependencyTable.Clear();
-		Inputs.Clear();
-		Outputs.Clear();
-	}
-	
 	private void OnCopySettings(object data){
 		Circuit source = ((GameObject)data).GetComponent<Circuit>();
 		if(source == null) return;
-		
-		var inputPorts = source.Inputs.Select(i => new InputPort(i.port)).ToList();
-		var outputPorts = source.Outputs.Select(o => new OutputPort(o.port)).ToList();
-		SetData(source.CNIName, inputPorts, outputPorts);
+		SetData(source.dto with { });
 	}
 	
 	protected override void OnCleanUp(){
@@ -153,31 +92,21 @@ public sealed partial class Circuit : KMonoBehaviour {
 		Disconnect();
 		CleanUpEvents();
 	}
-
-	public void OnInputPortChanged(string inputId, int newValue){
-		if(cleaningUp) return;
-		if (symbolTable.GetValue(inputId) == newValue) return;
-		symbolTable.SetValue(inputId, newValue);
-		
-		var dependents = dependencyTable.GetOutputDependents(inputId);
-		foreach(CircuitOutput output in dependents)
-			output.Refresh();
-	}
 	
 	public void OnHover(int cell, HoverTextDrawer drawer, SelectToolHoverTextCard cfg){
 		var portInCell = TryGetPortAtCell(cell);
 		if(portInCell == null) return;
 		
 		drawer.BeginShadowBar();
-		portInCell.OnHover(CNIName, drawer, cfg);
+		portInCell.OnHover(dto.Name, drawer, cfg);
 		drawer.EndShadowBar();
 	}
 	
-	public CNIPort? TryGetPortAtCell(int cell){
-		foreach(CircuitInput? i in Inputs.Where(i => GetActualCell(i.port.Offset) == cell))
-			return i.port;
-		foreach(CircuitOutput? o in Outputs.Where(i => GetActualCell(i.port.Offset) == cell))
-			return o.port;
+	public IHover? TryGetPortAtCell(int cell){
+		foreach(InputPortDef? i in dto.InputPorts.Where(i => GetActualCell(i.Offset) == cell))
+			return i;
+		foreach(OutputPortDef? o in dto.OutputPorts.Where(i => GetActualCell(i.Offset) == cell))
+			return o;
 		return null;
 	}
 

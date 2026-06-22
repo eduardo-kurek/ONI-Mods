@@ -1,4 +1,5 @@
 using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Structs.Ports;
 using CircuitNotIncluded.UI.Cells;
 using CircuitNotIncluded.UI.Validators;
 using CircuitNotIncluded.Utils;
@@ -17,7 +18,7 @@ public partial class CircuitScreenManager {
 	
 	public GameObject Build(Circuit circuit){
 		this.circuit = circuit;
-		circuitNameBuffer = circuit.CNIName;
+		circuitNameBuffer = circuit.dto.Name;
 		GameObject go = new GameObject("CircuitScreen")
 			.RectTransform()
 			.AnchorMin(0, 0)
@@ -32,8 +33,9 @@ public partial class CircuitScreenManager {
 		return go;
 	}
 	
-	private void SaveCircuit(List<InputPort> inputs, List<OutputPort> outputs){
-		circuit.SetData(circuitNameBuffer, inputs, outputs);
+	private void SaveCircuit(InputPortDef[] inputPorts, OutputPortDef[] outputPorts){
+		var circuitDto = new CircuitDTO(circuitNameBuffer, inputPorts, outputPorts);
+		circuit.SetData(circuitDto);
 	}
 	
 	public void OnOutputCellCreated(OutputCellState data) => screen.AddOutputCell(data);

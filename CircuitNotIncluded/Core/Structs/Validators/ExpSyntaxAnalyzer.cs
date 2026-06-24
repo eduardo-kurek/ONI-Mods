@@ -1,6 +1,6 @@
 using CircuitNotIncluded.UI.Cells;
 
-namespace CircuitNotIncluded.UI.Validators;
+namespace CircuitNotIncluded.Core.Structs.Validators;
 
 public class ExpSyntaxValidator : BasePortValidator<PortCellState> {
 	private string error = "";

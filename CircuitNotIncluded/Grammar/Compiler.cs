@@ -1,6 +1,5 @@
 using Antlr4.Runtime;
 using CircuitNotIncluded.Grammar.Visitors;
-using CircuitNotIncluded.Structs;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.Grammar;

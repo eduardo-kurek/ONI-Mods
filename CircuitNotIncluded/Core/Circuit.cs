@@ -1,11 +1,11 @@
-using CircuitNotIncluded.Core;
 using CircuitNotIncluded.Interfaces;
-using CircuitNotIncluded.Structs.Ports;
+using CircuitNotIncluded.Core.Structs;
+using CircuitNotIncluded.Core.Runtime;
 using KSerialization;
 using UnityEngine;
 using static EventSystem;
 
-namespace CircuitNotIncluded.Structs;
+namespace CircuitNotIncluded.Core;
 
 [SerializationConfig(MemberSerialization.OptIn)]
 public sealed partial class Circuit : KMonoBehaviour {

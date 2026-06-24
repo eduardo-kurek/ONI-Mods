@@ -1,22 +1,11 @@
-using CircuitNotIncluded.Interfaces;
 using KSerialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 using MemberSerialization = KSerialization.MemberSerialization;
 
-namespace CircuitNotIncluded.Structs;
+namespace CircuitNotIncluded.Core.Runtime;
 
 [SerializationConfig(MemberSerialization.OptIn)]
-public abstract class CircuitPort : ILogicUIElement {
-	protected int cell;
-	
-	protected CircuitPort(){ }
-	
-	protected CircuitPort(int cell){
-		this.cell = cell;
-	}
-
+public abstract class PortRuntime(int cell) : ILogicUIElement {
 	public void Connect(){
 		Game.Instance.logicCircuitSystem.AddToNetworks(cell, this, true);
 		Game.Instance.logicCircuitManager.AddVisElem(this);

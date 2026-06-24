@@ -1,9 +1,8 @@
 using CircuitNotIncluded.Grammar;
-using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.UI.Cells;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
-namespace CircuitNotIncluded.UI.Validators;
+namespace CircuitNotIncluded.Core.Structs.Validators;
 
 public class ValidationContext {
 	private readonly List<string> Errors = [];

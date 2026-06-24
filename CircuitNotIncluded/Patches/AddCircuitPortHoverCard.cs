@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Reflection.Emit;
-using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Core;
 using HarmonyLib;
 using UnityEngine;
 

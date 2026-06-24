@@ -1,7 +1,7 @@
-using CircuitNotIncluded.Structs;
-using CircuitNotIncluded.Structs.Ports;
+using CircuitNotIncluded.Core.Structs;
+using CircuitNotIncluded.Grammar;
 
-namespace CircuitNotIncluded.Core;
+namespace CircuitNotIncluded.Core.Runtime;
 
 public class CircuitRuntime {
 	private readonly List<InputRuntime> inputs = [];

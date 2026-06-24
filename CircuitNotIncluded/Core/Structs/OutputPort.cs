@@ -2,7 +2,7 @@ using CircuitNotIncluded.Interfaces;
 using KSerialization;
 using Newtonsoft.Json.Linq;
 
-namespace CircuitNotIncluded.Structs.Ports;
+namespace CircuitNotIncluded.Core.Structs;
 
 [SerializationConfig(MemberSerialization.OptIn)]
 public record OutputPort (

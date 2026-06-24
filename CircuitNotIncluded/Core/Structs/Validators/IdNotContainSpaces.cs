@@ -1,6 +1,6 @@
 using CircuitNotIncluded.UI.Cells;
 
-namespace CircuitNotIncluded.UI.Validators;
+namespace CircuitNotIncluded.Core.Structs.Validators;
 
 public class IdNotContainSpacesValidator : BasePortValidator<PortCellState> {
 	protected override bool DispatchErrorWhen(PortCellState cell, ValidationContext ctx){

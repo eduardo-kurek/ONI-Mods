@@ -1,8 +1,8 @@
-using CircuitNotIncluded.Structs.Ports;
+using CircuitNotIncluded.Core.Structs;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-namespace CircuitNotIncluded.Structs;
+namespace CircuitNotIncluded.Core;
 
 public sealed partial class Circuit {
 	public static JObject Blueprints_GetData(GameObject source){

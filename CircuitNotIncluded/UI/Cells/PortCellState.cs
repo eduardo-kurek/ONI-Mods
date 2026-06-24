@@ -1,4 +1,4 @@
-using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Core;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.UI;
 using UnityEngine;

@@ -1,5 +1,5 @@
 using System.Reflection.Emit;
-using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Core;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.Grammar.Visitors;

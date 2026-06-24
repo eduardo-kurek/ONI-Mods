@@ -1,7 +1,5 @@
-using CircuitNotIncluded.Structs;
-using CircuitNotIncluded.Structs.Ports;
+using CircuitNotIncluded.Core.Structs;
 using CircuitNotIncluded.UI.Cells;
-using CircuitNotIncluded.UI.Validators;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
 using UnityEngine;
@@ -64,7 +62,7 @@ public class CircuitScreen : KModalScreen {
 	
 	private string ValidateCells() {
 		try {
-			Validator.Validate(InputCellTypes, OutputCellTypes);
+			// TODO Validator.Validate(InputCellTypes, OutputCellTypes);
 			return string.Empty;
 		} catch (Exception e){
 			return e.Message;

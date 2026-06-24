@@ -1,6 +1,6 @@
 using CircuitNotIncluded.UI.Cells;
 
-namespace CircuitNotIncluded.UI.Validators;
+namespace CircuitNotIncluded.Core.Structs.Validators;
 
 public interface IPortValidator<in TPort> where TPort : PortCellState {
     bool Validate(TPort port, ValidationContext ctx);

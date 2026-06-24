@@ -1,5 +1,4 @@
-using CircuitNotIncluded.Structs;
-using CircuitNotIncluded.Utils;
+using CircuitNotIncluded.Core;
 using STRINGS;
 using TUNING;
 using UnityEngine;

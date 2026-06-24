@@ -1,6 +1,5 @@
-using System.Text.RegularExpressions;
-using CircuitNotIncluded.Structs;
-using CircuitNotIncluded.Structs.Ports;
+using CircuitNotIncluded.Core;
+using CircuitNotIncluded.Core.Structs;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
 using TMPro;

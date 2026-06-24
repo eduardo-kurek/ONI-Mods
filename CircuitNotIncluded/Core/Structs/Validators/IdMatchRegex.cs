@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using CircuitNotIncluded.UI.Cells;
 
-namespace CircuitNotIncluded.UI.Validators;
+namespace CircuitNotIncluded.Core.Structs.Validators;
 
 public class IdMatchRegexValidator : BasePortValidator<PortCellState> {
 	private const string RegexPattern = @"^[a-zA-Z_][a-zA-Z0-9_]*$";

@@ -2,7 +2,7 @@ using CircuitNotIncluded.Grammar;
 using CircuitNotIncluded.UI.Cells;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
-namespace CircuitNotIncluded.UI.Validators;
+namespace CircuitNotIncluded.Core.Structs.Validators;
 
 public class ExpSemanticValidator : BasePortValidator<OutputCellState> {
 	private string error = "";

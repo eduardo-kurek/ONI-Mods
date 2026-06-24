@@ -1,7 +1,6 @@
-using CircuitNotIncluded.Structs;
-using CircuitNotIncluded.Structs.Ports;
+using CircuitNotIncluded.Core;
+using CircuitNotIncluded.Core.Structs;
 using CircuitNotIncluded.UI.Cells;
-using CircuitNotIncluded.UI.Validators;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.Core;
 using UnityEngine;

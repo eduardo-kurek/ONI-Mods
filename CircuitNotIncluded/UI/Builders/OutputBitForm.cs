@@ -1,4 +1,4 @@
-using CircuitNotIncluded.Structs.Ports;
+using CircuitNotIncluded.Core.Structs;
 using CircuitNotIncluded.Utils;
 using UnityEngine;
 

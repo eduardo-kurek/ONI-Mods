@@ -26,8 +26,8 @@ public class OutputCellState(string label = "", string description = "", string 
 
 	public string GetExpression() => Expression.Trim();
 	
-	public OutputPortDef ToPort(){
-		return new OutputPortDef(GetOffset(), new OutputBit(Label, Description, Expression));
+	public OutputPort ToPort(){
+		return new OutputPort(GetOffset(), new OutputBit(Label, Description, Expression));
 	}
 
 	public override void OnEnter(CircuitCell owner){

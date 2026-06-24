@@ -33,7 +33,7 @@ public partial class CircuitScreenManager {
 		return go;
 	}
 	
-	private void SaveCircuit(InputPortDef[] inputPorts, OutputPortDef[] outputPorts){
+	private void SaveCircuit(InputPort[] inputPorts, OutputPort[] outputPorts){
 		var circuitDto = new CircuitDTO(circuitNameBuffer, inputPorts, outputPorts);
 		circuit.SetData(circuitDto);
 	}

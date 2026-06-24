@@ -10,13 +10,13 @@ public class CircuitRuntime {
 	private SymbolTable symbolTable = new();
 	
 	public CircuitRuntime(Circuit circuit, CircuitDTO circuitDto){
-		foreach(InputPortDef i in circuitDto.InputPorts){
+		foreach(InputPort i in circuitDto.InputPorts){
 			string id = i.Bit1.Id;
 			int cell = circuit.GetActualCell(i.Offset);
 			Inputs.Add(new CircuitInput(symbolTable, id, cell));
 		}
 
-		foreach(OutputPortDef i in circuitDto.OutputPorts){
+		foreach(OutputPort i in circuitDto.OutputPorts){
 			var evaluateFunc = Compiler.Compile(i.Bit1.Expression);
 			int cell = circuit.GetActualCell(i.Offset);
 			Outputs.Add(new CircuitOutput(symbolTable, evaluateFunc, cell));

@@ -22,8 +22,8 @@ public class InputCellState(string id = "", string description = "") : PortCellS
 		return panel;
 	}
 	
-	public InputPortDef ToPort(){
-		return new InputPortDef(Owner.Offset, new InputBit(Id, Description));
+	public InputPort ToPort(){
+		return new InputPort(Owner.Offset, new InputBit(Id, Description));
 	}
 
 	public override void OnEnter(CircuitCell owner){

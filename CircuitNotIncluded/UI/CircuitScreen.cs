@@ -16,7 +16,7 @@ public class CircuitScreen : KModalScreen {
 	public LocText title = null!;
 	public GameObject editorContent = null!;
 	public GameObject displayCellGrid = null!;
-	public delegate void OnSave(InputPortDef[] inputPorts, OutputPortDef[] outputPorts);
+	public delegate void OnSave(InputPort[] inputPorts, OutputPort[] outputPorts);
 	public OnSave? onSave;
 
 	public void OnReady(){
@@ -81,10 +81,10 @@ public class CircuitScreen : KModalScreen {
 	}
 	
 	private void SaveCells() {
-		List<InputPortDef> inputs = [];
+		List<InputPort> inputs = [];
 		inputs.AddRange(InputCellTypes.Select(i => i.ToPort()));
 		
-		List<OutputPortDef> outputs = [];
+		List<OutputPort> outputs = [];
 		outputs.AddRange(OutputCellTypes.Select(i => i.ToPort()));
 		
 		onSave?.Invoke([..inputs], [..outputs]);

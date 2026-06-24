@@ -1,3 +1,4 @@
+using CircuitNotIncluded.Structs.Ports;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.UI;
 using UnityEngine;
@@ -52,12 +53,12 @@ public class EmptyCellState : CircuitCellState {
 	}
 	
 	private void PromoteToInput(){
-		var inputType = new InputCellState();
+		var inputType = new InputCellState(new InputBit("", ""));
 		Owner.TransitionTo(inputType);
 	}
 
 	private void PromoteToOutput(){
-		var outputType = new OutputCellState();
+		var outputType = new OutputCellState(new OutputBit("", "", ""));
 		Owner.TransitionTo(outputType);
 	}
 }

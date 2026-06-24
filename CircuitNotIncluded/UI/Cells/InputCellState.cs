@@ -1,30 +1,23 @@
-using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.Structs.Ports;
-using CircuitNotIncluded.Utils;
-using PeterHan.PLib.UI;
+using CircuitNotIncluded.UI.Builders;
 using UnityEngine;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class InputCellState(string id = "", string description = "") : PortCellState {
-	private string Id = id;
-	private string Description = description;
-	
+public class InputCellState(InputBit inputBit) : PortCellState {
+	private readonly InputBitForm inputBitForm = new(inputBit);
 	protected override string CellTitle => "Input Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.inputSprite;
-	public override string GetId() => Id;
+	public override string GetId() => inputBitForm.id;
 
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();
-		FieldBuilder.BuildIdField(panel, Id, (_, text) => { Id = text; });
-		FieldBuilder.BuildDescriptionField(panel, Description, (_, text) => { Description = text; });
+		inputBitForm.Build(panel);
 		BuildDeleteButton(panel);
 		return panel;
 	}
 	
-	public InputPort ToPort(){
-		return new InputPort(Owner.Offset, new InputBit(Id, Description));
-	}
+	public InputPort ToPort() => new(Owner.Offset, inputBitForm.GetValue());
 
 	public override void OnEnter(CircuitCell owner){
 		base.OnEnter(owner);

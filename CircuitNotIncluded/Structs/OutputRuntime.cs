@@ -5,7 +5,7 @@ namespace CircuitNotIncluded.Structs;
 using EvaluateFunc = Func<SymbolTable, int>;
 
 [SerializationConfig(MemberSerialization.OptIn)]
-public class CircuitOutput(SymbolTable symbolTable, EvaluateFunc evaluate, int cell) 
+public class OutputRuntime(SymbolTable symbolTable, EvaluateFunc evaluate, int cell) 
 	: CircuitPort(cell), ILogicEventSender
 {
 	private int logicValue;

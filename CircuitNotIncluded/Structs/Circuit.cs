@@ -35,13 +35,17 @@ public sealed partial class Circuit : KMonoBehaviour {
 
 	protected override void OnSpawn(){
 		InitMembers();
-		runtime = new CircuitRuntime(this, dto);
+		UpdateRuntime();
 		ConnectIfNotBroken();
 		SetUpEvents();
 	}
 
 	private void InitMembers(){
 		def = GetComponent<Building>().Def;
+	}
+
+	private void UpdateRuntime(){
+		runtime = new CircuitRuntime(this);
 	}
 	
 	private void ConnectIfNotBroken(){
@@ -77,7 +81,7 @@ public sealed partial class Circuit : KMonoBehaviour {
 	public void SetData(CircuitDTO circuitDto){
 		dto = circuitDto;
 		Disconnect();
-		runtime = new CircuitRuntime(this, circuitDto);
+		UpdateRuntime();
 		ConnectIfNotBroken();
 	}
 

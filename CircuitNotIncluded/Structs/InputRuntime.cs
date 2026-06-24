@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace CircuitNotIncluded.Structs;
 
-public class CircuitInput(SymbolTable symbolTable, string id, int cell) 
+public class InputRuntime(SymbolTable symbolTable, string id, int cell) 
 	: CircuitPort(cell), ILogicEventReceiver
 {
 	public void OnLogicNetworkConnectionChanged(bool connected){ }

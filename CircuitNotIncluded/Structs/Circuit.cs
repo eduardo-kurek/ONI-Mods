@@ -75,8 +75,8 @@ public sealed partial class Circuit : KMonoBehaviour {
 	}
 
 	public void SetData(CircuitDTO circuitDto){
-		this.dto = circuitDto;
-		runtime.Disconnect();
+		dto = circuitDto;
+		Disconnect();
 		runtime = new CircuitRuntime(this, circuitDto);
 		ConnectIfNotBroken();
 	}

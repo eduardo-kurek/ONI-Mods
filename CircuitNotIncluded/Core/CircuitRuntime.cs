@@ -1,7 +1,5 @@
-using CircuitNotIncluded.Grammar;
 using CircuitNotIncluded.Structs;
 using CircuitNotIncluded.Structs.Ports;
-using UnityEngine;
 
 namespace CircuitNotIncluded.Core;
 
@@ -18,9 +16,8 @@ public class CircuitRuntime {
 		}
 
 		foreach(OutputPort i in circuit.dto.OutputPorts){
-			var evaluateFunc = Compiler.Compile(i.Bit1.Expression);
 			int cell = circuit.GetActualCell(i.Offset);
-			outputs.Add(new OutputRuntime(symbolTable, evaluateFunc, cell));
+			outputs.Add(new OutputRuntime(symbolTable, i.Bit1.Expression, cell));
 		}
 	}
 

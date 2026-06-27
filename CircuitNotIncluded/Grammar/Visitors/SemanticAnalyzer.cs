@@ -15,12 +15,12 @@ public class SemanticAnalyzer : ExpressionBaseListener {
 		base.ExitIdFactor(context);
 		string id = context.ID().GetText();
 		if (!ids.Contains(id)){
-			errors += $"Input port '{id}' not found in the circuit.\n";
+			errors += $"Input ID '{id}' not found in the circuit.\n";
 		}
 	}
 
 	private void ThrowIfErrors(){
-		if(errors != "") throw new Exception($"Semantic errors: \n{string.Join("\n", errors)}");
+		if(errors != "") throw new Exception($"Semantic error: {string.Join(";", errors)}");
 	}
 	
 	/*
@@ -31,5 +31,10 @@ public class SemanticAnalyzer : ExpressionBaseListener {
 		SemanticAnalyzer semanticAnalyzer = new(ids);
 		ParseTreeWalker.Default.Walk(semanticAnalyzer, tree);
 		semanticAnalyzer.ThrowIfErrors();
+	}
+	
+	public static void Analyze(string expression, HashSet<string> ids){
+		ProgramContext tree = Compiler.Parse(expression);
+		Analyze(tree, ids);
 	}
 }

@@ -1,5 +1,5 @@
 using CircuitNotIncluded.Core;
-using CircuitNotIncluded.Core.Structs;
+using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.UI.Cells;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.Core;
@@ -10,14 +10,12 @@ namespace CircuitNotIncluded.UI;
 public partial class CircuitScreenManager {
 	private Circuit circuit = null!;
 	private CircuitScreen screen = null!;
-	private string circuitNameBuffer = null!;
 	
 	public static CircuitScreenManager Instance { get; } = new ();
 	private CircuitScreenManager(){ }
 	
 	public GameObject Build(Circuit circuit){
 		this.circuit = circuit;
-		circuitNameBuffer = circuit.dto.Name;
 		GameObject go = new GameObject("CircuitScreen")
 			.RectTransform()
 			.AnchorMin(0, 0)
@@ -27,13 +25,14 @@ public partial class CircuitScreenManager {
 			.SetParent(RootParent);
 
 		screen = go.AddComponent<CircuitScreen>();
+		screen.resolver = circuit.ToDisplayIndex;
+		screen.CircuitName = circuit.dto.Name;
 		screen.onSave += SaveCircuit; 
 		BuildScreen(go);
 		return go;
 	}
 	
-	private void SaveCircuit(InputPort[] inputPorts, OutputPort[] outputPorts){
-		var circuitDto = new CircuitDTO(circuitNameBuffer, inputPorts, outputPorts);
+	private void SaveCircuit(CircuitDTO circuitDto){
 		circuit.SetData(circuitDto);
 	}
 	

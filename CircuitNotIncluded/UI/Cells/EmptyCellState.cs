@@ -1,4 +1,4 @@
-using CircuitNotIncluded.Core.Structs;
+using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.UI;
 using UnityEngine;
@@ -53,12 +53,12 @@ public class EmptyCellState : CircuitCellState {
 	}
 	
 	private void PromoteToInput(){
-		var inputType = new InputCellState(new InputBit("", ""));
+		var inputType = new InputCellState(new InputBitDTO("", ""));
 		Owner.TransitionTo(inputType);
 	}
 
 	private void PromoteToOutput(){
-		var outputType = new OutputCellState(new OutputBit("", "", ""));
+		var outputType = new OutputCellState(new OutputBitDTO("", "", ""));
 		Owner.TransitionTo(outputType);
 	}
 }

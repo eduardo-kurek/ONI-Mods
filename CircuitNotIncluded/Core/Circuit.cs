@@ -1,5 +1,5 @@
+using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.Interfaces;
-using CircuitNotIncluded.Core.Structs;
 using CircuitNotIncluded.Core.Runtime;
 using KSerialization;
 using UnityEngine;
@@ -45,7 +45,7 @@ public sealed partial class Circuit : KMonoBehaviour {
 	}
 
 	private void UpdateRuntime(){
-		runtime = new CircuitRuntime(this);
+		//runtime = new CircuitRuntime(this);
 	}
 	
 	private void ConnectIfNotBroken(){
@@ -56,13 +56,13 @@ public sealed partial class Circuit : KMonoBehaviour {
 	
 	private void Connect(){
 		if(connected) return;
-		runtime.Connect();
+		//runtime.Connect();
 		connected = true;
 	}
 	
 	private void Disconnect(){
 		if(!connected) return;
-		runtime.Disconnect();
+		//runtime.Disconnect();
 		connected = false;
 	}
 	
@@ -107,9 +107,9 @@ public sealed partial class Circuit : KMonoBehaviour {
 	}
 	
 	public IHover? TryGetPortAtCell(int cell){
-		foreach(InputPort? i in dto.InputPorts.Where(i => GetActualCell(i.Offset) == cell))
+		foreach(InputPortDTO? i in dto.InputPorts.Where(i => GetActualCell(i.Offset) == cell))
 			return i;
-		foreach(OutputPort? o in dto.OutputPorts.Where(i => GetActualCell(i.Offset) == cell))
+		foreach(OutputPortDTO? o in dto.OutputPorts.Where(i => GetActualCell(i.Offset) == cell))
 			return o;
 		return null;
 	}

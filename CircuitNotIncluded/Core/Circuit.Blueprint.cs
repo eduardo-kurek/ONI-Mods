@@ -1,4 +1,4 @@
-using CircuitNotIncluded.Core.Structs;
+using CircuitNotIncluded.Core.DTO;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 

@@ -1,5 +1,5 @@
 using CircuitNotIncluded.Core;
-using CircuitNotIncluded.Core.Structs;
+using CircuitNotIncluded.Core.DTO;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
 using TMPro;
@@ -106,7 +106,7 @@ public class CircuitSideScreen : SideScreenContent {
 
 	private void CreateOutputs(){
 		var layout = outputsPanel.GetComponent<VerticalLayoutGroup>();
-		foreach(OutputPort o in circuit!.dto.OutputPorts){
+		foreach(OutputPortDTO o in circuit!.dto.OutputPorts){
 			var originalText = $"{o.Bit1.Label} = {o.Bit1.Expression}";
 			var colorizedText = Utils.UI.ColorizeExpression(originalText);
 			var go = Utils.UI.DarkText(colorizedText, layout.transform);

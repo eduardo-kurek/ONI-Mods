@@ -1,13 +1,13 @@
-using CircuitNotIncluded.Core.Structs;
+using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.Utils;
 using UnityEngine;
 
 namespace CircuitNotIncluded.UI.Builders;
 
-public class OutputBitForm(OutputBit outputBit) {
-	public string label = outputBit.Label;
-	private string description = outputBit.Description;
-	public string expression = outputBit.Expression;
+public class OutputBitForm(OutputBitDTO outputBitDto) {
+	public string label = outputBitDto.Label;
+	private string description = outputBitDto.Description;
+	public string expression = outputBitDto.Expression;
 	
 	public void Build(GameObject container){
 		FieldBuilder.BuildLabelField(container, label, (_, text) => { label = text; });
@@ -15,5 +15,5 @@ public class OutputBitForm(OutputBit outputBit) {
 		FieldBuilder.BuildExpressionField(container, expression, (_, text) => { expression = text; });
 	}
 
-	public OutputBit GetValue() => new(label, description, expression);
+	public OutputBitDTO GetValue() => new(label.Trim(), description.Trim(), expression);
 }

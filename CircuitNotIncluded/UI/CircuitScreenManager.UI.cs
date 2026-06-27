@@ -1,5 +1,5 @@
 using CircuitNotIncluded.Core;
-using CircuitNotIncluded.Core.Structs;
+using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.UI.Cells;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.Core;
@@ -86,10 +86,10 @@ public partial class CircuitScreenManager {
 			.AddTo(container);
 		
 		return new PTextField("Title")
-			.Text(circuitNameBuffer)
+			.Text(circuit.dto.Name)
 			.MinWidth(300)
 			.MaxLength(100)
-			.SetOnTextChanged((go, source) => { circuitNameBuffer = source; })
+			.SetOnTextChanged((go, source) => { screen.CircuitName = source; })
 			.AddTo(panel);
 	}
 
@@ -175,7 +175,7 @@ public partial class CircuitScreenManager {
 	
 	private void BuildInputPorts(GameObject container){
 		Circuit c = circuit;
-		foreach(InputPort i in c.dto.InputPorts){
+		foreach(InputPortDTO i in c.dto.InputPorts){
 			var cellType = new InputCellState(i.Bit1);
 			int index = circuit.ToGridIndex(i.Offset);
 			ChangeCellType(index, cellType);
@@ -184,7 +184,7 @@ public partial class CircuitScreenManager {
 
 	private void BuildOutputPorts(GameObject container){
 		Circuit c = circuit;
-		foreach(OutputPort o in c.dto.OutputPorts){
+		foreach(OutputPortDTO o in c.dto.OutputPorts){
 			var cellType = new OutputCellState(o.Bit1);
 			int index = circuit.ToGridIndex(o.Offset);
 			ChangeCellType(index, cellType);

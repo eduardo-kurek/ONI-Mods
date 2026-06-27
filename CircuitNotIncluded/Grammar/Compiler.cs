@@ -22,7 +22,7 @@ public class Compiler {
 		return tree;
 	}
 	
-	public static void SemanticAnalyze(ProgramContext tree, HashSet<string> ids) => SemanticAnalyzer.Analyze(tree, ids);
+	public static void SemanticAnalyze(string expression, HashSet<string> ids) => SemanticAnalyzer.Analyze(expression, ids);
 	public static HashSet<string> ExtractIds(ProgramContext tree) => IdExtractor.Extract(tree);
 	public static Func<SymbolTable, int> Compile(string expression) => ExpressionCompiler.Compile(expression);
 }

@@ -1,4 +1,5 @@
-using CircuitNotIncluded.Core.Structs;
+using CircuitNotIncluded.Core.DTO;
+using CircuitNotIncluded.Core.Model;
 using CircuitNotIncluded.Grammar;
 
 namespace CircuitNotIncluded.Core.Runtime;
@@ -8,16 +9,16 @@ public class CircuitRuntime {
 	private readonly List<OutputRuntime> outputs = [];
 	private readonly SymbolTable symbolTable = new();
 	
-	public CircuitRuntime(Circuit circuit){
-		foreach(InputPort i in circuit.dto.InputPorts){
-			string id = i.Bit1.Id;
-			int cell = circuit.GetActualCell(i.Offset);
+	public CircuitRuntime(CircuitModel circuit, Func<CellOffset, int> offsetToCell){
+		foreach(var i in circuit.InputBits){
+			string id = i.Id;
+			int cell = offsetToCell.Invoke(i.Port.Offset);
 			inputs.Add(new InputRuntime(symbolTable, id, cell));
 		}
 
-		foreach(OutputPort i in circuit.dto.OutputPorts){
-			int cell = circuit.GetActualCell(i.Offset);
-			outputs.Add(new OutputRuntime(symbolTable, i.Bit1.Expression, cell));
+		foreach(var o in circuit.OutputBits){
+			int cell = offsetToCell.Invoke(o.Port.Offset);
+			outputs.Add(new OutputRuntime(symbolTable, o.Expression, cell));
 		}
 	}
 

@@ -16,12 +16,14 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+        <PackageReference Include="FluentValidation" Version="9.5.4" />
         <PackageReference Include="PLib" Version="4.17.1" />
     </ItemGroup>
     
     <ItemGroup>
-        <AssembliesToMerge Include="$(TargetDir)PLib.dll" />
         <AssembliesToMerge Include="$(TargetDir)Antlr4.Runtime.dll" />
+        <AssembliesToMerge Include="$(TargetDir)PLib.dll" />
+        <AssembliesToMerge Include="$(TargetDir)FluentValidation.dll" />
     </ItemGroup>
     
     <ItemGroup>

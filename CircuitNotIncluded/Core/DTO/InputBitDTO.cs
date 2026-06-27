@@ -1,14 +1,16 @@
+using CircuitNotIncluded.Core.Interfaces;
 using CircuitNotIncluded.Interfaces;
 using KSerialization;
 using Newtonsoft.Json.Linq;
 
-namespace CircuitNotIncluded.Core.Structs;
+namespace CircuitNotIncluded.Core.DTO;
 
 [SerializationConfig(MemberSerialization.OptIn)]
-public record InputBit (
+public record InputBitDTO (
 	[property: Serialize] string Id,
 	[property: Serialize] string Description
-) : IBlueprintSerializable {
+) : IInputBit, IBlueprintSerializable {
+	
 	public JObject ToJson() {
 		return new JObject {
 			{ "Id", Id },
@@ -16,9 +18,9 @@ public record InputBit (
 		};
 	}
 
-	public static InputBit FromJson(JObject json) {
+	public static InputBitDTO FromJson(JObject json) {
 		string id = json["Id"]?.Value<string>() ?? string.Empty;
 		string description = json["Description"]?.Value<string>() ?? string.Empty;
-		return new InputBit(id, description);
+		return new InputBitDTO(id, description);
 	}
 }

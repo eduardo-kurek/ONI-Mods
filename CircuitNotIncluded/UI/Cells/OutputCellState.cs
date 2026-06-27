@@ -1,11 +1,11 @@
-using CircuitNotIncluded.Core.Structs;
+using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.UI.Builders;
 using UnityEngine;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public class OutputCellState(OutputBit outputBit) : PortCellState {
-	private OutputBitForm outputBitForm = new(outputBit);
+public class OutputCellState(OutputBitDTO outputBitDto) : PortCellState {
+	private OutputBitForm outputBitForm = new(outputBitDto);
 
 	protected override string CellTitle => "Output Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.outputSprite;
@@ -20,7 +20,7 @@ public class OutputCellState(OutputBit outputBit) : PortCellState {
 
 	public string GetExpression() => outputBitForm.expression.Trim();
 	
-	public OutputPort ToPort() => new(GetOffset(), outputBitForm.GetValue());
+	public OutputPortDTO ToPort() => new(GetOffset(), outputBitForm.GetValue());
 
 	public override void OnEnter(CircuitCell owner){
 		base.OnEnter(owner);

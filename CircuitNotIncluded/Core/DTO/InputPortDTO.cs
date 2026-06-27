@@ -1,14 +1,17 @@
+using CircuitNotIncluded.Core.Interfaces;
 using CircuitNotIncluded.Interfaces;
 using KSerialization;
 using Newtonsoft.Json.Linq;
 
-namespace CircuitNotIncluded.Core.Structs;
+namespace CircuitNotIncluded.Core.DTO;
 
 [SerializationConfig(MemberSerialization.OptIn)]
-public record InputPort (
-	[property: Serialize] CellOffset Offset,
-	[property: Serialize] InputBit Bit1
-) : IBlueprintSerializable, IHover {
+public record InputPortDTO (
+	CellOffset Offset,
+	[property: Serialize] InputBitDTO Bit1
+) : PortDTO(Offset), IInputPort, IBlueprintSerializable, IHover {
+	
+	IInputBit IInputPort.Bit1 => Bit1;
 	
 	public void OnHover(string circuitName, HoverTextDrawer drawer, SelectToolHoverTextCard cfg) {
 		drawer.DrawText($"INPUT  {Bit1.Id}    <style=\"hovercard_element\">({circuitName.ToUpper()})</style>", cfg.Styles_Title.Standard);
@@ -19,17 +22,22 @@ public record InputPort (
 	}
    
 	public JObject ToJson() {
-		return new JObject {
-			{ "Offset", JObject.FromObject(Offset) },
+		var inputJson = new JObject {
 			{ "Bit1", Bit1.ToJson() }
 		};
+		
+		var portJson = PortToJson();
+		portJson.Merge(inputJson);
+		return portJson;
 	}
 
-	public static InputPort FromJson(JObject json) {
-		var offset = json["Offset"]?.ToObject<CellOffset>() ?? default;
+	public static InputPortDTO FromJson(JObject json) {
+		var port = PortFromJson(json);
+     
 		var bit1 = json.TryGetValue("Bit1", out var i1) && i1 is JObject i1Obj 
-			? InputBit.FromJson(i1Obj) 
+			? InputBitDTO.FromJson(i1Obj) 
 			: null;
-		return new InputPort(offset, bit1!);
+
+		return new InputPortDTO(port.Offset, bit1!);
 	}
 }

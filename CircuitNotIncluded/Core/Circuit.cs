@@ -1,4 +1,5 @@
 using CircuitNotIncluded.Core.DTO;
+using CircuitNotIncluded.Core.Model;
 using CircuitNotIncluded.Interfaces;
 using CircuitNotIncluded.Core.Runtime;
 using KSerialization;
@@ -45,7 +46,8 @@ public sealed partial class Circuit : KMonoBehaviour {
 	}
 
 	private void UpdateRuntime(){
-		//runtime = new CircuitRuntime(this);
+		var model = new CircuitModel(dto, GetActualCell);
+		runtime = new CircuitRuntime(model);
 	}
 	
 	private void ConnectIfNotBroken(){
@@ -56,13 +58,13 @@ public sealed partial class Circuit : KMonoBehaviour {
 	
 	private void Connect(){
 		if(connected) return;
-		//runtime.Connect();
+		runtime.Connect();
 		connected = true;
 	}
 	
 	private void Disconnect(){
 		if(!connected) return;
-		//runtime.Disconnect();
+		runtime.Disconnect();
 		connected = false;
 	}
 	

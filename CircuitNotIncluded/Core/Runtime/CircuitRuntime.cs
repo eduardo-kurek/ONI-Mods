@@ -9,15 +9,15 @@ public class CircuitRuntime {
 	private readonly List<OutputRuntime> outputs = [];
 	private readonly SymbolTable symbolTable = new();
 	
-	public CircuitRuntime(CircuitModel circuit, Func<CellOffset, int> offsetToCell){
+	public CircuitRuntime(CircuitModel circuit){
 		foreach(var i in circuit.InputBits){
 			string id = i.Id;
-			int cell = offsetToCell.Invoke(i.Port.Offset);
+			int cell = i.Port.Index;
 			inputs.Add(new InputRuntime(symbolTable, id, cell));
 		}
 
 		foreach(var o in circuit.OutputBits){
-			int cell = offsetToCell.Invoke(o.Port.Offset);
+			int cell = o.Port.Index;
 			outputs.Add(new OutputRuntime(symbolTable, o.Expression, cell));
 		}
 	}

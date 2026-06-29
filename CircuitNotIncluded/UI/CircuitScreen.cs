@@ -14,6 +14,8 @@ public class CircuitScreen : KModalScreen {
 	public string CircuitName = "Circuit name";
 	private readonly List<InputCellState> InputCellTypes = [];
 	private readonly List<OutputCellState> OutputCellTypes = [];
+
+	private CircuitDTO snapshot = null!; 
 	
 	public LocText title = null!;
 	public GameObject editorContent = null!;
@@ -22,7 +24,8 @@ public class CircuitScreen : KModalScreen {
 	public OnSave? onSave;
 
 	public void OnReady(){
-		// TODO: snapshot validation logic
+		snapshot = GetValue();
+		Console.WriteLine($"Snapshot: {snapshot}");
 	}
 
 	public void RemoveInputCell(InputCellState data) => InputCellTypes.Remove(data);
@@ -38,52 +41,46 @@ public class CircuitScreen : KModalScreen {
 	}
 
 	private bool IsEmpty() => OutputCellTypes.Count == 0 && InputCellTypes.Count == 0;
+
+	private CircuitDTO GetValue(){
+		var inputs = InputCellTypes.Select(i => i.ToPort()).ToArray();
+		var outputs = OutputCellTypes.Select(o => o.ToPort()).ToArray();
+		return new CircuitDTO(CircuitName, inputs, outputs);	
+	}
 	
 	public void SaveButtonClicked(){
-		try{
-			var inputs = InputCellTypes.Select(i => i.ToPort()).ToArray();
-			var outputs = OutputCellTypes.Select(o => o.ToPort()).ToArray();
-
-			var dto = new CircuitDTO(CircuitName, inputs, outputs);
+		try {
+			if (!HasChanged(out CircuitDTO dto)) {
+				ExecuteSave(dto);
+				return;
+			}
+     
 			CircuitValidator.DoValidate(new CircuitModel(dto, resolver));
-			
-			Deactivate();
+     
+			PUIElements.ShowConfirmDialog(
+				parent: CircuitScreenManager.RootParent,
+				message: "Are you sure you want to apply all changes?",
+				onConfirm: () => ExecuteSave(dto),
+				onCancel: () => {},
+				confirmText: "Yes",
+				cancelText: "No"
+			);
 		}
-		catch(Exception e){
+		catch (Exception e) {
 			ShowMessageDialog(e.Message);
 		}
-		
-		// if(!Changed()){
-		// 	SaveCells();
-		// 	return;
-		// }
-		//
-		// string errMsg = ValidateCells();
-		// if(errMsg != string.Empty){
-		// 	ShowMessageDialog(errMsg);
-		// 	return;
-		// }
-		//
-		// PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent,
-		// 							"Are you sure you want to apply all changes?",
-		// 							SaveCells,
-		// 							() => {},
-		// 							"Yes",
-		// 							"No");
 	}
-	
-	private bool Changed() {
-		// TODO: changed logic based on snapshot
-		return false;
+
+	private bool HasChanged(out CircuitDTO dto){
+		dto = GetValue();
+		return !dto.Equals(snapshot);
 	}
-	
-	private string ValidateCells() {
-		try {
-			// TODO Validator.Validate(InputCellTypes, OutputCellTypes);
-			return string.Empty;
-		} catch (Exception e){
-			return e.Message;
-		}
+
+	private bool HasChanged() => HasChanged(out _);
+
+	private void ExecuteSave(CircuitDTO dto) {
+		onSave?.Invoke(dto);   
+		Deactivate();
 	}
 	
 	private static void ShowMessageDialog(string message){
@@ -100,7 +97,7 @@ public class CircuitScreen : KModalScreen {
 			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent,
 				"Are you sure you want to clear all cells?",
 				ClearCells,
-				()=>{},
+				null,
 				"Yes",
 				"No");	
 		}
@@ -112,11 +109,11 @@ public class CircuitScreen : KModalScreen {
 	}
 	
 	public void CancelButtonClicked() {
-		if (Changed()) {
+		if (HasChanged()) {
 			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent, 
 				"Are you sure you want to leave and discard changes?",
 				Deactivate,
-				()=> {},
+				null,
 				"Yes",
 				"No");
 		} else {

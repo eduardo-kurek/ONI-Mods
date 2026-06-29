@@ -1,3 +1,5 @@
+using CircuitNotIncluded.Core.Model;
+using CircuitNotIncluded.Interfaces;
 using KSerialization;
 using Newtonsoft.Json.Linq;
 
@@ -9,17 +11,7 @@ public record OutputPortDTO (
 	[property: Serialize] OutputBitDTO Bit1
 ) : PortDTO(Offset) {
 	
-	public override void OnHover(string circuitName, HoverTextDrawer drawer, SelectToolHoverTextCard cfg) {
-		drawer.DrawText($"OUTPUT  {Bit1.Label}    <style=\"hovercard_element\">({circuitName.ToUpper()})</style>", cfg.Styles_Title.Standard);
-		drawer.NewLine();
-		drawer.DrawText($"Expression = {Utils.UI.ColorizeExpression(Bit1.Expression)}", cfg.Styles_LogicActive.Standard);
-		if (Bit1.Description.IsNullOrWhiteSpace()) return;
-		drawer.NewLine();
-		drawer.DrawIcon(cfg.iconDash);
-		drawer.DrawText($"{Bit1.Description}", cfg.Styles_BodyText.Standard);
-	}
-   
-	public JObject ToJson() {
+	public override JObject ToJson() {
 		var outputJson = new JObject {
 			{ "Bit1", Bit1.ToJson() }
 		};
@@ -35,5 +27,19 @@ public record OutputPortDTO (
 			: null;
 
 		return new OutputPortDTO(ReadOffset(json), bit1!);
+	}
+	
+	public override void OnHover(string circuitName, HoverTextDrawer drawer, SelectToolHoverTextCard cfg) {
+		drawer.DrawText($"OUTPUT  {Bit1.Label}    <style=\"hovercard_element\">({circuitName.ToUpper()})</style>", cfg.Styles_Title.Standard);
+		drawer.NewLine();
+		drawer.DrawText($"Expression = {Utils.UI.ColorizeExpression(Bit1.Expression)}", cfg.Styles_LogicActive.Standard);
+		if (Bit1.Description.IsNullOrWhiteSpace()) return;
+		drawer.NewLine();
+		drawer.DrawIcon(cfg.iconDash);
+		drawer.DrawText($"{Bit1.Description}", cfg.Styles_BodyText.Standard);
+	}
+
+	public override IModel CreateModel(CircuitModel parent, OffsetResolver resolver){
+		return new OutputPortModel(this, parent, resolver);
 	}
 }

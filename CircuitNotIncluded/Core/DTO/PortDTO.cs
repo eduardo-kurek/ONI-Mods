@@ -1,3 +1,4 @@
+using CircuitNotIncluded.Core.Model;
 using CircuitNotIncluded.Interfaces;
 using KSerialization;
 using Newtonsoft.Json.Linq;
@@ -17,4 +18,5 @@ public abstract record PortDTO (
 	};
 	
 	public abstract void OnHover(string circuitName, HoverTextDrawer drawer, SelectToolHoverTextCard cfg);
+	public abstract IModel CreateModel(CircuitModel parent, OffsetResolver resolver);
 }

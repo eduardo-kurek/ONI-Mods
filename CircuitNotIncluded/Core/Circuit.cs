@@ -17,7 +17,8 @@ public sealed partial class Circuit : KMonoBehaviour {
 	public int Height => def.HeightInCells;
 
 	[Serialize] public CircuitDTO dto = CircuitDTO.Empty();
-	private CircuitRuntime runtime = null!;
+	
+	private IRuntime[] runtimes = [];
 	
 	private static readonly IntraObjectHandler<Circuit> OnBuildingBrokenDelegate = new (delegate(Circuit component, object data){
 		component.Disconnect();
@@ -47,7 +48,7 @@ public sealed partial class Circuit : KMonoBehaviour {
 
 	private void UpdateRuntime(){
 		var model = new CircuitModel(dto, GetActualCell);
-		runtime = new CircuitRuntime(model);
+		runtimes = model.CreateRuntimes();
 	}
 	
 	private void ConnectIfNotBroken(){
@@ -58,13 +59,15 @@ public sealed partial class Circuit : KMonoBehaviour {
 	
 	private void Connect(){
 		if(connected) return;
-		runtime.Connect();
+		foreach(IRuntime runtime in runtimes)
+			runtime.Connect();
 		connected = true;
 	}
 	
 	private void Disconnect(){
 		if(!connected) return;
-		runtime.Disconnect();
+		foreach(IRuntime runtime in runtimes)
+			runtime.Disconnect();
 		connected = false;
 	}
 	

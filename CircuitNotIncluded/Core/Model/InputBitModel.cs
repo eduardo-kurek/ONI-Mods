@@ -1,8 +1,8 @@
-using CircuitNotIncluded.Core.Interfaces;
+using CircuitNotIncluded.Core.DTO;
 
 namespace CircuitNotIncluded.Core.Model;
 
-public class InputBitModel(IInputBit bit, PortModel port, int bitNumber) : IInputBit {
+public class InputBitModel(InputBitDTO bit, PortModel port, int bitNumber) {
 	public string Id { get; } = bit.Id;
 	public string Description { get; } = bit.Description;
 	public int BitNumber { get; } = bitNumber;

@@ -1,13 +1,11 @@
-using CircuitNotIncluded.Core.Interfaces;
+using CircuitNotIncluded.Core.DTO;
 
 namespace CircuitNotIncluded.Core.Model;
 
-public class InputPortModel : PortModel, IInputPort {
+public class InputPortModel : PortModel {
 	public InputBitModel Bit1 { get; }
-	
-	IInputBit IInputPort.Bit1 => Bit1;
 
-	public InputPortModel(IInputPort inputPort, CircuitModel circuit, OffsetResolver resolver) 
+	public InputPortModel(InputPortDTO inputPort, CircuitModel circuit, OffsetResolver resolver) 
 		: base(inputPort, circuit, resolver) {
 		Bit1 = new InputBitModel(inputPort.Bit1, this, 1);
 	}

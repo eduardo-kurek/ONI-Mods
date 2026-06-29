@@ -1,5 +1,3 @@
-using CircuitNotIncluded.Core.Interfaces;
-using CircuitNotIncluded.Interfaces;
 using KSerialization;
 using Newtonsoft.Json.Linq;
 
@@ -9,7 +7,7 @@ namespace CircuitNotIncluded.Core.DTO;
 public record InputBitDTO (
 	[property: Serialize] string Id,
 	[property: Serialize] string Description
-) : IInputBit, IBlueprintSerializable {
+) {
 	
 	public JObject ToJson() {
 		return new JObject {

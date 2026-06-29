@@ -1,5 +1,3 @@
-using CircuitNotIncluded.Core.Interfaces;
-using CircuitNotIncluded.Interfaces;
 using KSerialization;
 using Newtonsoft.Json.Linq;
 
@@ -10,11 +8,8 @@ public record CircuitDTO (
 	[property: Serialize] string Name,
 	[property: Serialize] InputPortDTO[] InputPorts,
 	[property: Serialize] OutputPortDTO[] OutputPorts
-) : ICircuit, IBlueprintSerializable {
+) {
 
-	IInputPort[] ICircuit.InputPorts => InputPorts;
-	IOutputPort[] ICircuit.OutputPorts => OutputPorts;
-	
 	public virtual bool Equals(CircuitDTO? other) {
 		if(other is null) return false;
 		if(ReferenceEquals(this, other)) return true;

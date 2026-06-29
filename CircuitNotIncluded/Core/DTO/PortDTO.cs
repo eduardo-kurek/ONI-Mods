@@ -1,20 +1,20 @@
-using CircuitNotIncluded.Core.Interfaces;
+using CircuitNotIncluded.Interfaces;
 using KSerialization;
 using Newtonsoft.Json.Linq;
 
 namespace CircuitNotIncluded.Core.DTO;
 
-public record PortDTO(
+public abstract record PortDTO (
 	[property: Serialize] CellOffset Offset
-) : IPort {
+) : IBlueprintSerializable, IHover {
 	
-	protected JObject PortToJson() => new() {
+	protected static CellOffset ReadOffset(JObject json){
+		return json["Offset"]?.ToObject<CellOffset>() ?? default; 
+	}
+
+	public virtual JObject ToJson() => new() {
 		{ "Offset", JObject.FromObject(Offset) }
 	};
-
-	protected static PortDTO PortFromJson(JObject json){
-		var offset = json["Offset"]?.ToObject<CellOffset>() ?? default; 
-		return new PortDTO(offset);
-	}
 	
+	public abstract void OnHover(string circuitName, HoverTextDrawer drawer, SelectToolHoverTextCard cfg);
 }

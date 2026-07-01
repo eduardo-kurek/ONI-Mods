@@ -8,7 +8,6 @@ public class InputCellState(InputBitDTO inputBitDto) : PortCellState {
 	private readonly InputBitForm inputBitForm = new(inputBitDto);
 	protected override string CellTitle => "Input Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.inputSprite;
-	public override string GetId() => inputBitForm.id;
 
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();

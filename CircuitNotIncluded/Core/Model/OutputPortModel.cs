@@ -1,11 +1,14 @@
 using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.Core.Runtime;
+using CircuitNotIncluded.Core.Validators;
 using CircuitNotIncluded.Grammar;
 using CircuitNotIncluded.Interfaces;
+using FluentValidation.Results;
 
 namespace CircuitNotIncluded.Core.Model;
 
 public class OutputPortModel : PortModel {
+	public override ValidationPriority ValidationPriority => ValidationPriority.Second;
 	public OutputBitModel Bit1 { get; }
 
 	public OutputPortModel(OutputPortDTO outputPort, CircuitModel circuit, OffsetResolver resolver) 
@@ -15,5 +18,10 @@ public class OutputPortModel : PortModel {
 
 	public override IRuntime CreateRuntime(SymbolTable symbolTable){
 		return new OutputRuntime(symbolTable, Bit1.Expression, Index);
+	}
+
+	public override ValidationResult Validate(ValidationData data){
+		var validator = new OutputPortValidator(data);
+		return validator.Validate(this);
 	}
 }

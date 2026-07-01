@@ -9,11 +9,7 @@ namespace CircuitNotIncluded.Core.Validators;
 public class OutputBitValidator : AbstractValidator<OutputBitModel> {
 	private const string RegexPattern = @"^[a-zA-Z_][a-zA-Z0-9_]*$";
 	
-	public OutputBitValidator(
-		Dictionary<string, InputBitModel> declaredInputs,
-		Dictionary<string, OutputBitModel> declaredOutputs,
-		bool withBitNumber = false)
-	{
+	public OutputBitValidator(ValidationData data, bool withBitNumber = false){
 		CascadeMode = CascadeMode.Stop;
 		
 		RuleFor(o => o.Label)
@@ -27,16 +23,16 @@ public class OutputBitValidator : AbstractValidator<OutputBitModel> {
 		RuleFor(o => o)
 			.Cascade(CascadeMode.Stop)
 			.Custom((o, ctx) => {
-				if (declaredInputs.TryGetValue(o.Label, out var declared)){
+				if (data.declaredInputs.TryGetValue(o.Label, out var declared)){
 					ctx.AddFailure(
 						$"{Prefix(o)} Label '{o.Label}' conflicts with input ID declared at cell {declared.Port.Index}.{declared.BitNumber}");
 				}
 			})
 			.Custom((o, ctx) => {
-				if (declaredOutputs.TryGetValue(o.Label, out var declared))
+				if (data.declaredOutputs.TryGetValue(o.Label, out var declared))
 					ctx.AddFailure($"{Prefix(o)} Label '{o.Label}' duplicated at cell {declared.Port.Index}.{o.BitNumber}");
 				else
-					declaredOutputs[o.Label] = o;
+					data.declaredOutputs[o.Label] = o;
 			});
 		
 		RuleFor(o => o)
@@ -46,7 +42,7 @@ public class OutputBitValidator : AbstractValidator<OutputBitModel> {
 				catch(Exception e){ ctx.AddFailure($"{Prefix(o)} {e.Message}"); }
 			})
 			.Custom((o, ctx) => {
-				var ids = new HashSet<string>(declaredInputs.Keys);
+				var ids = new HashSet<string>(data.declaredInputs.Keys);
 				try{ Compiler.SemanticAnalyze(o.Expression, ids); }
 				catch(Exception e){ ctx.AddFailure($"{Prefix(o)} {e.Message}"); }
 			});

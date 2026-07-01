@@ -112,11 +112,7 @@ public sealed partial class Circuit : KMonoBehaviour {
 	}
 	
 	public IHover? TryGetPortAtCell(int cell){
-		foreach(InputPortDTO? i in dto.InputPorts.Where(i => GetActualCell(i.Offset) == cell))
-			return i;
-		foreach(OutputPortDTO? o in dto.OutputPorts.Where(i => GetActualCell(i.Offset) == cell))
-			return o;
-		return null;
+		return dto.Ports.FirstOrDefault(p => GetActualCell(p.Offset) == cell);
 	}
 
 	public int GetActualCell(CellOffset offset){

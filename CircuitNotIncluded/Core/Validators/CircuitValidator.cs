@@ -6,19 +6,36 @@ namespace CircuitNotIncluded.Core.Validators;
 
 public class CircuitValidator : AbstractValidator<CircuitModel> {
 	private CircuitValidator(){
-		var declaredInputs = new Dictionary<string, InputBitModel>(StringComparer.Ordinal);
-		var declaredOutputs = new Dictionary<string, OutputBitModel>(StringComparer.Ordinal);
+		ValidationData data = new();
 		
 		RuleFor(circuit => circuit.Name)
 			.Cascade(CascadeMode.Stop)
 			.NotEmpty().WithMessage("Circuit name cannot be empty")
 			.MinimumLength(3).WithMessage("Circuit name must be at least 3 characters long");
 
-		RuleForEach(c => c.InputPorts)
-			.SetValidator(new InputPortValidator(declaredInputs))
-			.DependentRules(() => {
-				RuleForEach(c => c.OutputPorts)
-					.SetValidator(new OutputPortValidator(declaredInputs, declaredOutputs));
+		RuleFor(circuit => circuit.PortModels)
+			.Custom((models, context) => {
+				if (models == null || models.Length == 0) return;
+
+				var modelsByPriority = models
+					.GroupBy(m => m.ValidationPriority)
+					.OrderBy(g => g.Key);
+
+				foreach(var group in modelsByPriority) {
+					var failures = new List<ValidationFailure>();
+
+					foreach(var item in group){
+						var result = item.Validate(data);
+						if(!result.IsValid)
+							failures.AddRange(result.Errors);
+					}
+
+					if(failures.Count > 0){
+						foreach (var failure in failures)
+							context.AddFailure(failure);
+						return;
+					}
+				}
 			});
 	}
 

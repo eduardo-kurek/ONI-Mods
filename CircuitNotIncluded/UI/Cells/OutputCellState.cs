@@ -9,7 +9,6 @@ public class OutputCellState(OutputBitDTO outputBitDto) : PortCellState {
 
 	protected override string CellTitle => "Output Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.outputSprite;
-	public override string GetId() => outputBitForm.label.Trim();
 
 	public override GameObject BuildEditorContent(){
 		GameObject panel = BuildContainer();
@@ -18,8 +17,6 @@ public class OutputCellState(OutputBitDTO outputBitDto) : PortCellState {
 		return panel;
 	}
 
-	public string GetExpression() => outputBitForm.expression.Trim();
-	
 	public OutputPortDTO ToPort() => new(GetOffset(), outputBitForm.GetValue());
 
 	public override void OnEnter(CircuitCell owner){

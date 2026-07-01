@@ -10,62 +10,53 @@ public record CircuitDTO (
 	[property: Serialize] OutputPortDTO[] OutputPorts
 ) {
 
+	public PortDTO[] Ports => InputPorts.Cast<PortDTO>().Concat(OutputPorts).ToArray();
+
 	public virtual bool Equals(CircuitDTO? other) {
 		if(other is null) return false;
 		if(ReferenceEquals(this, other)) return true;
 
 		if(Name != other.Name) return false;
-		if(InputPorts.Length != other.InputPorts.Length) return false;
-		if(OutputPorts.Length != other.OutputPorts.Length) return false;
+		if(Ports.Length != other.Ports.Length) return false;
 
-		var orderedInputPorts = InputPorts.OrderBy(p => p.Offset.x).ThenBy(p => p.Offset.y);
-		var otherOrderedInputPorts = other.InputPorts.OrderBy(p => p.Offset.x).ThenBy(p => p.Offset.y);
-		if(!orderedInputPorts.SequenceEqual(otherOrderedInputPorts)) return false;
-		
-		var orderedOutputPorts = OutputPorts.OrderBy(p => p.Offset.x).ThenBy(p => p.Offset.y);
-		var otherOrderedOutputPorts = other.OutputPorts.OrderBy(p => p.Offset.x).ThenBy(p => p.Offset.y);
-		if(!orderedOutputPorts.SequenceEqual(otherOrderedOutputPorts)) return false;
-
-		return true;
+		var orderedPorts = Ports.OrderBy(p => p.Offset.x).ThenBy(p => p.Offset.y);
+		var otherOrderedPorts = other.Ports.OrderBy(p => p.Offset.x).ThenBy(p => p.Offset.y);
+		return orderedPorts.SequenceEqual(otherOrderedPorts);
 	}
 
 	public override int GetHashCode(){
 		unchecked {
-			return (Name?.GetHashCode() ?? 0) ^ InputPorts.Length ^ OutputPorts.Length;
+			return (Name?.GetHashCode() ?? 0) ^ Ports.Length;
 		}
 	}
 
 	public JObject ToJson(){
-		var inputsArray = new JArray();
-		foreach (var port in InputPorts) inputsArray.Add(port.ToJson());
-
-		var outputsArray = new JArray();
-		foreach (var port in OutputPorts) outputsArray.Add(port.ToJson());
+		var portsArray = new JArray();
+		foreach (var port in Ports) portsArray.Add(port.ToJson());
 
 		return new JObject {
-			{ "InputPorts", inputsArray },
-			{ "OutputPorts", outputsArray }
+			{ "Name", Name },
+			{ "Ports", portsArray }
 		};
 	}
 	
 	public static CircuitDTO FromJson(JObject json){
 		string name = json["Name"]?.Value<string>() ?? "Circuit Name";
-		var inputPorts = new List<InputPortDTO>();
-		var outputPorts = new List<OutputPortDTO>();
 
-		if (json.TryGetValue("InputPorts", out JToken i) && i is JArray inputsArray) {
-			foreach (var item in inputsArray)
-				if (item is JObject portObj)
-					inputPorts.Add(InputPortDTO.FromJson(portObj));
-		}
+		// TODO READ ports with type field discriminator
+		// if (json.TryGetValue("InputPorts", out JToken i) && i is JArray inputsArray) {
+		// 	foreach (var item in inputsArray)
+		// 		if (item is JObject portObj)
+		// 			inputPorts.Add(InputPortDTO.FromJson(portObj));
+		// }
+		//
+		// if (json.TryGetValue("OutputPorts", out JToken o) && o is JArray outputsArray) {
+		// 	foreach (var item in outputsArray)
+		// 		if (item is JObject portObj)
+		// 			outputPorts.Add(OutputPortDTO.FromJson(portObj));
+		// }
 
-		if (json.TryGetValue("OutputPorts", out JToken o) && o is JArray outputsArray) {
-			foreach (var item in outputsArray)
-				if (item is JObject portObj)
-					outputPorts.Add(OutputPortDTO.FromJson(portObj));
-		}
-
-		return new CircuitDTO(name, inputPorts.ToArray(), outputPorts.ToArray());
+		return new CircuitDTO(name, [], []);
 	}
 
 	public static CircuitDTO Empty() => new("Circuit Name", [], []);

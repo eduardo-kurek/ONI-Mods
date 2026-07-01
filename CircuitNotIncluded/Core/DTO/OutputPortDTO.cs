@@ -1,5 +1,7 @@
+using System.Text;
 using CircuitNotIncluded.Core.Model;
 using CircuitNotIncluded.Interfaces;
+using CircuitNotIncluded.UI.Cells;
 using KSerialization;
 using Newtonsoft.Json.Linq;
 
@@ -10,7 +12,16 @@ public record OutputPortDTO (
 	CellOffset Offset,
 	[property: Serialize] OutputBitDTO Bit1
 ) : PortDTO(Offset) {
-	
+	public override PortCategory Category => PortCategory.Output;
+
+	public override string GetDisplayText(){
+		StringBuilder sb = new();
+		sb.AppendLine($"{Bit1.Label} = {Bit1.Expression}");
+		if(Bit1.Description.Length > 0)
+			sb.AppendLine($"• {Bit1.Description}");
+		return sb.ToString();
+	}
+
 	public override JObject ToJson() {
 		var outputJson = new JObject {
 			{ "Bit1", Bit1.ToJson() }
@@ -41,5 +52,9 @@ public record OutputPortDTO (
 
 	public override IModel CreateModel(CircuitModel parent, OffsetResolver resolver){
 		return new OutputPortModel(this, parent, resolver);
+	}
+
+	public override CircuitCellState CreateCellState(){
+		return new OutputCellState(Bit1);
 	}
 }

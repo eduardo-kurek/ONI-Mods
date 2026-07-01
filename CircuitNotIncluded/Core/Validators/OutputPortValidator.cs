@@ -4,13 +4,10 @@ using FluentValidation;
 namespace CircuitNotIncluded.Core.Validators;
 
 public class OutputPortValidator : AbstractValidator<OutputPortModel> {
-	public OutputPortValidator(
-		Dictionary<string, InputBitModel> declaredInputs,
-		Dictionary<string, OutputBitModel> declaredOutputs)
-	{
+	public OutputPortValidator(ValidationData data){
 		CascadeMode = CascadeMode.Stop;
 
 		RuleFor(p => p.Bit1)
-			.SetValidator(new OutputBitValidator(declaredInputs, declaredOutputs));	
+			.SetValidator(new OutputBitValidator(data));	
 	}
 }

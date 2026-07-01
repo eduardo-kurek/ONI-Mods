@@ -15,7 +15,7 @@ public class CircuitScreen : KModalScreen {
 	private readonly List<InputCellState> InputCellTypes = [];
 	private readonly List<OutputCellState> OutputCellTypes = [];
 
-	private CircuitDTO snapshot = null!; 
+	private CircuitDTO snapshot = null!;
 	
 	public LocText title = null!;
 	public GameObject editorContent = null!;
@@ -50,7 +50,7 @@ public class CircuitScreen : KModalScreen {
 	
 	public void SaveButtonClicked(){
 		try {
-			if (!HasChanged(out CircuitDTO dto)) {
+			if(!HasChanged(out CircuitDTO dto)){
 				ExecuteSave(dto);
 				return;
 			}
@@ -78,7 +78,7 @@ public class CircuitScreen : KModalScreen {
 
 	private bool HasChanged() => HasChanged(out _);
 
-	private void ExecuteSave(CircuitDTO dto) {
+	private void ExecuteSave(CircuitDTO dto){
 		onSave?.Invoke(dto);   
 		Deactivate();
 	}
@@ -92,7 +92,7 @@ public class CircuitScreen : KModalScreen {
 		Destroy(cancelButton.gameObject);
 	}
 	
-	public void ClearButtonClicked() {
+	public void ClearButtonClicked(){
 		if(!IsEmpty()){
 			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent,
 				"Are you sure you want to clear all cells?",
@@ -103,12 +103,12 @@ public class CircuitScreen : KModalScreen {
 		}
 	}
 	
-	private void ClearCells() {
+	private void ClearCells(){
 		foreach (var cell in InputCellTypes.ToList()) cell.Delete();
 		foreach (var cell in OutputCellTypes.ToList()) cell.Delete();
 	}
 	
-	public void CancelButtonClicked() {
+	public void CancelButtonClicked(){
 		if (HasChanged()) {
 			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent, 
 				"Are you sure you want to leave and discard changes?",

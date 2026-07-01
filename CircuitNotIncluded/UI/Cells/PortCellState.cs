@@ -6,11 +6,8 @@ using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public interface IHasId {
-	string GetId();
-}
 
-public abstract class PortCellState : CircuitCellState, IHasId {
+public abstract class PortCellState : CircuitCellState {
 	protected abstract Sprite PortSprite { get; }
 
 	public override void UpdateCellImage(Image img){
@@ -37,5 +34,4 @@ public abstract class PortCellState : CircuitCellState, IHasId {
 		Owner.TransitionTo(state);
 	}
 
-	public abstract string GetId();
 }

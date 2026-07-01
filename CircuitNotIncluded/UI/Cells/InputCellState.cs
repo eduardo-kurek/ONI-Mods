@@ -9,21 +9,11 @@ public class InputCellState(InputBitDTO inputBitDto) : PortCellState {
 	protected override string CellTitle => "Input Port";
 	protected override Sprite PortSprite => Assets.instance.logicModeUIData.inputSprite;
 
-	public override GameObject BuildEditorContent(){
-		GameObject panel = BuildContainer();
-		inputBitForm.Build(panel);
-		BuildDeleteButton(panel);
-		return panel;
+	protected override void BuildPortContent(GameObject parent){
+		inputBitForm.Build(parent);
 	}
 	
-	public InputPortDTO ToPort() => new(Owner.Offset, inputBitForm.GetValue());
-
-	public override void OnEnter(CircuitCell owner){
-		base.OnEnter(owner);
-		CircuitScreenManager.Instance.OnInputCellCreated(this);
-	}
-
-	public override void OnExit(){
-		CircuitScreenManager.Instance.OnInputCellDeleted(this);
+	public override PortDTO CreateDTO(){
+		return new InputPortDTO(Owner.Offset, inputBitForm.GetValue());
 	}
 }

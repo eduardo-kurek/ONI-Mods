@@ -1,37 +1,40 @@
-using CircuitNotIncluded.Core;
+using CircuitNotIncluded.Core.DTO;
+using CircuitNotIncluded.UI.Builders;
 using CircuitNotIncluded.Utils;
-using PeterHan.PLib.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-
 public abstract class PortCellState : CircuitCellState {
 	protected abstract Sprite PortSprite { get; }
 
+	public abstract PortDTO CreateDTO();
+	protected abstract void BuildPortContent(GameObject parent);
+	
+	public override GameObject BuildEditorContent(){
+		GameObject panel = BuildContainer();
+		BuildPortContent(panel);
+		FieldBuilder.BuildDeleteButton(panel, (go) => Delete());
+		return panel;
+	}
+	
+	public void Delete(){
+		EmptyCellState state = new();
+		Owner.TransitionTo(state);
+	}
+	
 	public override void UpdateCellImage(Image img){
 		img.color = Color.white;
 		img.sprite = PortSprite;
 	}
 	
-	protected GameObject BuildDeleteButton(GameObject container){
-		GameObject deletePanel = new PPanel("DeletePanel")
-			.Direction(PanelDirection.Horizontal)
-			.Alignment(TextAnchor.MiddleCenter)
-			.Margin(20, 0, 0, 0)
-			.AddTo(container);
-		
-		return new PButton("DeleteButton")
-			.Text("Delete Port")
-			.Margin(10)
-			.SetOnClick((go) => { Delete(); })
-			.AddTo(deletePanel);
+	public override void OnEnter(CircuitCell owner){
+		base.OnEnter(owner);
+		CircuitScreenManager.Instance.OnPortCellCreated(this);
 	}
 
-	public void Delete(){
-		EmptyCellState state = new();
-		Owner.TransitionTo(state);
+	public override void OnExit(){
+		CircuitScreenManager.Instance.OnPortCellDeleted(this);
 	}
-
 }

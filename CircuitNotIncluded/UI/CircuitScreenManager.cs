@@ -36,9 +36,7 @@ public partial class CircuitScreenManager {
 		circuit.SetData(circuitDto);
 	}
 	
-	public void OnOutputCellCreated(OutputCellState data) => screen.AddOutputCell(data);
-	public void OnOutputCellDeleted(OutputCellState data) => screen.RemoveOutputCell(data);
-	public void OnInputCellCreated(InputCellState data) => screen.AddInputCell(data);
-	public void OnInputCellDeleted(InputCellState data) => screen.RemoveInputCell(data);
+	public void OnPortCellCreated(PortCellState data) => screen.AddPortCell(data);
+	public void OnPortCellDeleted(PortCellState data) => screen.RemovePortCell(data);
 	public void BuildSideScreen(CircuitCellState data) => screen.OnCellClicked(data);
 }

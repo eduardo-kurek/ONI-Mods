@@ -12,8 +12,7 @@ namespace CircuitNotIncluded.UI;
 public class CircuitScreen : KModalScreen {
 	public OffsetResolver resolver = null!;
 	public string CircuitName = "Circuit name";
-	private readonly List<InputCellState> InputCellTypes = [];
-	private readonly List<OutputCellState> OutputCellTypes = [];
+	private readonly List<PortCellState> PortCellStates = [];
 
 	private CircuitDTO snapshot = null!;
 	
@@ -28,11 +27,9 @@ public class CircuitScreen : KModalScreen {
 		Console.WriteLine($"Snapshot: {snapshot}");
 	}
 
-	public void RemoveInputCell(InputCellState data) => InputCellTypes.Remove(data);
-	public void AddInputCell(InputCellState data) => InputCellTypes.Add(data);
-	public void RemoveOutputCell(OutputCellState data) => OutputCellTypes.Remove(data);
-	public void AddOutputCell(OutputCellState data) => OutputCellTypes.Add(data);
-	
+	public void AddPortCell(PortCellState cellState){ PortCellStates.Add(cellState); }
+	public void RemovePortCell(PortCellState cellState){ PortCellStates.Remove(cellState); }
+
 	public void OnCellClicked(CircuitCellState cellState){
 		GameObject content = cellState.BuildEditorContent();
 		foreach(Transform child in editorContent.transform)
@@ -40,12 +37,13 @@ public class CircuitScreen : KModalScreen {
 		content.SetParent(editorContent);
 	}
 
-	private bool IsEmpty() => OutputCellTypes.Count == 0 && InputCellTypes.Count == 0;
+	private bool IsEmpty() => PortCellStates.Count == 0;
 
 	private CircuitDTO GetValue(){
-		var inputs = InputCellTypes.Select(i => i.ToPort()).ToArray();
-		var outputs = OutputCellTypes.Select(o => o.ToPort()).ToArray();
-		return new CircuitDTO(CircuitName, inputs, outputs);	
+		var portDtos = PortCellStates.Select(p => p.CreateDTO()).ToArray();
+		var inputs = portDtos.OfType<InputPortDTO>().ToArray();
+		var outputs = portDtos.OfType<OutputPortDTO>().ToArray();
+		return new CircuitDTO(CircuitName, inputs, outputs);
 	}
 	
 	public void SaveButtonClicked(){
@@ -104,8 +102,7 @@ public class CircuitScreen : KModalScreen {
 	}
 	
 	private void ClearCells(){
-		foreach (var cell in InputCellTypes.ToList()) cell.Delete();
-		foreach (var cell in OutputCellTypes.ToList()) cell.Delete();
+		foreach (var cell in PortCellStates.ToArray()) cell.Delete();
 	}
 	
 	public void CancelButtonClicked(){

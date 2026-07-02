@@ -31,32 +31,38 @@ public record CircuitDTO (
 	}
 
 	public JObject ToJson(){
-		var portsArray = new JArray();
-		foreach (var port in Ports) portsArray.Add(port.ToJson());
+		var inputPorts = new JArray();
+		foreach (var i in InputPorts) inputPorts.Add(i.ToJson());
+		
+		var outputPorts = new JArray();
+		foreach (var o in OutputPorts) outputPorts.Add(o.ToJson());
 
 		return new JObject {
 			{ "Name", Name },
-			{ "Ports", portsArray }
+			{ "InputPorts", inputPorts },
+			{ "OutputPorts", outputPorts }
 		};
 	}
 	
 	public static CircuitDTO FromJson(JObject json){
 		string name = json["Name"]?.Value<string>() ?? "Circuit Name";
+		
+		var inputPorts = new List<InputPortDTO>();
+		var outputPorts = new List<OutputPortDTO>();
 
-		// TODO READ ports with type field discriminator
-		// if (json.TryGetValue("InputPorts", out JToken i) && i is JArray inputsArray) {
-		// 	foreach (var item in inputsArray)
-		// 		if (item is JObject portObj)
-		// 			inputPorts.Add(InputPortDTO.FromJson(portObj));
-		// }
-		//
-		// if (json.TryGetValue("OutputPorts", out JToken o) && o is JArray outputsArray) {
-		// 	foreach (var item in outputsArray)
-		// 		if (item is JObject portObj)
-		// 			outputPorts.Add(OutputPortDTO.FromJson(portObj));
-		// }
+		if (json.TryGetValue("InputPorts", out JToken i) && i is JArray inputsArray) {
+			foreach (var item in inputsArray)
+				if (item is JObject portObj)
+					inputPorts.Add(InputPortDTO.FromJson(portObj));
+		}
+		
+		if (json.TryGetValue("OutputPorts", out JToken o) && o is JArray outputsArray) {
+			foreach (var item in outputsArray)
+				if (item is JObject portObj)
+					outputPorts.Add(OutputPortDTO.FromJson(portObj));
+		}
 
-		return new CircuitDTO(name, [], []);
+		return new CircuitDTO(name, inputPorts.ToArray(), outputPorts.ToArray());
 	}
 
 	public static CircuitDTO Empty() => new("Circuit Name", [], []);

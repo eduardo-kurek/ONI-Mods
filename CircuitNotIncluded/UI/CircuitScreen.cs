@@ -1,6 +1,7 @@
-using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Core.DTO;
+using CircuitNotIncluded.Core.Model;
+using CircuitNotIncluded.Core.Validators;
 using CircuitNotIncluded.UI.Cells;
-using CircuitNotIncluded.UI.Validators;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.UI;
 using UnityEngine;
@@ -9,28 +10,26 @@ using UnityEngine.UI;
 namespace CircuitNotIncluded.UI;
 
 public class CircuitScreen : KModalScreen {
-	private readonly List<InputCellState> InputCellTypes = [];
-	private readonly List<OutputCellState> OutputCellTypes = [];
-	
-	private List<InputCellState> InputCellTypesSnapshot = [];
-	private List<OutputCellState> OutputCellTypesSnapshot = [];
+	public OffsetResolver resolver = null!;
+	public string CircuitName = "Circuit name";
+	private readonly List<PortCellState> PortCellStates = [];
+
+	private CircuitDTO snapshot = null!;
 	
 	public LocText title = null!;
 	public GameObject editorContent = null!;
 	public GameObject displayCellGrid = null!;
-	public delegate void OnSave(List<InputPort> inputs, List<OutputPort> outputs);
+	public delegate void OnSave(CircuitDTO circuitDto);
 	public OnSave? onSave;
 
 	public void OnReady(){
-		InputCellTypesSnapshot = InputCellTypes.Select(i => i.Clone()).ToList();
-		OutputCellTypesSnapshot = OutputCellTypes.Select(o => o.Clone()).ToList();
+		snapshot = GetValue();
+		Console.WriteLine($"Snapshot: {snapshot}");
 	}
 
-	public void RemoveInputCell(InputCellState data) => InputCellTypes.Remove(data);
-	public void AddInputCell(InputCellState data) => InputCellTypes.Add(data);
-	public void RemoveOutputCell(OutputCellState data) => OutputCellTypes.Remove(data);
-	public void AddOutputCell(OutputCellState data) => OutputCellTypes.Add(data);
-	
+	public void AddPortCell(PortCellState cellState){ PortCellStates.Add(cellState); }
+	public void RemovePortCell(PortCellState cellState){ PortCellStates.Remove(cellState); }
+
 	public void OnCellClicked(CircuitCellState cellState){
 		GameObject content = cellState.BuildEditorContent();
 		foreach(Transform child in editorContent.transform)
@@ -38,41 +37,48 @@ public class CircuitScreen : KModalScreen {
 		content.SetParent(editorContent);
 	}
 
-	private bool IsEmpty() => OutputCellTypes.Count == 0 && InputCellTypes.Count == 0;
+	private bool IsEmpty() => PortCellStates.Count == 0;
+
+	private CircuitDTO GetValue(){
+		var portDtos = PortCellStates.Select(p => p.CreateDTO()).ToArray();
+		var inputs = portDtos.OfType<InputPortDTO>().ToArray();
+		var outputs = portDtos.OfType<OutputPortDTO>().ToArray();
+		return new CircuitDTO(CircuitName, inputs, outputs);
+	}
 	
 	public void SaveButtonClicked(){
-		if(!Changed()){
-			SaveCells();
-			return;
-		}
-		
-		string errMsg = ValidateCells();
-		if(errMsg != string.Empty){
-			ShowMessageDialog(errMsg);
-			return;
-		}
-		
-		PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent,
-									"Are you sure you want to apply all changes?",
-									SaveCells,
-									() => {},
-									"Yes",
-									"No");
-	}
-	
-	private bool Changed() {
-		if (!InputCellTypesSnapshot.SequenceEqual(InputCellTypes)) return true;
-		if (!OutputCellTypesSnapshot.SequenceEqual(OutputCellTypes)) return true;
-		return false;
-	}
-	
-	private string ValidateCells() {
 		try {
-			Validator.Validate(InputCellTypes, OutputCellTypes);
-			return string.Empty;
-		} catch (Exception e){
-			return e.Message;
+			if(!HasChanged(out CircuitDTO dto)){
+				ExecuteSave(dto);
+				return;
+			}
+     
+			CircuitValidator.DoValidate(new CircuitModel(dto, resolver));
+     
+			PUIElements.ShowConfirmDialog(
+				parent: CircuitScreenManager.RootParent,
+				message: "Are you sure you want to apply all changes?",
+				onConfirm: () => ExecuteSave(dto),
+				onCancel: () => {},
+				confirmText: "Yes",
+				cancelText: "No"
+			);
 		}
+		catch (Exception e) {
+			ShowMessageDialog(e.Message);
+		}
+	}
+
+	private bool HasChanged(out CircuitDTO dto){
+		dto = GetValue();
+		return !dto.Equals(snapshot);
+	}
+
+	private bool HasChanged() => HasChanged(out _);
+
+	private void ExecuteSave(CircuitDTO dto){
+		onSave?.Invoke(dto);   
+		Deactivate();
 	}
 	
 	private static void ShowMessageDialog(string message){
@@ -84,39 +90,27 @@ public class CircuitScreen : KModalScreen {
 		Destroy(cancelButton.gameObject);
 	}
 	
-	private void SaveCells() {
-		List<OutputPort> outputs = [];
-		outputs.AddRange(OutputCellTypes.Select(i => i.ToPort()));
-	
-		List<InputPort> inputs = [];
-		inputs.AddRange(InputCellTypes.Select(i => i.ToPort()));
-		
-		onSave?.Invoke(inputs, outputs);
-		Deactivate();
-	}
-	
-	public void ClearButtonClicked() {
+	public void ClearButtonClicked(){
 		if(!IsEmpty()){
 			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent,
 				"Are you sure you want to clear all cells?",
 				ClearCells,
-				()=>{},
+				null,
 				"Yes",
 				"No");	
 		}
 	}
 	
-	private void ClearCells() {
-		foreach (var cell in InputCellTypes.ToList()) cell.Delete();
-		foreach (var cell in OutputCellTypes.ToList()) cell.Delete();
+	private void ClearCells(){
+		foreach (var cell in PortCellStates.ToArray()) cell.Delete();
 	}
 	
-	public void CancelButtonClicked() {
-		if (Changed()) {
+	public void CancelButtonClicked(){
+		if (HasChanged()) {
 			PUIElements.ShowConfirmDialog(CircuitScreenManager.RootParent, 
 				"Are you sure you want to leave and discard changes?",
 				Deactivate,
-				()=> {},
+				null,
 				"Yes",
 				"No");
 		} else {

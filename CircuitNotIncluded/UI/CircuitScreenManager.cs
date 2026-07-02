@@ -1,6 +1,6 @@
-using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Core;
+using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.UI.Cells;
-using CircuitNotIncluded.UI.Validators;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.Core;
 using UnityEngine;
@@ -10,14 +10,12 @@ namespace CircuitNotIncluded.UI;
 public partial class CircuitScreenManager {
 	private Circuit circuit = null!;
 	private CircuitScreen screen = null!;
-	private string circuitNameBuffer = null!;
 	
 	public static CircuitScreenManager Instance { get; } = new ();
 	private CircuitScreenManager(){ }
 	
 	public GameObject Build(Circuit circuit){
 		this.circuit = circuit;
-		circuitNameBuffer = circuit.CNIName;
 		GameObject go = new GameObject("CircuitScreen")
 			.RectTransform()
 			.AnchorMin(0, 0)
@@ -27,18 +25,18 @@ public partial class CircuitScreenManager {
 			.SetParent(RootParent);
 
 		screen = go.AddComponent<CircuitScreen>();
+		screen.resolver = circuit.ToDisplayIndex;
+		screen.CircuitName = circuit.dto.Name;
 		screen.onSave += SaveCircuit; 
 		BuildScreen(go);
 		return go;
 	}
 	
-	private void SaveCircuit(List<InputPort> inputs, List<OutputPort> outputs){
-		circuit.SetData(circuitNameBuffer, inputs, outputs);
+	private void SaveCircuit(CircuitDTO circuitDto){
+		circuit.SetData(circuitDto);
 	}
 	
-	public void OnOutputCellCreated(OutputCellState data) => screen.AddOutputCell(data);
-	public void OnOutputCellDeleted(OutputCellState data) => screen.RemoveOutputCell(data);
-	public void OnInputCellCreated(InputCellState data) => screen.AddInputCell(data);
-	public void OnInputCellDeleted(InputCellState data) => screen.RemoveInputCell(data);
+	public void OnPortCellCreated(PortCellState data) => screen.AddPortCell(data);
+	public void OnPortCellDeleted(PortCellState data) => screen.RemovePortCell(data);
 	public void BuildSideScreen(CircuitCellState data) => screen.OnCellClicked(data);
 }

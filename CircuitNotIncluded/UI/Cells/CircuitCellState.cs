@@ -1,3 +1,4 @@
+using CircuitNotIncluded.UI.Builders;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.UI;
 using TMPro;
@@ -24,44 +25,10 @@ public abstract class CircuitCellState {
 			.FlexibleHeight(1)
 			.FlexibleWidth(1)
 			.gameObject;
-		BuildCoordsLabel(container);
+		FieldBuilder.BuildCoordsLabel(container, CellTitle, GetDisplayIndex());
 		return container;
 	}
-
-	private GameObject BuildCoordsLabel(GameObject container){
-		return new PLabel("Coords")
-			.Text($"{CellTitle} ({Owner.DisplayIndex})")
-			.Style(CircuitCell.TitleStyle)
-			.FlexSize(1, 0)
-			.AddTo(container);
-	}
 	
-	protected GameObject BuildTextField(GameObject parent, string labelText, string defaultValue, 
-		int maxLength, TextStyleSetting fieldStyle, PUIDelegates.OnTextChanged onTextChanged){
-		
-		GameObject panel = new PPanel()
-			.Direction(PanelDirection.Horizontal)
-			.Spacing(5)
-			.FlexSize(1, 0)
-			.AddTo(parent);
-
-		new PLabel()
-			.Text(labelText)
-			.Style(CircuitCell.LabelStyle)
-			.AddTo(panel);
-
-		new PTextField()
-			.Text(defaultValue)
-			.Style(fieldStyle)
-			.FlexSize(1, 0)
-			.MaxLength(maxLength)
-			.TextAlignment(TextAlignmentOptions.Left)
-			.SetOnTextChanged(onTextChanged)
-			.AddTo(panel);
-
-		return panel;
-	}
-
 	public CellOffset GetOffset() {
 		return Owner.Offset;
 	}

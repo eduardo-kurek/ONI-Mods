@@ -1,24 +1,12 @@
 using CircuitNotIncluded.Interfaces;
 using KSerialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 using MemberSerialization = KSerialization.MemberSerialization;
 
-namespace CircuitNotIncluded.Structs;
+namespace CircuitNotIncluded.Core.Runtime;
 
 [SerializationConfig(MemberSerialization.OptIn)]
-public abstract class CircuitPort : ILogicUIElement, IBlueprintSerializable {
-	public Circuit parent;
-	[Serialize] protected int cell;
-	
-	protected CircuitPort(){ }
-	
-	protected CircuitPort(Circuit parent, int cell){
-		this.parent = parent;
-		this.cell = cell;
-	}
-
+public abstract class PortRuntime(int cell) : IRuntime, ILogicUIElement {
 	public void Connect(){
 		Game.Instance.logicCircuitSystem.AddToNetworks(cell, this, true);
 		Game.Instance.logicCircuitManager.AddVisElem(this);
@@ -33,5 +21,4 @@ public abstract class CircuitPort : ILogicUIElement, IBlueprintSerializable {
 	public Vector2 PosMax() => Grid.CellToPos2D(cell);
 	public int GetLogicUICell() => cell;
 	public abstract LogicPortSpriteType GetLogicPortSpriteType();
-	public abstract JObject ToJson();
 }

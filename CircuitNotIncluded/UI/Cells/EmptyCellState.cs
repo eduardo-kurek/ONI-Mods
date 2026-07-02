@@ -1,5 +1,6 @@
+using CircuitNotIncluded.Core.DTO;
+using CircuitNotIncluded.UI.Builders;
 using CircuitNotIncluded.Utils;
-using PeterHan.PLib.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,43 +22,19 @@ public class EmptyCellState : CircuitCellState {
 	
 	public override GameObject BuildEditorContent(){
 		GameObject mainPanel = BuildContainer();
-		GameObject buttonsPanel = BuildButtonsPanel(mainPanel);
-		BuildCreateInputButton(buttonsPanel);
-		BuildCreateOutputButton(buttonsPanel);
+		GameObject buttonsPanel = FieldBuilder.BuildButtonsPanel(mainPanel);
+		FieldBuilder.BuildButton(buttonsPanel, "Create Input Port", (go) => PromoteToInput());
+		FieldBuilder.BuildButton(buttonsPanel, "Create Output Port", (go) => PromoteToOutput());
 		return mainPanel;
 	}
 
-	private static GameObject BuildButtonsPanel(GameObject container){
-		return new PPanel()
-			.FlexSize(1, 1)
-			.Spacing(10)
-			.Alignment(TextAnchor.MiddleCenter)
-			.AddTo(container);
-	}
-
-	private GameObject BuildCreateInputButton(GameObject container){
-		return BuildButton(container, "Create Input Port", (go) => PromoteToInput());
-	}
-	
-	private GameObject BuildCreateOutputButton(GameObject container){
-		return BuildButton(container, "Create Output Port", (go) => PromoteToOutput());
-	}
-	
-	private static GameObject BuildButton(GameObject container, string text, PUIDelegates.OnButtonPressed onClick){
-		return new PButton()
-			.Text(text)
-			.Margin(10)
-			.SetOnClick(onClick)
-			.AddTo(container);
-	}
-	
 	private void PromoteToInput(){
-		var inputType = InputCellState.Create();
+		var inputType = new InputCellState(new InputBitDTO("", ""));
 		Owner.TransitionTo(inputType);
 	}
 
 	private void PromoteToOutput(){
-		var outputType = OutputCellState.Create();
+		var outputType = new OutputCellState(new OutputBitDTO("", "", ""));
 		Owner.TransitionTo(outputType);
 	}
 }

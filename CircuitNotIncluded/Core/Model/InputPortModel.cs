@@ -1,0 +1,27 @@
+using CircuitNotIncluded.Core.DTO;
+using CircuitNotIncluded.Core.Runtime;
+using CircuitNotIncluded.Core.Validators;
+using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Interfaces;
+using FluentValidation.Results;
+
+namespace CircuitNotIncluded.Core.Model;
+
+public class InputPortModel : PortModel {
+	public InputBitModel Bit1 { get; }
+	public override ValidationPriority ValidationPriority => ValidationPriority.First;
+
+	public InputPortModel(InputPortDTO inputPort, CircuitModel circuit, OffsetResolver resolver) 
+		: base(inputPort, circuit, resolver) {
+		Bit1 = new InputBitModel(inputPort.Bit1, this, 1);
+	}
+
+	public override IRuntime CreateRuntime(SymbolTable symbolTable){
+		return new InputRuntime(symbolTable, Bit1.Id, Index);
+	}
+
+	public override ValidationResult Validate(ValidationData data){
+		var validator = new InputPortValidator(data.declaredInputs);
+		return validator.Validate(this);
+	}
+}

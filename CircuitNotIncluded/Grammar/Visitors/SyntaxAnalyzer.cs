@@ -13,12 +13,12 @@ public class SyntaxAnalyzer : BaseErrorListener {
 		int line, int charPositionInLine, 
 		string msg, RecognitionException e)
 	{
-		errors.Add($"\tat char {charPositionInLine}: {msg}");
+		errors.Add($"at char {charPositionInLine} {msg}");
 	}
 	
 	public void ThrowIfErrors(){
 		if(errors.Count > 0){
-			throw new Exception($"Syntax errors: \n{string.Join("\n", errors)}");
+			throw new Exception($"Syntax error: {string.Join(";", errors)}");
 		}
 	}
 } 

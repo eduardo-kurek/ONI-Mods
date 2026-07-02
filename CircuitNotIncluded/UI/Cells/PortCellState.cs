@@ -1,73 +1,40 @@
-using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Core.DTO;
+using CircuitNotIncluded.UI.Builders;
 using CircuitNotIncluded.Utils;
-using PeterHan.PLib.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace CircuitNotIncluded.UI.Cells;
 
-public interface IHasId {
-	string GetId();
-}
-
-public abstract class PortCellState : CircuitCellState, IHasId {
+public abstract class PortCellState : CircuitCellState {
 	protected abstract Sprite PortSprite { get; }
 
+	public abstract PortDTO CreateDTO();
+	protected abstract void BuildPortContent(GameObject parent);
+	
+	public override GameObject BuildEditorContent(){
+		GameObject panel = BuildContainer();
+		BuildPortContent(panel);
+		FieldBuilder.BuildDeleteButton(panel, (go) => Delete());
+		return panel;
+	}
+	
+	public void Delete(){
+		EmptyCellState state = new();
+		Owner.TransitionTo(state);
+	}
+	
 	public override void UpdateCellImage(Image img){
 		img.color = Color.white;
 		img.sprite = PortSprite;
 	}
 	
-	protected GameObject BuildIdField(GameObject container, string label, PortInfo info){
-		return BuildTextField(container, label, info.Id, 
-			50, CircuitCell.ExpressionStyle,
-			(source, text) => {
-				info.Id = text;
-			});
+	public override void OnEnter(CircuitCell owner){
+		base.OnEnter(owner);
+		CircuitScreenManager.Instance.OnPortCellCreated(this);
 	}
 
-	protected GameObject BuildDescriptionField(GameObject container, string label, PortInfo info){
-		return BuildTextField(container, label, info.Description, 
-			255, CircuitCell.LabelStyle,
-			(source, text) => {
-				info.Description = text;
-			});
+	public override void OnExit(){
+		CircuitScreenManager.Instance.OnPortCellDeleted(this);
 	}
-
-	protected GameObject BuildActiveDescriptionField(GameObject container, PortInfo info){
-		return BuildTextField(container, "Active Description: ", info.ActiveDescription, 
-			255, CircuitCell.LabelStyle,
-			(source, text) => {
-				info.ActiveDescription = text;
-			});
-	}
-
-	protected GameObject BuildInactiveDescription(GameObject container, PortInfo info){
-		return BuildTextField(container, "Inactive Description: ", info.InactiveDescription, 
-			255, CircuitCell.LabelStyle,
-			(source, text) => {
-				info.InactiveDescription = text;
-			});
-	}
-	
-	protected GameObject BuildDeleteButton(GameObject container){
-		GameObject deletePanel = new PPanel("DeletePanel")
-			.Direction(PanelDirection.Horizontal)
-			.Alignment(TextAnchor.MiddleCenter)
-			.Margin(20, 0, 0, 0)
-			.AddTo(container);
-		
-		return new PButton("DeleteButton")
-			.Text("Delete Port")
-			.Margin(10)
-			.SetOnClick((go) => { Delete(); })
-			.AddTo(deletePanel);
-	}
-
-	public void Delete(){
-		EmptyCellState state = new();
-		Owner.TransitionTo(state);
-	}
-
-	public abstract string GetId();
 }

@@ -1,4 +1,5 @@
-using CircuitNotIncluded.Structs;
+using CircuitNotIncluded.Core;
+using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.UI.Cells;
 using CircuitNotIncluded.Utils;
 using PeterHan.PLib.Core;
@@ -85,10 +86,10 @@ public partial class CircuitScreenManager {
 			.AddTo(container);
 		
 		return new PTextField("Title")
-			.Text(circuitNameBuffer)
+			.Text(circuit.dto.Name)
 			.MinWidth(300)
 			.MaxLength(100)
-			.SetOnTextChanged((go, source) => { circuitNameBuffer = source; })
+			.SetOnTextChanged((go, source) => { screen.CircuitName = source; })
 			.AddTo(panel);
 	}
 
@@ -150,8 +151,7 @@ public partial class CircuitScreenManager {
 
 	private void BuildPorts(GameObject container){
 		BuildEmptyPorts(container);
-		BuildInputPorts(container);
-		BuildOutputPorts(container);
+		BuildCircuitPorts(container);
 		BuildInvalidPorts(container);
 		screen.OnReady();
 	}
@@ -172,23 +172,12 @@ public partial class CircuitScreenManager {
 			.SetParent(container);
 	}
 	
-	private void BuildInputPorts(GameObject container){
+	private void BuildCircuitPorts(GameObject container){
 		Circuit c = circuit;
-		foreach(CircuitInput input in c.Inputs){
-			InputPort port = input.port;
-			var cellType = InputCellState.Create(port);
-			int index = circuit.ToGridIndex(port.Offset);
-			ChangeCellType(index, cellType);
-		}
-	}
-
-	private void BuildOutputPorts(GameObject container){
-		Circuit c = circuit;
-		foreach(CircuitOutput output in c.Outputs){
-			OutputPort port = output.port;
-			var cellType = OutputCellState.Create(port);
-			int index = circuit.ToGridIndex(port.Offset);
-			ChangeCellType(index, cellType);
+		foreach(PortDTO p in c.dto.Ports){
+			var cellState = p.CreateCellState();
+			int index = circuit.ToGridIndex(p.Offset);
+			ChangeCellType(index, cellState);
 		}
 	}
 	

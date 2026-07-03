@@ -15,11 +15,7 @@ public record InputPortDTO (
 	public override PortCategory Category => PortCategory.Input;
 
 	public override string GetDisplayText(){
-		StringBuilder sb = new();
-		sb.AppendLine($"Id: {Bit1.Id}");
-		if(Bit1.Description.Length > 0)
-			sb.AppendLine($"• {Bit1.Description}");
-		return sb.ToString();
+		return Bit1.GetDisplayText();
 	}
 
 	public override JObject ToJson() {
@@ -41,18 +37,14 @@ public record InputPortDTO (
 	}
 	
 	public override void OnHover(string circuitName, HoverTextDrawer drawer, SelectToolHoverTextCard cfg) {
-		drawer.DrawText($"INPUT  {Bit1.Id}    <style=\"hovercard_element\">({circuitName.ToUpper()})</style>", cfg.Styles_Title.Standard);
-		if(Bit1.Description.IsNullOrWhiteSpace()) return;
+		drawer.DrawText($"INPUT    <style=\"hovercard_element\">({circuitName.ToUpper()})</style>", cfg.Styles_Title.Standard);
 		drawer.NewLine();
-		drawer.DrawIcon(cfg.iconDash);
-		drawer.DrawText($"{Bit1.Description}", cfg.Styles_BodyText.Standard);
+		Bit1.OnHover(drawer, cfg);
 	}
 
-	public override IModel CreateModel(CircuitModel parent, OffsetResolver resolver){
-		return new InputPortModel(this, parent, resolver);
-	}
+	public override IModel CreateModel(CircuitModel parent, OffsetResolver resolver)
+		=> new InputPortModel(this, parent, resolver);
 
-	public override CircuitCellState CreateCellState(){
-		return new InputCellState(Bit1);
-	}
+	public override CircuitCellState CreateCellState()
+		=> new InputCellState(this);
 }

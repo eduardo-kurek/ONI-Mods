@@ -15,11 +15,7 @@ public record OutputPortDTO (
 	public override PortCategory Category => PortCategory.Output;
 
 	public override string GetDisplayText(){
-		StringBuilder sb = new();
-		sb.AppendLine($"{Bit1.Label} = {Bit1.Expression}");
-		if(Bit1.Description.Length > 0)
-			sb.AppendLine($"• {Bit1.Description}");
-		return sb.ToString();
+		return Bit1.GetDisplayText();
 	}
 
 	public override JObject ToJson() {
@@ -43,11 +39,7 @@ public record OutputPortDTO (
 	public override void OnHover(string circuitName, HoverTextDrawer drawer, SelectToolHoverTextCard cfg) {
 		drawer.DrawText($"OUTPUT  {Bit1.Label}    <style=\"hovercard_element\">({circuitName.ToUpper()})</style>", cfg.Styles_Title.Standard);
 		drawer.NewLine();
-		drawer.DrawText($"Expression = {Utils.UI.ColorizeExpression(Bit1.Expression)}", cfg.Styles_LogicActive.Standard);
-		if (Bit1.Description.IsNullOrWhiteSpace()) return;
-		drawer.NewLine();
-		drawer.DrawIcon(cfg.iconDash);
-		drawer.DrawText($"{Bit1.Description}", cfg.Styles_BodyText.Standard);
+		Bit1.OnHover(drawer, cfg);
 	}
 
 	public override IModel CreateModel(CircuitModel parent, OffsetResolver resolver){

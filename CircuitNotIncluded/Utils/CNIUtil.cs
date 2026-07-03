@@ -16,18 +16,12 @@ public class CNIUtil {
 		}
 
 		public static void AddPlan(HashedString category, string subcategory, string idBuilding, string addAfter = null){
-			const string str = "Adding ";
-			const string str2 = " to category ";
-			var hashedString = category;
-			Debug.Log(str + idBuilding + str2 + hashedString.ToString());
 			foreach(var planInfo in TUNING.BUILDINGS.PLANORDER){
 				if(planInfo.category == category){
 					CNIUtil.AddPlanToCategory(planInfo, subcategory, idBuilding, addAfter);
 					return;
 				}
 			}
-
-			Debug.Log($"Unknown build menu category: ${category}");
 		}
 
 		private static void AddPlanToCategory(PlanScreen.PlanInfo menu, string subcategory, string idBuilding,

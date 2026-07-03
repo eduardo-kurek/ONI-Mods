@@ -17,6 +17,14 @@ public static class FieldBuilder {
 			.AddTo(container);
 	}
 	
+	public static GameObject BuildBitLabel(GameObject container, int bitNumber){
+		return new PLabel($"Bit {bitNumber}")
+			.Text($"Bit {bitNumber}")
+			.Style(CircuitCell.ExpressionStyle)
+			.FlexSize(1, 0)
+			.AddTo(container);
+	}
+	
 	public static GameObject BuildTextField(GameObject parent, string labelText, string defaultValue, 
 		int maxLength, TextStyleSetting fieldStyle, OnTextChanged onTextChanged){
 		

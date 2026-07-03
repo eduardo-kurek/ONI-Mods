@@ -24,7 +24,6 @@ public class CircuitScreen : KModalScreen {
 
 	public void OnReady(){
 		snapshot = GetValue();
-		Console.WriteLine($"Snapshot: {snapshot}");
 	}
 
 	public void AddPortCell(PortCellState cellState){ PortCellStates.Add(cellState); }
@@ -42,8 +41,9 @@ public class CircuitScreen : KModalScreen {
 	private CircuitDTO GetValue(){
 		var portDtos = PortCellStates.Select(p => p.CreateDTO()).ToArray();
 		var inputs = portDtos.OfType<InputPortDTO>().ToArray();
+		var ribbonInputs = portDtos.OfType<RibbonInputDTO>().ToArray();
 		var outputs = portDtos.OfType<OutputPortDTO>().ToArray();
-		return new CircuitDTO(CircuitName, inputs, outputs);
+		return new CircuitDTO(CircuitName, inputs, ribbonInputs, outputs);
 	}
 	
 	public void SaveButtonClicked(){

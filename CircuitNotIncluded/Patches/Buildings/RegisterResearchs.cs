@@ -15,12 +15,6 @@ public class RegisterResearchs {
 		tech.AddUnlockedItemIDs("Circuit_2x3");
 		tech.AddUnlockedItemIDs("Circuit_2x4");
 		tech.AddUnlockedItemIDs("Circuit_2x5");
-		tech.AddUnlockedItemIDs("Circuit_3x3");
-		tech.AddUnlockedItemIDs("Circuit_3x4");
-		tech.AddUnlockedItemIDs("Circuit_3x5");
-		tech.AddUnlockedItemIDs("Circuit_4x4");
-		tech.AddUnlockedItemIDs("Circuit_4x5");
-		tech.AddUnlockedItemIDs("Circuit_5x5");
 	}
 	
 }

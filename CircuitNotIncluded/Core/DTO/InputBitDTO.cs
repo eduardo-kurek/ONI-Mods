@@ -23,7 +23,7 @@ public record InputBitDTO (
 		if(Description.Length <= 0) return;
 		drawer.NewLine();
 		drawer.DrawIcon(cfg.iconDash);
-		drawer.DrawText($"{Description}", cfg.Styles_BodyText.Standard);
+		drawer.DrawText(Description, cfg.Styles_BodyText.Standard);
 	}
 	
 	public JObject ToJson() {

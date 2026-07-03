@@ -2,9 +2,14 @@ using CircuitNotIncluded.Grammar;
 
 namespace CircuitNotIncluded.Core.Runtime;
 
-public class RibbonInputRuntime(SymbolTable symbolTable, string id1, string id2, string id3, string id4, int cell) 
-	: PortRuntime(cell), ILogicEventReceiver
-{
+public class RibbonInputRuntime(
+	SymbolTable symbolTable,
+	string id1,
+	string id2,
+	string id3,
+	string id4,
+	int cell
+) : PortRuntime(cell), ILogicEventReceiver {
 
 	public void OnLogicNetworkConnectionChanged(bool connected){  }
 

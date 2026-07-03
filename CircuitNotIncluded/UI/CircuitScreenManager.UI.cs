@@ -55,7 +55,7 @@ public partial class CircuitScreenManager {
 			.AddTo(parent)
 			.AddOutline()
 			.RectTransform()
-			.SizeDelta(1100, 700)
+			.SizeDelta(1100, 750)
 			.AnchorMin(0.5f, 0.5f)
 			.AnchorMax(0.5f, 0.5f)
 			.LocalPosition(Vector3.zero)
@@ -247,8 +247,8 @@ public partial class CircuitScreenManager {
 
 	private GameObject BuildInfoPanel(GameObject container){
 		PLabel infoText = new PLabel("InfoText")
-			.Text("Supported operations (by precedence):\n" +
-			      " ! = NOT, * = AND, # = XOR, + = OR\n" +
+			.Text("Supported operations (by precedence):\n\n" +
+			      "! = NOT | * = AND | # = XOR | + = OR\n\n" +
 			      "Expressions supports 'true' or 'false' constants;\n" +
 			      "Use parentheses to override precedence;\n" +
 			      "Example: !(a + b) * c # d;");
@@ -259,7 +259,7 @@ public partial class CircuitScreenManager {
 			.AddOutline()
 			.LayoutElement()
 			.FlexibleWidth(1)
-			.PreferredHeight(150)
+			.PreferredHeight(120)
 			.gameObject;
 
 		infoText.AddTo(editorInfo);

@@ -43,7 +43,8 @@ public class CircuitScreen : KModalScreen {
 		var inputs = portDtos.OfType<InputPortDTO>().ToArray();
 		var ribbonInputs = portDtos.OfType<RibbonInputDTO>().ToArray();
 		var outputs = portDtos.OfType<OutputPortDTO>().ToArray();
-		return new CircuitDTO(CircuitName, inputs, ribbonInputs, outputs);
+		var ribbonOutputs = portDtos.OfType<RibbonOutputDTO>().ToArray();
+		return new CircuitDTO(CircuitName, inputs, ribbonInputs, outputs, ribbonOutputs);
 	}
 	
 	public void SaveButtonClicked(){

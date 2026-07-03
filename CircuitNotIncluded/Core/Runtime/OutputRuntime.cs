@@ -18,7 +18,6 @@ public class OutputRuntime(SymbolTable symbolTable, string expression, int cell)
 	}
 
 	public int GetLogicValue() => logicValue;
-	
 	public int GetLogicCell() => base.GetLogicUICell();	
 	public override LogicPortSpriteType GetLogicPortSpriteType() => LogicPortSpriteType.Output;
 }

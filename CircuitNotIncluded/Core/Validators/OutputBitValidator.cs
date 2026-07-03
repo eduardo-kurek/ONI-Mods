@@ -30,7 +30,7 @@ public class OutputBitValidator : AbstractValidator<OutputBitModel> {
 			})
 			.Custom((o, ctx) => {
 				if (data.declaredOutputs.TryGetValue(o.Label, out var declared))
-					ctx.AddFailure($"{Prefix(o)} Label '{o.Label}' duplicated at cell {declared.Port.Index}.{o.BitNumber}");
+					ctx.AddFailure($"{Prefix(o)} Label '{o.Label}' duplicated at cell {declared.Port.Index}.{declared.BitNumber}");
 				else
 					data.declaredOutputs[o.Label] = o;
 			});

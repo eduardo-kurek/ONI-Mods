@@ -38,6 +38,7 @@ public record InputPortDTO (
 	
 	public override void OnHover(string circuitName, HoverTextDrawer drawer, SelectToolHoverTextCard cfg) {
 		drawer.DrawText($"INPUT    <style=\"hovercard_element\">({circuitName.ToUpper()})</style>", cfg.Styles_Title.Standard);
+		drawer.NewLine();
 		Bit1.OnHover(drawer, cfg);
 	}
 

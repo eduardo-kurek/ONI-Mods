@@ -7,13 +7,15 @@ namespace CircuitNotIncluded.Core.DTO;
 public record CircuitDTO(
 	[property: Serialize] string Name,
 	[property: Serialize] InputPortDTO[] InputPorts,
-	[property: Serialize] RibbonInputDTO[] RibbonInputs,	
-	[property: Serialize] OutputPortDTO[] OutputPorts
+	[property: Serialize] RibbonInputDTO[] RibbonInputs,
+	[property: Serialize] OutputPortDTO[] OutputPorts,
+	[property: Serialize] RibbonOutputDTO[] RibbonOutputs
 ) {
 
 	public PortDTO[] Ports => InputPorts
 		.Concat(RibbonInputs.Cast<PortDTO>()).ToArray()
-		.Concat(OutputPorts.Cast<PortDTO>()).ToArray();
+		.Concat(OutputPorts.Cast<PortDTO>()).ToArray()
+		.Concat(RibbonOutputs.Cast<PortDTO>()).ToArray();
 
 	public virtual bool Equals(CircuitDTO? other) {
 		if(other is null) return false;
@@ -42,12 +44,16 @@ public record CircuitDTO(
 		
 		var outputPorts = new JArray();
 		foreach (var o in OutputPorts) outputPorts.Add(o.ToJson());
+		
+		var ribbonOutputs = new JArray();
+		foreach (var ro in RibbonOutputs) ribbonOutputs.Add(ro.ToJson());	
 
 		return new JObject {
 			{ "Name", Name },
 			{ "InputPorts", inputPorts },
 			{ "RibbonInputs", ribbonInputs },
-			{ "OutputPorts", outputPorts }
+			{ "OutputPorts", outputPorts },
+			{ "RibbonOutputs", ribbonOutputs }
 		};
 	}
 	
@@ -57,6 +63,7 @@ public record CircuitDTO(
 		var inputPorts = new List<InputPortDTO>();
 		var ribbonInputs = new List<RibbonInputDTO>();
 		var outputPorts = new List<OutputPortDTO>();
+		var ribbonOutputs = new List<RibbonOutputDTO>();
 
 		if (json.TryGetValue("InputPorts", out JToken i) && i is JArray inputsArray) {
 			foreach (var item in inputsArray)
@@ -76,8 +83,20 @@ public record CircuitDTO(
 					outputPorts.Add(OutputPortDTO.FromJson(portObj));
 		}
 
-		return new CircuitDTO(name, inputPorts.ToArray(), ribbonInputs.ToArray(), outputPorts.ToArray());
+		if (json.TryGetValue("RibbonOutputs", out JToken ro) && ro is JArray ribbonOutputsArray) {
+			foreach (var item in ribbonOutputsArray)
+				if (item is JObject portObj)
+					ribbonOutputs.Add(RibbonOutputDTO.FromJson(portObj));
+		}
+
+		return new CircuitDTO(
+			name, 
+			inputPorts.ToArray(), 
+			ribbonInputs.ToArray(), 
+			outputPorts.ToArray(),
+			ribbonOutputs.ToArray()
+		);
 	}
 
-	public static CircuitDTO Empty() => new("Circuit Name", [], [], []);
+	public static CircuitDTO Empty() => new("Circuit Name", [], [], [], []);
 }

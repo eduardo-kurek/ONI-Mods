@@ -26,6 +26,7 @@ public class EmptyCellState : CircuitCellState {
 		FieldBuilder.BuildButton(buttonsPanel, "Create Input Port", (go) => PromoteToInput());
 		FieldBuilder.BuildButton(buttonsPanel, "Create Ribbon Input Port", (go) => PromoteToRibbonInput());
 		FieldBuilder.BuildButton(buttonsPanel, "Create Output Port", (go) => PromoteToOutput());
+		FieldBuilder.BuildButton(buttonsPanel, "Create Ribbon Output Port", (go) => PromoteToRibbonOutput());
 		return mainPanel;
 	}
 
@@ -55,5 +56,18 @@ public class EmptyCellState : CircuitCellState {
 	private void PromoteToOutput(){
 		var outputType = new OutputCellState(new OutputBitDTO("", "", ""));
 		Owner.TransitionTo(outputType);
+	}
+	
+	private void PromoteToRibbonOutput(){
+		var ribbonOutputType = new RibbonOutputCellState(
+			new RibbonOutputDTO(
+				Owner.Offset, 
+				new OutputBitDTO("", "", ""),
+				new OutputBitDTO("", "", ""),
+				new OutputBitDTO("", "", ""),
+				new OutputBitDTO("", "", "")
+			)
+		);
+		Owner.TransitionTo(ribbonOutputType);
 	}
 }

@@ -1,3 +1,4 @@
+using System.Text;
 using KSerialization;
 using Newtonsoft.Json.Linq;
 
@@ -9,6 +10,22 @@ public record OutputBitDTO (
 	[property: Serialize] string Description,
 	[property: Serialize] string Expression
 ) {
+	
+	public string GetDisplayText() {
+		StringBuilder sb = new();
+		sb.AppendLine($"{Label} = {Expression}");
+		if(Description.Length > 0)
+			sb.AppendLine($"• {Description}");
+		return sb.ToString();
+	}
+	
+	public void OnHover(HoverTextDrawer drawer, SelectToolHoverTextCard cfg) {
+		drawer.DrawText($"{Label} = {Utils.UI.ColorizeExpression(Expression)}", cfg.Styles_LogicActive.Standard);
+		if (Description.IsNullOrWhiteSpace()) return;
+		drawer.NewLine();
+		drawer.DrawIcon(cfg.iconDash);
+		drawer.DrawText(Description, cfg.Styles_BodyText.Standard);
+	}
 	
 	public JObject ToJson() {
 		return new JObject {

@@ -13,7 +13,7 @@ public record OutputBitDTO (
 	
 	public string GetDisplayText() {
 		StringBuilder sb = new();
-		sb.AppendLine($"{Label} = {Expression}");
+		sb.AppendLine($"{Label} = {Utils.UI.ColorizeExpression(Expression)}");
 		if(Description.Length > 0)
 			sb.AppendLine($"• {Description}");
 		return sb.ToString();

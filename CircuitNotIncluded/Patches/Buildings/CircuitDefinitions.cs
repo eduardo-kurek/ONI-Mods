@@ -1,5 +1,10 @@
 namespace CircuitNotIncluded.Patches.Buildings;
 
+public class Circuit_1x2 : BaseCircuitConfig {
+	protected override int Width => 1;
+	protected override int Height => 2;
+}
+
 public class Circuit_1x3 : BaseCircuitConfig {
 	protected override int Width => 1;
 	protected override int Height => 3;

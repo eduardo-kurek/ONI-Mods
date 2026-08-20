@@ -8,8 +8,7 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 	private readonly DynamicMethod method;
 	private readonly ILGenerator il;
 	
-	private readonly List<FilterState> filters = [];
-	private readonly List<BufferState> buffers = [];
+	private readonly List<IStatefulGate> gates = [];
 
 	private ExpressionCompiler(){
 		method = new DynamicMethod(
@@ -23,31 +22,24 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 
 	public override object? VisitFilterFunction(FilterFunctionContext context){
 		float delayAmount = float.Parse(context.FLOAT().GetText());
-		filters.Add(new FilterState(delayAmount));
-		
-		il.Emit(OpCodes.Ldarg_1);
-		il.Emit(OpCodes.Ldfld, typeof(ExpressionState).GetField("Filters")!);
-		il.Emit(OpCodes.Ldc_I4, filters.Count - 1);
-		il.Emit(OpCodes.Ldelem_Ref);
-		
-		Visit(context.expression());
-		il.Emit(OpCodes.Callvirt, typeof(FilterState).GetMethod("Evaluate")!);
+		EmitStatefulGateCall(context.expression(), new TransitionDelayState(delayAmount, 0));
 		return null;
 	}
 	
 	public override object? VisitBufferFunction(BufferFunctionContext context){
 		float delayAmount = float.Parse(context.FLOAT().GetText());
-		buffers.Add(new BufferState(delayAmount));
+		EmitStatefulGateCall(context.expression(), new TransitionDelayState(delayAmount, 1));
+		return null;
+	}
+	
+	private void EmitStatefulGateCall(ExpressionContext expression, IStatefulGate gate){
+		gates.Add(gate);
+		int index = gates.Count - 1;
 
 		il.Emit(OpCodes.Ldarg_1);
-		il.Emit(OpCodes.Ldfld, typeof(ExpressionState).GetField("Buffers")!);
-		il.Emit(OpCodes.Ldc_I4, buffers.Count - 1);
-		il.Emit(OpCodes.Ldelem_Ref);
-
-		Visit(context.expression());
-
-		il.Emit(OpCodes.Callvirt, typeof(BufferState).GetMethod("Evaluate")!);
-		return null;
+		Visit(expression);
+		il.Emit(OpCodes.Ldc_I4, index);
+		il.Emit(OpCodes.Callvirt, typeof(ExpressionState).GetMethod("EvaluateGate")!);
 	}
 
 	public override object? VisitTrueFactor(TrueFactorContext context){
@@ -112,7 +104,7 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 	}
 
 	public CompiledExpression GetCompiledExpression(){
-		var state = new ExpressionState(filters.ToArray(), buffers.ToArray());
+		var state = new ExpressionState(gates.ToArray());
 		return new CompiledExpression(GetEvaluateFunc(), state);	
 	}
 

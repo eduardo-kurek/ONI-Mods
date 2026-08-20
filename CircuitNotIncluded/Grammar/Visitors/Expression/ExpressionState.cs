@@ -1,6 +1,7 @@
 namespace CircuitNotIncluded.Grammar.Visitors.Expression;
 
-public class ExpressionState(FilterState[] filters, BufferState[] buffers) {
-	public FilterState[] Filters = filters;
-	public BufferState[] Buffers = buffers;
+public class ExpressionState(IStatefulGate[] gates) {
+	public int EvaluateGate(int currentInput, int index){
+		return gates[index].Evaluate(currentInput);
+	}
 }

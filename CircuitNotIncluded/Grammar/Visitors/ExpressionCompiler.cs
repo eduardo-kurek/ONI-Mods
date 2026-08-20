@@ -1,22 +1,38 @@
 using System.Reflection.Emit;
-using CircuitNotIncluded.Core;
+using UnityEngine;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
 namespace CircuitNotIncluded.Grammar.Visitors;
-using EvaluateFunc = Func<SymbolTable, int>;
+using EvaluateFunc = Func<SymbolTable, ExpressionState, int>;
 
 public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 	private readonly DynamicMethod method;
 	private readonly ILGenerator il;
 	
+	public List<FilterState> filters = [];
+
 	private ExpressionCompiler(){
 		method = new DynamicMethod(
 			"Temp",
 			typeof(int),
-			[typeof(SymbolTable)]
+			[typeof(SymbolTable), typeof(ExpressionState)]
 		);
 		
 		il = method.GetILGenerator();
+	}
+
+	public override object? VisitFilterFunction(FilterFunctionContext context){
+		float delayAmount = float.Parse(context.FLOAT().GetText());
+		filters.Add(new FilterState(delayAmount));
+		
+		il.Emit(OpCodes.Ldarg_1);
+		il.Emit(OpCodes.Ldfld, typeof(ExpressionState).GetField("Filters")!);
+		il.Emit(OpCodes.Ldc_I4, filters.Count - 1);
+		il.Emit(OpCodes.Ldelem_Ref);
+		
+		Visit(context.expression());
+		il.Emit(OpCodes.Callvirt, typeof(FilterState).GetMethod("Evaluate")!);
+		return null;
 	}
 
 	public override object? VisitTrueFactor(TrueFactorContext context){
@@ -76,17 +92,22 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 		return null;
 	}
 
-	public EvaluateFunc GetEvaluateFunc(){
+	private EvaluateFunc GetEvaluateFunc(){
 		return (EvaluateFunc)method.CreateDelegate(typeof(EvaluateFunc));
 	}
 
-	public static EvaluateFunc Compile(ProgramContext tree){
+	public CompiledExpression GetCompiledExpression(){
+		var state = new ExpressionState(filters.ToArray());
+		return new CompiledExpression(GetEvaluateFunc(), state);	
+	}
+
+	public static CompiledExpression Compile(ProgramContext tree){
 		ExpressionCompiler compiler = new ExpressionCompiler();
 		tree.Accept(compiler);
-		return compiler.GetEvaluateFunc();
+		return compiler.GetCompiledExpression();
 	}
 	
-	public static EvaluateFunc Compile(string expression){
+	public static CompiledExpression Compile(string expression){
 		ProgramContext tree = Compiler.Parse(expression);
 		return Compile(tree);
 	}

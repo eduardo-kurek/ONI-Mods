@@ -1,16 +1,21 @@
 grammar Expression;
 
-// Lexer rules
+fragment DIGIT: [0-9];
+fragment CHAR: [a-zA-Z];
+
+TRUE: 'true';
+FALSE: 'false';
+BUFFER: 'buffer';
+FILTER: 'filter';
 NOT: '!';
 AND: '*';
 XOR: '#';
 OR: '+';
 LPAREN: '(';
 RPAREN: ')';
-
-TRUE: 'true';
-FALSE: 'false';
-ID: [_a-zA-Z]+[_a-zA-Z0-9]*;
+COMMA: ',';
+FLOAT: DIGIT+ ('.' DIGIT+)?;
+ID: (CHAR | '_') (CHAR | DIGIT | '_')*;
 
 WS: [ \t]+ -> skip;
 ERROR : . ;
@@ -31,4 +36,10 @@ factor
     | TRUE                          #trueFactor
     | FALSE                         #falseFactor
     | LPAREN expression RPAREN      #parFactor
+    | function                      #funcFactor
+    ;
+    
+function
+    : BUFFER LPAREN expression COMMA FLOAT RPAREN  #bufferFunction
+    | FILTER LPAREN expression COMMA FLOAT RPAREN  #filterFunction 
     ;

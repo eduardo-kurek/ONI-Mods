@@ -1,7 +1,6 @@
 using CircuitNotIncluded.Grammar;
 
 namespace CircuitNotIncluded.Core.Runtime;
-using EvaluateFunc = Func<SymbolTable, int>;
 
 public class RibbonOutputRuntime(
 	SymbolTable symbolTable,
@@ -12,19 +11,19 @@ public class RibbonOutputRuntime(
 	int cell
 ) : PortRuntime(cell), ILogicEventSender {
 	
-	private readonly EvaluateFunc evaluate1 = Compiler.Compile(expression1);
-	private readonly EvaluateFunc evaluate2 = Compiler.Compile(expression2);
-	private readonly EvaluateFunc evaluate3 = Compiler.Compile(expression3);
-	private readonly EvaluateFunc evaluate4 = Compiler.Compile(expression4);
+	private readonly CompiledExpression compiledExp1 = Compiler.Compile(expression1);
+	private readonly CompiledExpression compiledExp2 = Compiler.Compile(expression2);
+	private readonly CompiledExpression compiledExp3 = Compiler.Compile(expression3);
+	private readonly CompiledExpression compiledExp4 = Compiler.Compile(expression4);
 	private int logicValue;
 
 	public void OnLogicNetworkConnectionChanged(bool connected){ }
 	
 	public void LogicTick(){
-		int v1 = evaluate1(symbolTable);
-		int v2 = evaluate2(symbolTable);
-		int v3 = evaluate3(symbolTable);
-		int v4 = evaluate4(symbolTable);
+		int v1 = compiledExp1.Evaluate(symbolTable);
+		int v2 = compiledExp2.Evaluate(symbolTable);
+		int v3 = compiledExp3.Evaluate(symbolTable);
+		int v4 = compiledExp4.Evaluate(symbolTable);
 		
 		logicValue = ((v1 & 1) << 0) |
 		             ((v2 & 1) << 1) |

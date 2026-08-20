@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CircuitNotIncluded.Grammar;
+namespace CircuitNotIncluded.Grammar.Visitors.Expression;
 
 public class FilterState(float delayAmount) {
 	private bool wasPreviouslyNegative; 

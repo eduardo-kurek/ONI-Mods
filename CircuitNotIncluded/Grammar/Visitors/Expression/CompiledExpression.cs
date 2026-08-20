@@ -1,4 +1,4 @@
-namespace CircuitNotIncluded.Grammar;
+namespace CircuitNotIncluded.Grammar.Visitors.Expression;
 
 using EvaluateFunc = Func<SymbolTable, ExpressionState, int>;
 

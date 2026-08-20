@@ -1,6 +1,6 @@
 using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.Core.Validators;
-using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 using CircuitNotIncluded.Interfaces;
 using FluentValidation.Results;
 

@@ -1,5 +1,5 @@
 using CircuitNotIncluded.Core.Validators;
-using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 using FluentValidation.Results;
 
 namespace CircuitNotIncluded.Interfaces;

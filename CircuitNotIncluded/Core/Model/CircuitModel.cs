@@ -1,5 +1,5 @@
 using CircuitNotIncluded.Core.DTO;
-using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 using CircuitNotIncluded.Interfaces;
 
 namespace CircuitNotIncluded.Core.Model;

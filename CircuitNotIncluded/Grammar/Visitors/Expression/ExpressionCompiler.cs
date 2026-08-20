@@ -1,15 +1,15 @@
 using System.Reflection.Emit;
-using UnityEngine;
 using static CircuitNotIncluded.Grammar.ExpressionParser;
 
-namespace CircuitNotIncluded.Grammar.Visitors;
+namespace CircuitNotIncluded.Grammar.Visitors.Expression;
 using EvaluateFunc = Func<SymbolTable, ExpressionState, int>;
 
 public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 	private readonly DynamicMethod method;
 	private readonly ILGenerator il;
 	
-	public List<FilterState> filters = [];
+	private readonly List<FilterState> filters = [];
+	private readonly List<BufferState> buffers = [];
 
 	private ExpressionCompiler(){
 		method = new DynamicMethod(
@@ -32,6 +32,21 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 		
 		Visit(context.expression());
 		il.Emit(OpCodes.Callvirt, typeof(FilterState).GetMethod("Evaluate")!);
+		return null;
+	}
+	
+	public override object? VisitBufferFunction(BufferFunctionContext context){
+		float delayAmount = float.Parse(context.FLOAT().GetText());
+		buffers.Add(new BufferState(delayAmount));
+
+		il.Emit(OpCodes.Ldarg_1);
+		il.Emit(OpCodes.Ldfld, typeof(ExpressionState).GetField("Buffers")!);
+		il.Emit(OpCodes.Ldc_I4, buffers.Count - 1);
+		il.Emit(OpCodes.Ldelem_Ref);
+
+		Visit(context.expression());
+
+		il.Emit(OpCodes.Callvirt, typeof(BufferState).GetMethod("Evaluate")!);
 		return null;
 	}
 
@@ -97,7 +112,7 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 	}
 
 	public CompiledExpression GetCompiledExpression(){
-		var state = new ExpressionState(filters.ToArray());
+		var state = new ExpressionState(filters.ToArray(), buffers.ToArray());
 		return new CompiledExpression(GetEvaluateFunc(), state);	
 	}
 

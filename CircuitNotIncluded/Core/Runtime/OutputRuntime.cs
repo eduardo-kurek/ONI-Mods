@@ -1,4 +1,5 @@
 using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 using KSerialization;
 
 namespace CircuitNotIncluded.Core.Runtime;

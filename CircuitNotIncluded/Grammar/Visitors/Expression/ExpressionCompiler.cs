@@ -8,7 +8,7 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 	private readonly DynamicMethod method;
 	private readonly ILGenerator il;
 	
-	private readonly List<IStatefulGate> gates = [];
+	private readonly List<TransitionDelayState> delayStates = [];
 
 	private ExpressionCompiler(){
 		method = new DynamicMethod(
@@ -22,24 +22,24 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 
 	public override object? VisitFilterFunction(FilterFunctionContext context){
 		float delayAmount = float.Parse(context.FLOAT().GetText());
-		EmitStatefulGateCall(context.expression(), new TransitionDelayState(delayAmount, 0));
+		EmitTransitionDelay(context.expression(), new TransitionDelayState(delayAmount, 0));
 		return null;
 	}
 	
 	public override object? VisitBufferFunction(BufferFunctionContext context){
 		float delayAmount = float.Parse(context.FLOAT().GetText());
-		EmitStatefulGateCall(context.expression(), new TransitionDelayState(delayAmount, 1));
+		EmitTransitionDelay(context.expression(), new TransitionDelayState(delayAmount, 1));
 		return null;
 	}
 	
-	private void EmitStatefulGateCall(ExpressionContext expression, IStatefulGate gate){
-		gates.Add(gate);
-		int index = gates.Count - 1;
+	private void EmitTransitionDelay(ExpressionContext expression, TransitionDelayState gate){
+		delayStates.Add(gate);
+		int index = delayStates.Count - 1;
 
 		il.Emit(OpCodes.Ldarg_1);
 		Visit(expression);
 		il.Emit(OpCodes.Ldc_I4, index);
-		il.Emit(OpCodes.Callvirt, typeof(ExpressionState).GetMethod("EvaluateGate")!);
+		il.Emit(OpCodes.Callvirt, typeof(ExpressionState).GetMethod("EvaluateDelayGate")!);
 	}
 
 	public override object? VisitTrueFactor(TrueFactorContext context){
@@ -103,19 +103,23 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 		return (EvaluateFunc)method.CreateDelegate(typeof(EvaluateFunc));
 	}
 
-	public CompiledExpression GetCompiledExpression(){
-		var state = new ExpressionState(gates.ToArray());
-		return new CompiledExpression(GetEvaluateFunc(), state);	
+	public ExpressionState GetExpressionState(){
+		return new ExpressionState(delayStates.ToArray());
 	}
 
-	public static CompiledExpression Compile(ProgramContext tree){
+	public static CompiledExpression Compile(ProgramContext tree, ExpressionState? existingState = null){
 		ExpressionCompiler compiler = new ExpressionCompiler();
 		tree.Accept(compiler);
-		return compiler.GetCompiledExpression();
+
+		if (existingState is not null) {
+			var compiledExp = new CompiledExpression(compiler.GetEvaluateFunc(), existingState);
+		}
+		
+		return new CompiledExpression(compiler.GetEvaluateFunc(), compiler.GetExpressionState());
 	}
 	
-	public static CompiledExpression Compile(string expression){
+	public static CompiledExpression Compile(string expression, ExpressionState? existingState = null){
 		ProgramContext tree = Compiler.Parse(expression);
-		return Compile(tree);
+		return Compile(tree, existingState);
 	}
 }

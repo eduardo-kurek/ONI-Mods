@@ -1,30 +1,25 @@
-using CircuitNotIncluded.Grammar;
 using CircuitNotIncluded.Grammar.Visitors.Expression;
 
 namespace CircuitNotIncluded.Core.Runtime;
 
 public class RibbonOutputRuntime(
 	SymbolTable symbolTable,
-	string expression1,
-	string expression2,
-	string expression3,
-	string expression4,
+	CompiledExpression expression1,
+	CompiledExpression expression2,
+	CompiledExpression expression3,
+	CompiledExpression expression4,
 	int cell
 ) : PortRuntime(cell), ILogicEventSender {
 	
-	private readonly CompiledExpression compiledExp1 = Compiler.Compile(expression1);
-	private readonly CompiledExpression compiledExp2 = Compiler.Compile(expression2);
-	private readonly CompiledExpression compiledExp3 = Compiler.Compile(expression3);
-	private readonly CompiledExpression compiledExp4 = Compiler.Compile(expression4);
 	private int logicValue;
 
 	public void OnLogicNetworkConnectionChanged(bool connected){ }
 	
 	public void LogicTick(){
-		int v1 = compiledExp1.Evaluate(symbolTable);
-		int v2 = compiledExp2.Evaluate(symbolTable);
-		int v3 = compiledExp3.Evaluate(symbolTable);
-		int v4 = compiledExp4.Evaluate(symbolTable);
+		int v1 = expression1.Evaluate(symbolTable);
+		int v2 = expression2.Evaluate(symbolTable);
+		int v3 = expression3.Evaluate(symbolTable);
+		int v4 = expression4.Evaluate(symbolTable);
 		
 		logicValue = ((v1 & 1) << 0) |
 		             ((v2 & 1) << 1) |

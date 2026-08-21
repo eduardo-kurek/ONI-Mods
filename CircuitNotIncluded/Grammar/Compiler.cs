@@ -25,5 +25,6 @@ public class Compiler {
 	
 	public static void SemanticAnalyze(string expression, HashSet<string> ids) => SemanticAnalyzer.Analyze(expression, ids);
 	public static HashSet<string> ExtractIds(ProgramContext tree) => IdExtractor.Extract(tree);
-	public static CompiledExpression Compile(string expression) => ExpressionCompiler.Compile(expression);
+	public static CompiledExpression Compile(string expression, ExpressionState? existingState = null) 
+		=> ExpressionCompiler.Compile(expression, existingState);
 }

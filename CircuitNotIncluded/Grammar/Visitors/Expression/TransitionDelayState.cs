@@ -1,10 +1,19 @@
+using KSerialization;
 using UnityEngine;
 
 namespace CircuitNotIncluded.Grammar.Visitors.Expression;
 
-public class TransitionDelayState(float delayAmount, int valueToAwait) : IStatefulGate {
-	private bool wasPreviouslyTriggered;
-	private int ticksRemaining;
+[SerializationConfig(MemberSerialization.OptIn)]
+public class TransitionDelayState {
+	[Serialize] private float delayAmount;
+	[Serialize] private int valueToAwait;
+	[Serialize] private bool wasPreviouslyTriggered;
+	[Serialize] private int ticksRemaining;
+
+	public TransitionDelayState(float delayAmount, int valueToAwait){
+		this.delayAmount = delayAmount;
+		this.valueToAwait = valueToAwait;
+	}
 
 	public int Evaluate(int currentInput){
 		if (currentInput == valueToAwait){

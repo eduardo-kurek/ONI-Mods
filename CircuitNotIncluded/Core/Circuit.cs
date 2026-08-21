@@ -2,6 +2,7 @@ using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.Core.Model;
 using CircuitNotIncluded.Interfaces;
 using CircuitNotIncluded.Core.Runtime;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 using CircuitNotIncluded.Utils;
 using KSerialization;
 using UnityEngine;

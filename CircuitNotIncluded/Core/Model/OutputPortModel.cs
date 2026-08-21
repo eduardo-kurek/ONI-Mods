@@ -1,6 +1,7 @@
 using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.Core.Runtime;
 using CircuitNotIncluded.Core.Validators;
+using CircuitNotIncluded.Grammar;
 using CircuitNotIncluded.Grammar.Visitors.Expression;
 using CircuitNotIncluded.Interfaces;
 using FluentValidation.Results;
@@ -17,7 +18,7 @@ public class OutputPortModel : PortModel {
 	}
 
 	public override IRuntime CreateRuntime(SymbolTable symbolTable){
-		return new OutputRuntime(symbolTable, Bit1.Expression, Index);
+		return new OutputRuntime(symbolTable, Compiler.Compile(Bit1.Expression), Index);
 	}
 
 	public override ValidationResult Validate(ValidationData data){

@@ -17,8 +17,8 @@ public class OutputPortModel : PortModel {
 		Bit1 = new OutputBitModel(outputPort.Bit1, this, 1);
 	}
 
-	public override IRuntime CreateRuntime(SymbolTable symbolTable){
-		return new OutputRuntime(symbolTable, Compiler.Compile(Bit1.Expression), Index);
+	public override IRuntime CreateRuntime(SymbolTable symbolTable, Dictionary<string, ExpressionState> statesByLabel){
+		return new OutputRuntime(symbolTable, Bit1.Compile(statesByLabel), Index);
 	}
 
 	public override ValidationResult Validate(ValidationData data){

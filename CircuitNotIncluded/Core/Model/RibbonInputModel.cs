@@ -24,7 +24,7 @@ public class RibbonInputModel : PortModel {
 	
 	public override ValidationPriority ValidationPriority => ValidationPriority.First;
 
-	public override IRuntime CreateRuntime(SymbolTable symbolTable)
+	public override IRuntime CreateRuntime(SymbolTable symbolTable, Dictionary<string, ExpressionState> _)
 		=> new RibbonInputRuntime(symbolTable, Bit1.Id, Bit2.Id, Bit3.Id, Bit4.Id, Index);
 
 	public override ValidationResult Validate(ValidationData data){

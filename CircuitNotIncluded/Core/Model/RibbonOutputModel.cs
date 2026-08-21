@@ -25,15 +25,16 @@ public class RibbonOutputModel : PortModel {
 	
 	public override ValidationPriority ValidationPriority => ValidationPriority.Second;
 
-	public override IRuntime CreateRuntime(SymbolTable symbolTable)
-		=> new RibbonOutputRuntime(
+	public override IRuntime CreateRuntime(SymbolTable symbolTable, Dictionary<string, ExpressionState> statesByLabel){
+		return new RibbonOutputRuntime(
 			symbolTable, 
-			Compiler.Compile(Bit1.Expression), 
-			Compiler.Compile(Bit2.Expression),
-			Compiler.Compile(Bit3.Expression), 
-			Compiler.Compile(Bit4.Expression),
+			Bit1.Compile(statesByLabel), 
+			Bit2.Compile(statesByLabel),
+			Bit3.Compile(statesByLabel), 
+			Bit4.Compile(statesByLabel),
 			Index
 		);
+	}
 
 	public override ValidationResult Validate(ValidationData data){
 		var validator = new RibbonOutputValidator(data);

@@ -111,11 +111,9 @@ public class ExpressionCompiler : ExpressionBaseVisitor<object?> {
 		ExpressionCompiler compiler = new ExpressionCompiler();
 		tree.Accept(compiler);
 
-		if (existingState is not null) {
-			var compiledExp = new CompiledExpression(compiler.GetEvaluateFunc(), existingState);
-		}
-		
-		return new CompiledExpression(compiler.GetEvaluateFunc(), compiler.GetExpressionState());
+		return existingState is not null 
+			? new CompiledExpression(compiler.GetEvaluateFunc(), existingState) 
+			: new CompiledExpression(compiler.GetEvaluateFunc(), compiler.GetExpressionState());
 	}
 	
 	public static CompiledExpression Compile(string expression, ExpressionState? existingState = null){

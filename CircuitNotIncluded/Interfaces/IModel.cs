@@ -11,6 +11,6 @@ public enum ValidationPriority {
 
 public interface IModel {
 	ValidationPriority ValidationPriority { get; }
-	IRuntime CreateRuntime(SymbolTable symbolTable);
+	IRuntime CreateRuntime(SymbolTable symbolTable, Dictionary<string, ExpressionState> statesByLabel);
 	ValidationResult Validate(ValidationData data);
 }

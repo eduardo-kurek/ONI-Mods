@@ -17,10 +17,10 @@ public class CircuitModel {
 			.ToArray();
 	}
 
-	public IRuntime[] CreateRuntimes(){
+	public IRuntime[] CreateRuntimes(Dictionary<string, ExpressionState> statesByLabel){
 		SymbolTable symbolTable = new();
 		return [
-			..PortModels.Select(p => p.CreateRuntime(symbolTable))
+			..PortModels.Select(p => p.CreateRuntime(symbolTable, statesByLabel))
 		];
 	}
 }

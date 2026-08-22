@@ -8,10 +8,18 @@ public class OutputRuntime(SymbolTable symbolTable, CompiledExpression expressio
 	: PortRuntime(cell), ILogicEventSender
 {
 	private int logicValue;
-	
-	public void OnLogicNetworkConnectionChanged(bool connected){ }
+	private bool readyToEvaluate;
+
+	public void OnLogicNetworkConnectionChanged(bool connected){
+		if (connected)
+			readyToEvaluate = false;
+	}
 	
 	public void LogicTick(){
+		if (!readyToEvaluate){
+			readyToEvaluate = true;
+			return;
+		}
 		logicValue = expression.Evaluate(symbolTable);
 	}
 

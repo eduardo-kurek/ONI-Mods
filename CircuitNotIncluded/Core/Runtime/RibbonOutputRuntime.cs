@@ -12,10 +12,19 @@ public class RibbonOutputRuntime(
 ) : PortRuntime(cell), ILogicEventSender {
 	
 	private int logicValue;
+	private bool readyToEvaluate;
 
-	public void OnLogicNetworkConnectionChanged(bool connected){ }
+	public void OnLogicNetworkConnectionChanged(bool connected){
+		if (connected)
+			readyToEvaluate = false;
+	}
 	
 	public void LogicTick(){
+		if (!readyToEvaluate){
+			readyToEvaluate = true;
+			return;
+		}
+		
 		int v1 = expression1.Evaluate(symbolTable);
 		int v2 = expression2.Evaluate(symbolTable);
 		int v3 = expression3.Evaluate(symbolTable);

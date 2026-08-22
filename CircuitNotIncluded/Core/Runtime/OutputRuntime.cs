@@ -1,20 +1,26 @@
 using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 using KSerialization;
 
 namespace CircuitNotIncluded.Core.Runtime;
-using EvaluateFunc = Func<SymbolTable, int>;
 
-[SerializationConfig(MemberSerialization.OptIn)]
-public class OutputRuntime(SymbolTable symbolTable, string expression, int cell) 
+public class OutputRuntime(SymbolTable symbolTable, CompiledExpression expression, int cell) 
 	: PortRuntime(cell), ILogicEventSender
 {
-	private readonly EvaluateFunc evaluate = Compiler.Compile(expression);
 	private int logicValue;
-	
-	public void OnLogicNetworkConnectionChanged(bool connected){ }
+	private bool readyToEvaluate;
+
+	public void OnLogicNetworkConnectionChanged(bool connected){
+		if (connected)
+			readyToEvaluate = false;
+	}
 	
 	public void LogicTick(){
-		logicValue = evaluate(symbolTable);
+		if (!readyToEvaluate){
+			readyToEvaluate = true;
+			return;
+		}
+		logicValue = expression.Evaluate(symbolTable);
 	}
 
 	public int GetLogicValue() => logicValue;

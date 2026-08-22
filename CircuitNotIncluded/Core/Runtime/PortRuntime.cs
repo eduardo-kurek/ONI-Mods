@@ -5,7 +5,6 @@ using MemberSerialization = KSerialization.MemberSerialization;
 
 namespace CircuitNotIncluded.Core.Runtime;
 
-[SerializationConfig(MemberSerialization.OptIn)]
 public abstract class PortRuntime(int cell) : IRuntime, ILogicUIElement {
 	public void Connect(){
 		Game.Instance.logicCircuitSystem.AddToNetworks(cell, this, true);

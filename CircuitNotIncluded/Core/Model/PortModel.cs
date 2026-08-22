@@ -1,6 +1,6 @@
 using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.Core.Validators;
-using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 using CircuitNotIncluded.Interfaces;
 using FluentValidation.Results;
 
@@ -15,7 +15,11 @@ public abstract class PortModel(PortDTO port, CircuitModel circuit, OffsetResolv
 	public int Index { get; } = resolver.Invoke(port.Offset);
 	public CircuitModel Circuit { get; } = circuit;
 	
-	public abstract IRuntime CreateRuntime(SymbolTable symbolTable);
+	public abstract IRuntime CreateRuntime(
+		SymbolTable symbolTable,
+		Dictionary<string, ExpressionState> statesByLabel
+	);
+	
 	public abstract ValidationResult Validate(ValidationData data);
 	
 }

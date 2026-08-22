@@ -1,30 +1,34 @@
-using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 
 namespace CircuitNotIncluded.Core.Runtime;
-using EvaluateFunc = Func<SymbolTable, int>;
 
 public class RibbonOutputRuntime(
 	SymbolTable symbolTable,
-	string expression1,
-	string expression2,
-	string expression3,
-	string expression4,
+	CompiledExpression expression1,
+	CompiledExpression expression2,
+	CompiledExpression expression3,
+	CompiledExpression expression4,
 	int cell
 ) : PortRuntime(cell), ILogicEventSender {
 	
-	private readonly EvaluateFunc evaluate1 = Compiler.Compile(expression1);
-	private readonly EvaluateFunc evaluate2 = Compiler.Compile(expression2);
-	private readonly EvaluateFunc evaluate3 = Compiler.Compile(expression3);
-	private readonly EvaluateFunc evaluate4 = Compiler.Compile(expression4);
 	private int logicValue;
+	private bool readyToEvaluate;
 
-	public void OnLogicNetworkConnectionChanged(bool connected){ }
+	public void OnLogicNetworkConnectionChanged(bool connected){
+		if (connected)
+			readyToEvaluate = false;
+	}
 	
 	public void LogicTick(){
-		int v1 = evaluate1(symbolTable);
-		int v2 = evaluate2(symbolTable);
-		int v3 = evaluate3(symbolTable);
-		int v4 = evaluate4(symbolTable);
+		if (!readyToEvaluate){
+			readyToEvaluate = true;
+			return;
+		}
+		
+		int v1 = expression1.Evaluate(symbolTable);
+		int v2 = expression2.Evaluate(symbolTable);
+		int v3 = expression3.Evaluate(symbolTable);
+		int v4 = expression4.Evaluate(symbolTable);
 		
 		logicValue = ((v1 & 1) << 0) |
 		             ((v2 & 1) << 1) |

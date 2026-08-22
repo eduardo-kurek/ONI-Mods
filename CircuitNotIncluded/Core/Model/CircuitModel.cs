@@ -1,5 +1,5 @@
 using CircuitNotIncluded.Core.DTO;
-using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 using CircuitNotIncluded.Interfaces;
 
 namespace CircuitNotIncluded.Core.Model;
@@ -17,10 +17,10 @@ public class CircuitModel {
 			.ToArray();
 	}
 
-	public IRuntime[] CreateRuntimes(){
+	public IRuntime[] CreateRuntimes(Dictionary<string, ExpressionState> statesByLabel){
 		SymbolTable symbolTable = new();
 		return [
-			..PortModels.Select(p => p.CreateRuntime(symbolTable))
+			..PortModels.Select(p => p.CreateRuntime(symbolTable, statesByLabel))
 		];
 	}
 }

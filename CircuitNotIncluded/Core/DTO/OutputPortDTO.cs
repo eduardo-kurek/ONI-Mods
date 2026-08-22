@@ -1,4 +1,3 @@
-using System.Text;
 using CircuitNotIncluded.Core.Model;
 using CircuitNotIncluded.Interfaces;
 using CircuitNotIncluded.UI.Cells;

@@ -1,4 +1,4 @@
-namespace CircuitNotIncluded.Grammar;
+namespace CircuitNotIncluded.Grammar.Visitors.Expression;
 
 public class SymbolTable {
 	private readonly Dictionary<string, int> values = [];

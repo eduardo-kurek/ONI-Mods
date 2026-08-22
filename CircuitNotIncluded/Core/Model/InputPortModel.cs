@@ -1,7 +1,7 @@
 using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.Core.Runtime;
 using CircuitNotIncluded.Core.Validators;
-using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 using CircuitNotIncluded.Interfaces;
 using FluentValidation.Results;
 
@@ -16,7 +16,7 @@ public class InputPortModel : PortModel {
 		Bit1 = new InputBitModel(inputPort.Bit1, this, 1);
 	}
 
-	public override IRuntime CreateRuntime(SymbolTable symbolTable){
+	public override IRuntime CreateRuntime(SymbolTable symbolTable, Dictionary<string, ExpressionState> _){
 		return new InputRuntime(symbolTable, Bit1.Id, Index);
 	}
 

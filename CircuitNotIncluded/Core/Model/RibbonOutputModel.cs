@@ -2,6 +2,7 @@ using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.Core.Runtime;
 using CircuitNotIncluded.Core.Validators;
 using CircuitNotIncluded.Grammar;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 using CircuitNotIncluded.Interfaces;
 using FluentValidation.Results;
 
@@ -24,9 +25,16 @@ public class RibbonOutputModel : PortModel {
 	
 	public override ValidationPriority ValidationPriority => ValidationPriority.Second;
 
-	public override IRuntime CreateRuntime(SymbolTable symbolTable)
-		=> new RibbonOutputRuntime(symbolTable, Bit1.Expression, Bit2.Expression, 
-			Bit3.Expression, Bit4.Expression, Index);
+	public override IRuntime CreateRuntime(SymbolTable symbolTable, Dictionary<string, ExpressionState> statesByLabel){
+		return new RibbonOutputRuntime(
+			symbolTable, 
+			Bit1.Compile(statesByLabel), 
+			Bit2.Compile(statesByLabel),
+			Bit3.Compile(statesByLabel), 
+			Bit4.Compile(statesByLabel),
+			Index
+		);
+	}
 
 	public override ValidationResult Validate(ValidationData data){
 		var validator = new RibbonOutputValidator(data);

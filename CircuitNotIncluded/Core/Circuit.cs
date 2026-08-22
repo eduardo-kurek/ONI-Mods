@@ -1,8 +1,7 @@
 using CircuitNotIncluded.Core.DTO;
 using CircuitNotIncluded.Core.Model;
 using CircuitNotIncluded.Interfaces;
-using CircuitNotIncluded.Core.Runtime;
-using CircuitNotIncluded.Utils;
+using CircuitNotIncluded.Grammar.Visitors.Expression;
 using KSerialization;
 using UnityEngine;
 using static EventSystem;
@@ -18,6 +17,7 @@ public sealed partial class Circuit : KMonoBehaviour {
 	public int Height => def.HeightInCells;
 
 	[Serialize] public CircuitDTO dto = CircuitDTO.Empty();
+	[Serialize] public Dictionary<string, ExpressionState> statesByLabel = [];
 	
 	private IRuntime[] runtimes = [];
 	
@@ -49,7 +49,7 @@ public sealed partial class Circuit : KMonoBehaviour {
 
 	private void UpdateRuntime(){
 		var model = new CircuitModel(dto, GetActualCell);
-		runtimes = model.CreateRuntimes();
+		runtimes = model.CreateRuntimes(statesByLabel);
 	}
 	
 	private void ConnectIfNotBroken(){
@@ -86,6 +86,7 @@ public sealed partial class Circuit : KMonoBehaviour {
 
 	public void SetData(CircuitDTO circuitDto){
 		dto = circuitDto;
+		statesByLabel.Clear();
 		Disconnect();
 		UpdateRuntime();
 		ConnectIfNotBroken();

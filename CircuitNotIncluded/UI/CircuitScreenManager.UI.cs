@@ -226,7 +226,7 @@ public partial class CircuitScreenManager {
 			.AddOutline()
 			.LayoutElement()
 			.FlexibleHeight(1)
-			.PreferredWidth(350)
+			.PreferredWidth(450)
 			.gameObject;
 
 		GameObject content = BuildEditorContent(editor);
@@ -247,11 +247,11 @@ public partial class CircuitScreenManager {
 
 	private GameObject BuildInfoPanel(GameObject container){
 		PLabel infoText = new PLabel("InfoText")
-			.Text("Supported operations (by precedence):\n\n" +
-			      "! = NOT | * = AND | # = XOR | + = OR\n\n" +
-			      "Expressions supports 'true' or 'false' constants;\n" +
-			      "Use parentheses to override precedence;\n" +
-			      "Example: !(a + b) * c # d;");
+			.Text("Operations: ! NOT, * AND, # XOR, + OR\n" +
+			      "Constants: true, false\n" +
+			      "Functions: buffer, filter\n\n" +
+			      "Example: !(!buffer(a, 10) + b) * c # d\n" +
+					"Check the mod's Steam page for more details");
 		
 		GameObject editorInfo = new PPanel("EditorInfo")
 			.SetKleiPinkColor()

@@ -87,10 +87,14 @@ public sealed partial class Circuit : KMonoBehaviour {
 	public void SetData(CircuitDTO circuitDto){
 		dto = circuitDto;
 		statesByLabel.Clear();
+		if (!CircuitReadyToUpdate()) return;
+		
 		Disconnect();
 		UpdateRuntime();
 		ConnectIfNotBroken();
 	}
+
+	public bool CircuitReadyToUpdate() => isSpawned;
 
 	private void OnCopySettings(object data){
 		Circuit source = ((GameObject)data).GetComponent<Circuit>();

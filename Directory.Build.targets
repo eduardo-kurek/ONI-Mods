@@ -59,7 +59,7 @@
                Directory.Build.targets with the correct path" />
 
         <MakeDir Directories="$(RemoteModFolder)" />
-        <Exec Command="robocopy $(LocalModFolder) $(RemoteModFolder) /mir /xj /njs /s /xd /log+:$(TargetDir)robocopy_log.txt" IgnoreExitCode="true">
+        <Exec Command="robocopy &quot;$(LocalModFolder)&quot; &quot;$(RemoteModFolder)&quot; /mir /xj /njs /s /xd /log+:&quot;$(TargetDir)robocopy_log.txt&quot;" IgnoreExitCode="true">
             <Output TaskParameter="ExitCode" PropertyName="RobocopyExitCode" />
         </Exec>
 

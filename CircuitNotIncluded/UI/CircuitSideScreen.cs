@@ -9,6 +9,7 @@ using UnityEngine.UI;
 namespace CircuitNotIncluded.UI;
 
 public class CircuitSideScreen : SideScreenContent {
+   private const float PORTS_VIEWPORT_HEIGHT = 220f;
    private Circuit? circuit = null;
    private TextMeshProUGUI circuitName = null!;
    private GameObject portsContainer = null!;
@@ -50,13 +51,27 @@ public class CircuitSideScreen : SideScreenContent {
    }
 
    private void BuildPortsContainer(){
-     portsContainer = new GameObject("PortsContainer");
      var parent = ContentContainer.GetComponent<VerticalLayoutGroup>();
-     portsContainer.transform.SetParent(parent.transform);
-     
-     var layout = portsContainer.AddComponent<VerticalLayoutGroup>();
-     layout.spacing = 5;
-     layout.childAlignment = TextAnchor.UpperLeft;
+     var scrollArea = new GameObject("PortsScrollArea");
+     scrollArea.transform.SetParent(parent.transform, false);
+     var areaLayout = scrollArea.AddComponent<LayoutElement>();
+     areaLayout.minHeight = PORTS_VIEWPORT_HEIGHT;
+     areaLayout.preferredHeight = PORTS_VIEWPORT_HEIGHT;
+     areaLayout.flexibleHeight = 0;
+
+     var portsComponent = new PortsContainerComponent();
+     var scrollPane = new PScrollPane("PortsScroll") {
+       ScrollHorizontal = false,
+       ScrollVertical = true,
+       AlwaysShowHorizontal = false,
+       AlwaysShowVertical = false,
+       Child = portsComponent,
+       FlexSize = Vector2.right,
+       TrackSize = 5
+     }.Build();
+     scrollPane.transform.SetParent(scrollArea.transform, false);
+     PUIElements.SetAnchors(scrollPane, PUIAnchoring.Stretch, PUIAnchoring.Stretch);
+     portsContainer = portsComponent.Container;
    }
    
    private void ClearContent(){ 
@@ -131,4 +146,28 @@ public class CircuitSideScreen : SideScreenContent {
    }
 
    public override string GetTitle() => "Circuit properties";
+
+   private sealed class PortsContainerComponent : IUIComponent {
+     public string Name => "PortsContainer";
+
+     public event PUIDelegates.OnRealize OnRealize = null!;
+
+     public GameObject Container { get; private set; } = null!;
+
+     public GameObject Build(){
+       Container = new GameObject("PortsContainer");
+       var width = Container.AddComponent<LayoutElement>();
+       width.minWidth = 0;
+       width.preferredWidth = 0;
+       width.flexibleWidth = 1;
+       width.layoutPriority = 2;
+       Container.AddComponent<VerticalLayoutGroup>();
+       var layout = Container.GetComponent<VerticalLayoutGroup>();
+       layout.spacing = 5;
+       layout.childAlignment = TextAnchor.UpperLeft;
+       layout.padding = new RectOffset(5, 0, 0, 0);
+       OnRealize?.Invoke(Container);
+       return Container;
+     }
+   }
 }

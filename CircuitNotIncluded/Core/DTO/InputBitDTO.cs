@@ -12,14 +12,12 @@ public record InputBitDTO (
 	
 	public string GetDisplayText() {
 		StringBuilder sb = new();
-		sb.AppendLine($"Id: {Id}");
-		if(Description.Length > 0)
-			sb.AppendLine($"• {Description}");
+		sb.AppendLine($"{Id}");
 		return sb.ToString();
 	}
 	
 	public void OnHover(HoverTextDrawer drawer, SelectToolHoverTextCard cfg) {
-		drawer.DrawText($"Id: {Id}", cfg.Styles_BodyText.Standard);
+		drawer.DrawText($"{Id}", cfg.Styles_Title.Standard);
 		if(Description.Length <= 0) return;
 		drawer.NewLine();
 		drawer.DrawIcon(cfg.iconDash);
